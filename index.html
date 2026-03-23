@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>活在热爱里 - 社区地图</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #F8D36A;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            overflow: hidden; 
+        }
+
+        .view-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: none; 
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        #view-intro { background-color: #F8D36A; z-index: 30; }
+        #view-rotate { background-color: #333; color: white; z-index: 40; }
+        #view-map { display: block; z-index: 20; background-color: #F8D36A; }
+
+        @keyframes phoneRotate {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(-90deg); }
+            100% { transform: rotate(-90deg); }
+        }
+        .animate-phone { animation: phoneRotate 2s ease-in-out infinite; }
+
+        /* 🌟 头像专属左右摇摆动画 (Sway) */
+        @keyframes sway {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-6deg); }
+            75% { transform: rotate(6deg); }
+        }
+        .animate-sway { 
+            animation: sway 3s ease-in-out infinite; 
+            transform-origin: bottom center; 
+        }
+
+        /* 🌟 巴士专属左右平移动画 (Pan) */
+        @keyframes pan {
+            0%, 100% { transform: translateX(0px); }
+            50% { transform: translateX(-15px); }
+        }
+        .animate-pan { animation: pan 4s ease-in-out infinite; }
+
+        /* 错开动画时间 */
+        .delay-1 { animation-delay: 0.5s; }
+        .delay-2 { animation-delay: 1.2s; }
+        .delay-3 { animation-delay: 1.8s; }
+
+        .modal-enter { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .scroll-container {
+            width: 100vw;
+            height: 100vh;
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch; 
+            position: relative;
+        }
+        
+        .map-wrapper {
+            height: 100%;
+            position: relative;
+            display: inline-block; 
+        }
+
+        .map-bg-img {
+            height: 100%; 
+            width: auto;  
+            max-width: none;
+            display: block;
+        }
+
+        .hotspot-ip {
+            position: absolute;
+            cursor: pointer;
+            transition: transform 0.1s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .hotspot-ip:active { transform: scale(0.95); }
+
+        .fallback-icon { font-size: 3rem; line-height: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); }
+    </style>
+</head>
+<body class="antialiased text-gray-800">
+
+    <!-- 视图 1：竖屏开启页 -->
+    <div id="view-intro" class="view-layer">
+        <div class="text-center animate-sway">
+            <div class="text-8xl mb-6">⛺️</div> 
+            <h1 class="text-3xl font-black text-red-600 mb-2 drop-shadow-md">活在热爱里</h1>
+            <p class="text-yellow-800 font-bold tracking-widest mb-10">LIVING YOUR PASSION</p>
+        </div>
+        <button id="btn-start" class="bg-red-500 hover:bg-red-600 text-white font-bold py-4 px-10 rounded-full shadow-xl transform transition hover:scale-105 active:scale-95 text-xl animate-pulse">
+            开启探索之旅
+        </button>
+    </div>
+
+    <!-- 视图 2：旋转手机提示页 -->
+    <div id="view-rotate" class="view-layer">
+        <div class="flex flex-col items-center">
+            <div class="w-16 h-28 border-4 border-white rounded-xl mb-6 flex items-center justify-center animate-phone">
+                <div class="w-10 h-20 bg-white/20 rounded-sm"></div>
+            </div>
+            <h2 class="text-2xl font-bold mb-2">为了更好的体验</h2>
+            <p class="text-gray-300">请解锁方向锁定，并将手机横过来观看</p>
+        </div>
+    </div>
+
+    <!-- 视图 3：横向地图主页 -->
+    <div id="view-map" class="view-layer" style="display: none; align-items: flex-start;">
+        <div class="scroll-container">
+            <div class="map-wrapper">
+                
+                <!-- 🌟 替换为分层后的纯净版地图 map-horizontal-2.jpg -->
+                <img src="assets/map-horizontal-2.jpg" alt="活动地图" class="map-bg-img" onerror="console.error('找不到地图背景，请检查路径')">
+
+                <!-- 🌟 1. 男孩 Boy (最左侧底部起点) -->
+                <div class="hotspot-ip z-20" style="top: 65%; left: 3%;" data-zone="entrance">
+                    <img src="assets/ip-boy.png" alt="男孩" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="fallback-icon animate-sway hidden">👦</div>
+                    <span class="bg-white/95 text-red-600 text-xs sm:text-sm font-black px-3 py-1.5 rounded-full shadow-md mt-1 border-2 border-red-100 relative -top-3">起点: 领取地图</span>
+                </div>
+
+                <!-- 🌟 2. 大熊 Bear (左侧攀岩墙上方) -->
+                <div class="absolute z-10 flex flex-col items-center pointer-events-none" style="top: 2%; left: 16%;">
+                    <img src="assets/ip-bear.png" alt="大熊" class="w-32 h-32 sm:w-48 sm:h-48 object-contain animate-sway delay-1" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="fallback-icon animate-sway delay-1 hidden">🐻</div>
+                </div>
+
+                <!-- 🌟 3. 青蛙 Frog (露营区) -->
+                <div class="hotspot-ip z-20" style="top: 38%; left: 26%;" data-zone="stage">
+                    <img src="assets/ip-frog.png" alt="青蛙" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway delay-2" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="fallback-icon animate-sway delay-2 hidden">🐸</div>
+                    <span class="bg-white/95 text-yellow-600 text-xs sm:text-sm font-black px-3 py-1.5 rounded-full shadow-md mt-1 border-2 border-yellow-100 relative -top-3">露营互动区</span>
+                </div>
+
+                <!-- 🌟 4. 巴士 Bus 1 (中偏左底部) - 使用 pan 左右平移动画 -->
+                <div class="absolute z-30 flex flex-col items-center pointer-events-none" style="top: 72%; left: 36%;">
+                    <img src="assets/ip-bus.png" alt="巴士" class="w-60 sm:w-[350px] object-contain animate-pan" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="fallback-icon animate-pan hidden">🚌</div>
+                </div>
+
+                <!-- 🌟 5. 兔子 Rabbit (右侧买手店) -->
+                <div class="hotspot-ip z-20" style="top: 32%; left: 56%;" data-zone="shop">
+                    <img src="assets/ip-rabbit.png" alt="兔子" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway delay-1" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="fallback-icon animate-sway delay-1 hidden">🐰</div>
+                    <span class="bg-white/95 text-green-600 text-xs sm:text-sm font-black px-3 py-1.5 rounded-full shadow-md mt-1 border-2 border-green-100 relative -top-3">热爱买手店</span>
+                </div>
+
+                <!-- 🌟 6. 章鱼/粉色球 Octopus (海洋球池) -->
+                <div class="absolute z-10 flex flex-col items-center pointer-events-none" style="top: 52%; left: 70%;">
+                    <img src="assets/ip-octopus.png" alt="章鱼" class="w-24 h-24 sm:w-36 sm:h-36 object-contain animate-sway delay-3" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="fallback-icon animate-sway delay-3 hidden">🐙</div>
+                </div>
+
+                <!-- 🌟 7. 大象 Elephant (海洋球池右上方) -->
+                <div class="absolute z-10 flex flex-col items-center pointer-events-none" style="top: 28%; left: 77%;">
+                    <img src="assets/ip-elephant.png" alt="大象" class="w-24 h-24 sm:w-32 sm:h-32 object-contain animate-sway delay-2" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="fallback-icon animate-sway delay-2 hidden">🐘</div>
+                </div>
+
+                <!-- 🌟 8. 巴士 Bus 2 (右侧底部) - 使用 pan 左右平移动画 -->
+                <div class="absolute z-30 flex flex-col items-center pointer-events-none" style="top: 72%; left: 72%;">
+                    <img src="assets/ip-bus.png" alt="巴士" class="w-60 sm:w-[350px] object-contain animate-pan delay-1" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="fallback-icon animate-pan delay-1 hidden">🚌</div>
+                </div>
+
+                <!-- 🌟 9. 企鹅 Penguin (最右侧宠物区) -->
+                <div class="hotspot-ip z-20" style="top: 22%; left: 91%;" data-zone="pet">
+                    <img src="assets/ip-penguin.png" alt="企鹅" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway delay-1" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="fallback-icon animate-sway delay-1 hidden">🐧</div>
+                    <span class="bg-white/95 text-blue-600 text-xs sm:text-sm font-black px-3 py-1.5 rounded-full shadow-md mt-1 border-2 border-blue-100 relative -top-3">宠物治愈区</span>
+                </div>
+
+                <!-- 🌟 10. 小熊 Bear (最右侧宠物区旁边) -->
+                <div class="absolute z-10 flex flex-col items-center pointer-events-none" style="top: 25%; left: 95%;">
+                    <img src="assets/ip-bear.png" alt="小熊" class="w-24 h-24 sm:w-32 sm:h-32 object-contain animate-sway delay-3" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="fallback-icon animate-sway delay-3 hidden">🐻</div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 弹窗组件 -->
+    <div id="info-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-2 sm:p-4">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" id="modal-overlay"></div>
+        <div id="modal-card" class="bg-white w-full max-w-lg max-h-[90vh] rounded-2xl overflow-hidden shadow-2xl z-10 flex flex-col modal-enter relative">
+            <div class="h-16 sm:h-20 flex-shrink-0 relative flex items-center justify-center overflow-hidden" id="modal-header-bg">
+                <div class="absolute inset-0 opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9IiNmZmYiLz48L3N2Zz4=')]"></div>
+                <h2 id="modal-title" class="text-xl sm:text-2xl font-black text-white tracking-wider drop-shadow-md z-10">标题</h2>
+                <button id="close-btn" class="absolute top-2 right-2 w-8 h-8 bg-black/20 hover:bg-black/40 rounded-full text-white flex items-center justify-center font-bold transition-colors z-20">✕</button>
+            </div>
+            <div class="p-4 sm:p-6 overflow-y-auto">
+                <div class="bg-gray-50 font-bold py-1 px-4 rounded-full text-center text-xs sm:text-sm mb-4" id="modal-highlight">一句话亮点</div>
+                <div class="space-y-2 sm:space-y-3" id="modal-rules"></div>
+                <div class="mt-4 text-[10px] sm:text-xs text-gray-400 text-center border-t pt-2" id="modal-notice">* 现场活动以实际安排为准</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === 屏幕状态与横竖屏检测 ===
+        const viewIntro = document.getElementById('view-intro');
+        const viewRotate = document.getElementById('view-rotate');
+        const viewMap = document.getElementById('view-map');
+        const btnStart = document.getElementById('btn-start');
+        let hasStarted = false;
+
+        function checkOrientation() {
+            if (!hasStarted) return; 
+            const isLandscape = window.innerWidth > window.innerHeight;
+            if (isLandscape) {
+                viewIntro.style.display = 'none';
+                viewRotate.style.display = 'none';
+                viewMap.style.display = 'flex';
+            } else {
+                viewIntro.style.display = 'none';
+                viewMap.style.display = 'none';
+                viewRotate.style.display = 'flex';
+            }
+        }
+
+        btnStart.addEventListener('click', () => {
+            hasStarted = true;
+            checkOrientation(); 
+        });
+
+        window.addEventListener('resize', checkOrientation);
+        window.addEventListener('orientationchange', () => { setTimeout(checkOrientation, 200); });
+        viewIntro.style.display = 'flex';
+
+        // === 热区与弹窗文案数据 ===
+        const zonesData = {
+            'entrance': {
+                title: '👦 核心出入口',
+                themeColor: '#EF4444', highlightColor: '#FEE2E2', highlightText: '#DC2626',
+                highlight: '领取你的专属热爱地图！',
+                rules: [
+                    '📍 <strong>Step 1</strong>：扫码关注官方账号',
+                    '🗺️ <strong>Step 2</strong>：向工作人员领取纸质地图',
+                    '🎁 <strong>Step 3</strong>：开启你的快闪探索之旅！'
+                ],
+                notice: '小提示：地图限量发放，先到先得哦~'
+            },
+            'stage': {
+                title: '🐸 露营互动区',
+                themeColor: '#F59E0B', highlightColor: '#FEF3C7', highlightText: '#D97706',
+                highlight: '寻找热爱亮点，参与高燃互动！',
+                rules: [
+                    '✨ <strong>精彩演出</strong>：定时随机掉落 IP 巡游',
+                    '🎮 <strong>互动游戏</strong>：参与问答，赢取金币',
+                    '📸 <strong>拍照打卡</strong>：最佳出片机位，千万别错过'
+                ]
+            },
+            'shop': {
+                title: '🐰 热爱买手店',
+                themeColor: '#10B981', highlightColor: '#D1FAE5', highlightText: '#059669',
+                highlight: '总有一款是你热爱！',
+                rules: [
+                    '👗 汇聚暖心美食与时尚鞋服',
+                    '💰 <strong>金币兑换</strong>：使用收集的金币兑换专属权益和盲盒礼品！'
+                ]
+            },
+            'pet': {
+                title: '🐧 宠物治愈区',
+                themeColor: '#3B82F6', highlightColor: '#DBEAFE', highlightText: '#2563EB',
+                highlight: '带上毛孩子一起嗨！',
+                rules: [
+                    '🦴 <strong>专属区域</strong>：为爱宠提供饮水与玩耍空间',
+                    '🎨 <strong>涂鸦共创</strong>：旁边的 Painting 区域可留下专属涂鸦'
+                ],
+                notice: '请给宠物牵好绳索，保持现场整洁哦'
+            }
+        };
+
+        const hotspots = document.querySelectorAll('.hotspot-ip');
+        const modal = document.getElementById('info-modal');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const closeBtn = document.getElementById('close-btn');
+        const modalCard = document.getElementById('modal-card');
+
+        hotspots.forEach(hotspot => {
+            hotspot.addEventListener('click', () => {
+                const data = zonesData[hotspot.getAttribute('data-zone')];
+                if (data) {
+                    document.getElementById('modal-title').innerText = data.title;
+                    const elHighlight = document.getElementById('modal-highlight');
+                    elHighlight.innerText = data.highlight;
+                    document.getElementById('modal-header-bg').style.backgroundColor = data.themeColor;
+                    elHighlight.style.backgroundColor = data.highlightColor;
+                    elHighlight.style.color = data.highlightText;
+                    
+                    document.getElementById('modal-rules').innerHTML = data.rules.map(rule => `
+                        <div class="flex items-start">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0 mt-0.5" style="color: ${data.themeColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                            <span class="text-xs sm:text-sm text-gray-700 leading-relaxed">${rule}</span>
+                        </div>
+                    `).join('');
+
+                    const elNotice = document.getElementById('modal-notice');
+                    if (data.notice) { elNotice.innerText = data.notice; elNotice.style.display = 'block'; } 
+                    else { elNotice.style.display = 'none'; }
+
+                    modalCard.classList.remove('modal-enter');
+                    void modalCard.offsetWidth; 
+                    modalCard.classList.add('modal-enter');
+                    modal.classList.remove('hidden');
+                }
+            });
+        });
+
+        const closeModal = () => modal.classList.add('hidden');
+        closeBtn.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', closeModal);
+    </script>
+</body>
+</html>
