@@ -148,67 +148,63 @@
                 
                 <img src="assets/map-horizontal-2.jpg" alt="活动地图" class="map-bg-img" onerror="console.error('找不到地图背景，请检查路径')">
 
-                <!-- 1. 男孩 Boy (往上、往右) -->
-                <div class="hotspot-ip z-20" style="top: 55%; left: 6%;" data-zone="entrance">
+                <!-- 1. 男孩 Boy (往上、往右，去掉标签) -->
+                <div class="hotspot-ip z-20" style="top: 48%; left: 9%;" data-zone="entrance">
                     <img src="assets/ip-boy.png" alt="男孩" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway hidden">👦</div>
-                    <span class="bg-white/95 text-red-600 text-xs sm:text-sm font-black px-3 py-1.5 rounded-full shadow-md mt-1 border-2 border-red-100 relative -top-3">起点: 领取地图</span>
                 </div>
 
-                <!-- 2. 大熊 Bear -->
-                <div class="absolute z-10 flex flex-col items-center pointer-events-none" style="top: 2%; left: 16%;">
+                <!-- 2. 大熊 Bear (尽量往上) -->
+                <div class="absolute z-10 flex flex-col items-center pointer-events-none" style="top: 0%; left: 16%;">
                     <img src="assets/ip-bear.png" alt="大熊" class="w-32 h-32 sm:w-48 sm:h-48 object-contain animate-sway delay-1" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-1 hidden">🐻</div>
                 </div>
 
-                <!-- 3. 青蛙 Frog (往上、往左) -->
-                <div class="hotspot-ip z-20" style="top: 28%; left: 22%;" data-zone="stage">
+                <!-- 3. 青蛙 Frog (往上，去掉标签) -->
+                <div class="hotspot-ip z-20" style="top: 20%; left: 22%;" data-zone="stage">
                     <img src="assets/ip-frog.png" alt="青蛙" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway delay-2" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-2 hidden">🐸</div>
-                    <span class="bg-white/95 text-yellow-600 text-xs sm:text-sm font-black px-3 py-1.5 rounded-full shadow-md mt-1 border-2 border-yellow-100 relative -top-3">露营互动区</span>
                 </div>
 
                 <!-- 4. 巴士 Bus 1 (往上) -->
-                <div class="absolute z-30 flex flex-col items-center pointer-events-none" style="top: 65%; left: 36%;">
+                <div class="absolute z-30 flex flex-col items-center pointer-events-none" style="top: 58%; left: 36%;">
                     <img src="assets/ip-bus.png" alt="巴士" class="w-60 sm:w-[350px] object-contain animate-pan" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-pan hidden">🚌</div>
                 </div>
 
-                <!-- 5. 兔子 Rabbit (往上、往左) -->
-                <div class="hotspot-ip z-20" style="top: 26%; left: 53%;" data-zone="shop">
+                <!-- 5. 兔子 Rabbit (往上、往左，去掉标签) -->
+                <div class="hotspot-ip z-20" style="top: 18%; left: 50%;" data-zone="shop">
                     <img src="assets/ip-rabbit.png" alt="兔子" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway delay-1" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-1 hidden">🐰</div>
-                    <span class="bg-white/95 text-green-600 text-xs sm:text-sm font-black px-3 py-1.5 rounded-full shadow-md mt-1 border-2 border-green-100 relative -top-3">热爱买手店</span>
                 </div>
 
                 <!-- 6. 章鱼/粉色球 Octopus (往上、往左) -->
-                <div class="absolute z-10 flex flex-col items-center pointer-events-none" style="top: 46%; left: 67%;">
+                <div class="absolute z-10 flex flex-col items-center pointer-events-none" style="top: 38%; left: 64%;">
                     <img src="assets/ip-octopus.png" alt="章鱼" class="w-24 h-24 sm:w-36 sm:h-36 object-contain animate-sway delay-3" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-3 hidden">🐙</div>
                 </div>
 
                 <!-- 7. 大象 Elephant (往左) -->
-                <div class="absolute z-10 flex flex-col items-center pointer-events-none" style="top: 28%; left: 74%;">
+                <div class="absolute z-10 flex flex-col items-center pointer-events-none" style="top: 28%; left: 70%;">
                     <img src="assets/ip-elephant.png" alt="大象" class="w-24 h-24 sm:w-32 sm:h-32 object-contain animate-sway delay-2" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-2 hidden">🐘</div>
                 </div>
 
                 <!-- 8. 巴士 Bus 2 (往上) -->
-                <div class="absolute z-30 flex flex-col items-center pointer-events-none" style="top: 65%; left: 72%;">
+                <div class="absolute z-30 flex flex-col items-center pointer-events-none" style="top: 58%; left: 72%;">
                     <img src="assets/ip-bus.png" alt="巴士" class="w-60 sm:w-[350px] object-contain animate-pan delay-1" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-pan delay-1 hidden">🚌</div>
                 </div>
 
-                <!-- 9. 企鹅 Penguin (往上、往左) -->
-                <div class="hotspot-ip z-20" style="top: 18%; left: 88%;" data-zone="pet">
+                <!-- 9. 企鹅 Penguin (往左x3、往上，去掉标签) -->
+                <div class="hotspot-ip z-20" style="top: 12%; left: 81%;" data-zone="pet">
                     <img src="assets/ip-penguin.png" alt="企鹅" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway delay-1" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-1 hidden">🐧</div>
-                    <span class="bg-white/95 text-blue-600 text-xs sm:text-sm font-black px-3 py-1.5 rounded-full shadow-md mt-1 border-2 border-blue-100 relative -top-3">宠物治愈区</span>
                 </div>
 
-                <!-- 10. 小熊 Bear (往上、往左) -->
-                <div class="absolute z-10 flex flex-col items-center pointer-events-none" style="top: 18%; left: 92%;">
-                    <img src="assets/ip-bear.png" alt="小熊" class="w-24 h-24 sm:w-32 sm:h-32 object-contain animate-sway delay-3" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <!-- 10. 第二只小熊 Bear (放大尺寸、往左x2、高度和企鹅对齐) -->
+                <div class="absolute z-10 flex flex-col items-center pointer-events-none" style="top: 12%; left: 87%;">
+                    <img src="assets/ip-bear.png" alt="小熊" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway delay-3" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-3 hidden">🐻</div>
                 </div>
 
