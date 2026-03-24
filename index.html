@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
+    <!-- 🌟 新增：尝试把部分安卓/微信底栏染成黄色 -->
+    <meta name="theme-color" content="#F8D36A">
+    
     <!-- iOS 专属沉浸式全屏配置 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <!-- 安卓 Chrome 全屏配置 -->
     <meta name="mobile-web-app-capable" content="yes">
     
     <title>活在热爱里 - 社区地图</title>
@@ -37,7 +39,6 @@
             z-index: 10;
         }
 
-        /* 开启页背景现在由视频接管，这里可以去掉了纯色背景 */
         #view-intro { z-index: 30; }
         #view-rotate { background-color: #333; color: white; z-index: 40; }
         #view-map { display: block; z-index: 20; background-color: #F8D36A; }
@@ -116,11 +117,7 @@
 
     <!-- ================= 视图 1：竖屏开启页 ================= -->
     <div id="view-intro" class="view-layer relative overflow-hidden cursor-pointer">
-        
-        <!-- 🌟 新增：开屏兜底静态海报 (如果视频加载失败或被微信拦截，起码有这张图) -->
         <img src="assets/intro-bg.jpg" class="absolute inset-0 w-full h-full object-cover z-0" alt="活动海报">
-
-        <!-- 🌟 优化：加入微信 X5 浏览器专属属性，并加上 poster 海报属性 -->
         <video 
             id="intro-video"
             src="assets/intro-bg.mp4" 
@@ -155,12 +152,11 @@
 
                 <!-- 1. 男孩 Boy -->
                 <div class="hotspot-ip z-20" style="top: 44%; left: 11%;" data-zone="entrance">
-                    <!-- 🌟 增加了 drop-shadow-lg 智能轮廓阴影 -->
                     <img src="assets/ip-boy.png" alt="男孩" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway hidden">👦</div>
                 </div>
 
-                <!-- 2. 大熊 Bear (往上一点) -->
+                <!-- 2. 大熊 Bear -->
                 <div class="absolute z-10 flex flex-col items-center pointer-events-none" style="top: -14%; left: 16%;">
                     <img src="assets/ip-bear.png" alt="大熊" class="w-32 h-32 sm:w-48 sm:h-48 object-contain animate-sway delay-1 drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-1 hidden">🐻</div>
@@ -178,13 +174,13 @@
                     <div class="fallback-icon animate-pan hidden">🚌</div>
                 </div>
 
-                <!-- 5. 兔子 Rabbit (往右一点) -->
+                <!-- 5. 兔子 Rabbit -->
                 <div class="hotspot-ip z-20" style="top: 15%; left: 51%;" data-zone="shop">
                     <img src="assets/ip-rabbit.png" alt="兔子" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway delay-1 drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-1 hidden">🐰</div>
                 </div>
 
-                <!-- 6. 章鱼/粉色球 Octopus (往右一点) -->
+                <!-- 6. 章鱼/粉色球 Octopus -->
                 <div class="absolute z-10 flex flex-col items-center pointer-events-none" style="top: 19%; left: 64%;">
                     <img src="assets/ip-octopus.png" alt="章鱼" class="w-24 h-24 sm:w-36 sm:h-36 object-contain animate-sway delay-3 drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-3 hidden">🐙</div>
@@ -208,7 +204,7 @@
                     <div class="fallback-icon animate-sway delay-1 hidden">🐧</div>
                 </div>
 
-                <!-- 10. 第二只小熊 Bear (往右一点) -->
+                <!-- 10. 第二只小熊 Bear -->
                 <div class="absolute z-10 flex flex-col items-center pointer-events-none" style="top: 2%; left: 86%;">
                     <img src="assets/ip-bear.png" alt="小熊" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway delay-3 drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-3 hidden">🐻</div>
@@ -218,27 +214,43 @@
         </div>
     </div>
 
-    <!-- ================= 弹窗组件 ================= -->
-    <div id="info-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-2 sm:p-4">
-        <!-- 🌟 遮罩层：加上了 cursor-pointer 暗示可以点击关闭 -->
-        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity cursor-pointer" id="modal-overlay"></div>
+    <!-- ================= 🌟 弹窗组件：Apple 高级磨砂玻璃质感版 ================= -->
+    <div id="info-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
         
-        <!-- 🌟 卡片主体：bg-white/90 和 backdrop-blur-md 营造半透明磨砂玻璃感 -->
-        <div id="modal-card" class="bg-white/90 backdrop-blur-md w-full max-w-lg max-h-[90dvh] rounded-2xl overflow-hidden shadow-2xl z-10 flex flex-col modal-enter relative border border-white/50">
-            <div class="h-16 sm:h-20 flex-shrink-0 relative flex items-center justify-center overflow-hidden" id="modal-header-bg">
-                <div class="absolute inset-0 opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9IiNmZmYiLz48L3N2Zz4=')]"></div>
-                <h2 id="modal-title" class="text-xl sm:text-2xl font-black text-white tracking-wider drop-shadow-md z-10">标题</h2>
-                <!-- 🌟 删除了原本这里的 X 按钮 -->
-            </div>
-            <div class="p-4 sm:p-6 overflow-y-auto">
-                <div class="bg-gray-50/80 font-bold py-1 px-4 rounded-full text-center text-xs sm:text-sm mb-4 backdrop-blur-sm" id="modal-highlight">一句话亮点</div>
-                <div class="space-y-2 sm:space-y-3" id="modal-rules"></div>
-                <div class="mt-4 text-[10px] sm:text-xs text-gray-500 text-center border-t border-gray-200/50 pt-2" id="modal-notice">* 现场活动以实际安排为准</div>
+        <!-- 遮罩层：保留透明度，点击即可关闭 -->
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity cursor-pointer" id="modal-overlay"></div>
+        
+        <!-- 卡片主体：高透光白 + 极强磨砂 + 大圆角 -->
+        <!-- 去掉了生硬的背景色块和关闭按钮 -->
+        <div id="modal-card" class="w-full max-w-sm max-h-[85dvh] rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 flex flex-col modal-enter relative border border-white/60" style="background-color: rgba(255, 255, 255, 0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
+            
+            <!-- 🌟 氛围呼吸灯 (Glow)：这是一个绝密的氛围魔法，会根据你点击的不同区域，在弹窗右上角透出柔和的主题色光晕 -->
+            <div id="modal-glow" class="absolute top-0 right-0 w-full h-48 opacity-40 pointer-events-none transition-colors duration-500" style="background: radial-gradient(circle at 80% 0%, var(--theme-color), transparent 70%);"></div>
+
+            <div class="p-6 sm:p-8 overflow-y-auto relative z-10 flex flex-col items-center">
+                
+                <!-- 标题区：极简留白 -->
+                <h2 id="modal-title" class="text-2xl sm:text-3xl font-black text-gray-800 tracking-wide mb-3">标题</h2>
+                
+                <!-- 一句话亮点：高级药丸设计 -->
+                <div id="modal-highlight" class="inline-block px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold shadow-sm border border-white/60 mb-6">
+                    一句话亮点
+                </div>
+
+                <!-- 规则详情容器：包裹在一层更白的微磨砂容器里 -->
+                <div class="w-full space-y-3 bg-white/50 rounded-2xl p-4 sm:p-5 border border-white/50 shadow-inner" id="modal-rules">
+                    <!-- 动态规则注入点 -->
+                </div>
+
+                <!-- 底部弱化提示 -->
+                <div class="mt-6 text-[10px] sm:text-xs text-gray-500/80 font-medium" id="modal-notice">
+                    * 现场活动以实际安排为准
+                </div>
             </div>
         </div>
     </div>
 
-        <script>
+    <script>
         // === 屏幕状态与横竖屏检测 ===
         const viewIntro = document.getElementById('view-intro');
         const viewRotate = document.getElementById('view-rotate');
@@ -260,22 +272,18 @@
             }
         }
 
-        // 🌟 魔法 1：点击整个屏幕的任何地方，直接跳转到地图
         viewIntro.addEventListener('click', () => {
             hasStarted = true;
             checkOrientation(); 
         });
 
-        // 🌟 魔法 2：视频处理逻辑
         const introVideo = document.getElementById('intro-video');
         if (introVideo) {
-            // 播完自动跳地图
             introVideo.addEventListener('ended', () => {
                 hasStarted = true;
                 checkOrientation();
             });
 
-            // 🌟 微信防拦截魔法：尝试在微信环境准备好时强制唤醒播放
             document.addEventListener("WeixinJSBridgeReady", function() {
                 introVideo.play().catch(() => {});
             }, false);
@@ -332,7 +340,6 @@
         const hotspots = document.querySelectorAll('.hotspot-ip');
         const modal = document.getElementById('info-modal');
         const modalOverlay = document.getElementById('modal-overlay');
-        // 🌟 删除了对 X 按钮的获取
         const modalCard = document.getElementById('modal-card');
 
         hotspots.forEach(hotspot => {
@@ -342,7 +349,10 @@
                     document.getElementById('modal-title').innerText = data.title;
                     const elHighlight = document.getElementById('modal-highlight');
                     elHighlight.innerText = data.highlight;
-                    document.getElementById('modal-header-bg').style.backgroundColor = data.themeColor;
+                    
+                    // 🌟 给弹窗的呼吸灯注入当前的“主题色”
+                    document.getElementById('modal-glow').style.setProperty('--theme-color', data.themeColor);
+                    
                     elHighlight.style.backgroundColor = data.highlightColor;
                     elHighlight.style.color = data.highlightText;
                     
@@ -365,8 +375,8 @@
             });
         });
 
+        // 🌟 完全移除了 X 按钮，现在只有点击遮罩层才能关闭
         const closeModal = () => modal.classList.add('hidden');
-        // 🌟 只保留点击背景遮罩层退出弹窗
         modalOverlay.addEventListener('click', closeModal);
     </script>
 </body>
