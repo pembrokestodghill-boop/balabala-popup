@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- 🌟 新增：iOS 专属沉浸式全屏配置（允许添加到主屏幕后隐藏所有浏览器边框） -->
+    <!-- iOS 专属沉浸式全屏配置 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <!-- 🌟 新增：安卓 Chrome 全屏配置 -->
+    <!-- 安卓 Chrome 全屏配置 -->
     <meta name="mobile-web-app-capable" content="yes">
     
     <title>活在热爱里 - 社区地图</title>
@@ -20,7 +20,6 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             -webkit-tap-highlight-color: transparent;
             overflow: hidden; 
-            /* 🌟 新增：阻止微信/Safari上下滑动时的“橡皮筋”回弹效果，让它更像一个原生App */
             overscroll-behavior-y: none; 
         }
 
@@ -29,8 +28,7 @@
             top: 0;
             left: 0;
             width: 100vw;
-            /* 🌟 核心修改：使用 dvh (动态高度) 替换 vh，防止被微信/Safari底部导航栏遮挡！ */
-            height: 100vh; /* 旧版手机的备用兼容方案 */
+            height: 100vh; 
             height: 100dvh; 
             display: none; 
             flex-direction: column;
@@ -39,7 +37,8 @@
             z-index: 10;
         }
 
-        #view-intro { background-color: #F8D36A; z-index: 30; }
+        /* 开启页背景现在由视频接管，这里可以去掉了纯色背景 */
+        #view-intro { z-index: 30; }
         #view-rotate { background-color: #333; color: white; z-index: 40; }
         #view-map { display: block; z-index: 20; background-color: #F8D36A; }
 
@@ -50,7 +49,6 @@
         }
         .animate-phone { animation: phoneRotate 2s ease-in-out infinite; }
 
-        /* 头像专属左右摇摆动画 (Sway) */
         @keyframes sway {
             0%, 100% { transform: rotate(0deg); }
             25% { transform: rotate(-6deg); }
@@ -61,7 +59,6 @@
             transform-origin: bottom center; 
         }
 
-        /* 巴士专属左右平移动画 (Pan) */
         @keyframes pan {
             0%, 100% { transform: translateX(0px); }
             50% { transform: translateX(-15px); }
@@ -80,7 +77,6 @@
 
         .scroll-container {
             width: 100vw;
-            /* 🌟 核心修改：同样使用 100dvh 限制滚动容器高度，确保完美嵌在可视区域内 */
             height: 100vh; 
             height: 100dvh;
             overflow-x: auto;
@@ -118,19 +114,38 @@
 </head>
 <body class="antialiased text-gray-800">
 
-    <!-- 视图 1：竖屏开启页 -->
-    <div id="view-intro" class="view-layer">
-        <div class="text-center animate-sway">
-            <div class="text-8xl mb-6">⛺️</div> 
-            <h1 class="text-3xl font-black text-red-600 mb-2 drop-shadow-md">活在热爱里</h1>
-            <p class="text-yellow-800 font-bold tracking-widest mb-10">LIVING YOUR PASSION</p>
+    <!-- ================= 视图 1：竖屏开启页 ================= -->
+    <div id="view-intro" class="view-layer relative overflow-hidden">
+        
+        <!-- 🌟 新增：全屏 9:16 MP4 视频背景 -->
+        <!-- playsinline 和 webkit-playsinline 是苹果手机内联自动播放的终极护身符，千万不能删 -->
+        <video 
+            src="assets/intro-bg.mp4" 
+            autoplay 
+            loop 
+            muted 
+            playsinline 
+            webkit-playsinline
+            class="absolute inset-0 w-full h-full object-cover z-0"
+        ></video>
+
+        <!-- 如果视频背景太花导致文字看不清，可以取消注释下面这行（加一层淡淡的黑色半透明遮罩） -->
+        <!-- <div class="absolute inset-0 bg-black/20 z-0"></div> -->
+
+        <!-- 悬浮在视频上方的文字和按钮 (提到了 z-10) -->
+        <div class="relative z-10 flex flex-col items-center w-full px-6 text-center animate-sway">
+            
+            <!-- 💡 姚老师提示：如果你的 MP4 视频里面已经自带了这几个大字，你可以把下面这 2 行 <h1...> 和 <p...> 直接删掉！ -->
+            <h1 class="text-4xl sm:text-5xl font-black text-white mb-2 drop-shadow-lg">活在热爱里</h1>
+            <p class="text-white font-bold tracking-widest mb-16 drop-shadow-md">LIVING YOUR PASSION</p>
+
+            <button id="btn-start" class="bg-red-500 hover:bg-red-600 text-white font-bold py-4 px-12 rounded-full shadow-[0_10px_20px_rgba(239,68,68,0.4)] transform transition hover:scale-105 active:scale-95 text-xl animate-pulse mt-10">
+                开启探索之旅
+            </button>
         </div>
-        <button id="btn-start" class="bg-red-500 hover:bg-red-600 text-white font-bold py-4 px-10 rounded-full shadow-xl transform transition hover:scale-105 active:scale-95 text-xl animate-pulse">
-            开启探索之旅
-        </button>
     </div>
 
-    <!-- 视图 2：旋转手机提示页 -->
+    <!-- ================= 视图 2：旋转手机提示页 ================= -->
     <div id="view-rotate" class="view-layer">
         <div class="flex flex-col items-center">
             <div class="w-16 h-28 border-4 border-white rounded-xl mb-6 flex items-center justify-center animate-phone">
@@ -141,68 +156,68 @@
         </div>
     </div>
 
-    <!-- 视图 3：横向地图主页 -->
+    <!-- ================= 视图 3：横向地图主页 ================= -->
     <div id="view-map" class="view-layer" style="display: none; align-items: flex-start;">
         <div class="scroll-container">
             <div class="map-wrapper">
                 
                 <img src="assets/map-horizontal-2.jpg" alt="活动地图" class="map-bg-img" onerror="console.error('找不到地图背景，请检查路径')">
 
-                <!-- 1. 男孩 Boy (往上、往右，去掉标签) -->
+                <!-- 1. 男孩 Boy -->
                 <div class="hotspot-ip z-20" style="top: 44%; left: 11%;" data-zone="entrance">
                     <img src="assets/ip-boy.png" alt="男孩" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway hidden">👦</div>
                 </div>
 
-                <!-- 2. 大熊 Bear (再往上) -->
+                <!-- 2. 大熊 Bear -->
                 <div class="absolute z-10 flex flex-col items-center pointer-events-none" style="top: -10%; left: 16%;">
                     <img src="assets/ip-bear.png" alt="大熊" class="w-32 h-32 sm:w-48 sm:h-48 object-contain animate-sway delay-1" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-1 hidden">🐻</div>
                 </div>
 
-                <!-- 3. 青蛙 Frog (往上一点点) -->
+                <!-- 3. 青蛙 Frog -->
                 <div class="hotspot-ip z-20" style="top: 17%; left: 22%;" data-zone="stage">
                     <img src="assets/ip-frog.png" alt="青蛙" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway delay-2" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-2 hidden">🐸</div>
                 </div>
 
-                <!-- 4. 巴士 Bus 1 (往左一点，往上一点) -->
+                <!-- 4. 巴士 Bus 1 -->
                 <div class="absolute z-30 flex flex-col items-center pointer-events-none" style="top: 47%; left: 34%;">
                     <img src="assets/ip-bus.png" alt="巴士" class="w-60 sm:w-[350px] object-contain animate-pan" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-pan hidden">🚌</div>
                 </div>
 
-                <!-- 5. 兔子 Rabbit (往右一点) -->
+                <!-- 5. 兔子 Rabbit -->
                 <div class="hotspot-ip z-20" style="top: 15%; left: 52%;" data-zone="shop">
                     <img src="assets/ip-rabbit.png" alt="兔子" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway delay-1" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-1 hidden">🐰</div>
                 </div>
 
-                <!-- 6. 章鱼/粉色球 Octopus (往上一点) -->
+                <!-- 6. 章鱼/粉色球 Octopus -->
                 <div class="absolute z-10 flex flex-col items-center pointer-events-none" style="top: 22%; left: 64%;">
                     <img src="assets/ip-octopus.png" alt="章鱼" class="w-24 h-24 sm:w-36 sm:h-36 object-contain animate-sway delay-3" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-3 hidden">🐙</div>
                 </div>
 
-                <!-- 7. 大象 Elephant (往上一点点) -->
+                <!-- 7. 大象 Elephant -->
                 <div class="absolute z-10 flex flex-col items-center pointer-events-none" style="top: 24%; left: 70%;">
                     <img src="assets/ip-elephant.png" alt="大象" class="w-24 h-24 sm:w-32 sm:h-32 object-contain animate-sway delay-2" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-2 hidden">🐘</div>
                 </div>
 
-                <!-- 8. 巴士 Bus 2 (往上) -->
+                <!-- 8. 巴士 Bus 2 -->
                 <div class="absolute z-30 flex flex-col items-center pointer-events-none" style="top: 49%; left: 72%;">
                     <img src="assets/ip-bus.png" alt="巴士" class="w-60 sm:w-[350px] object-contain animate-pan delay-1" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-pan delay-1 hidden">🚌</div>
                 </div>
 
-                <!-- 9. 企鹅 Penguin (往上) -->
+                <!-- 9. 企鹅 Penguin -->
                 <div class="hotspot-ip z-20" style="top: 2%; left: 79%;" data-zone="pet">
                     <img src="assets/ip-penguin.png" alt="企鹅" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway delay-1" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-1 hidden">🐧</div>
                 </div>
 
-                <!-- 10. 第二只小熊 Bear (往右一点) -->
+                <!-- 10. 第二只小熊 Bear -->
                 <div class="absolute z-10 flex flex-col items-center pointer-events-none" style="top: 2%; left: 86%;">
                     <img src="assets/ip-bear.png" alt="小熊" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway delay-3" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-3 hidden">🐻</div>
@@ -212,7 +227,7 @@
         </div>
     </div>
 
-    <!-- 弹窗组件 -->
+    <!-- ================= 弹窗组件 ================= -->
     <div id="info-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-2 sm:p-4">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" id="modal-overlay"></div>
         <div id="modal-card" class="bg-white w-full max-w-lg max-h-[90dvh] rounded-2xl overflow-hidden shadow-2xl z-10 flex flex-col modal-enter relative">
