@@ -115,34 +115,24 @@
 <body class="antialiased text-gray-800">
 
     <!-- ================= 视图 1：竖屏开启页 ================= -->
-    <div id="view-intro" class="view-layer relative overflow-hidden">
+    <div id="view-intro" class="view-layer relative overflow-hidden cursor-pointer">
         
-        <!-- 🌟 新增：全屏 9:16 MP4 视频背景 -->
-        <!-- playsinline 和 webkit-playsinline 是苹果手机内联自动播放的终极护身符，千万不能删 -->
+        <!-- 🌟 新增：开屏兜底静态海报 (如果视频加载失败或被微信拦截，起码有这张图) -->
+        <img src="assets/intro-bg.jpg" class="absolute inset-0 w-full h-full object-cover z-0" alt="活动海报">
+
+        <!-- 🌟 优化：加入微信 X5 浏览器专属属性，并加上 poster 海报属性 -->
         <video 
+            id="intro-video"
             src="assets/intro-bg.mp4" 
+            poster="assets/intro-bg.jpg"
             autoplay 
-            loop 
             muted 
             playsinline 
             webkit-playsinline
-            class="absolute inset-0 w-full h-full object-cover z-0"
+            x5-video-player-type="h5"
+            x5-video-player-fullscreen="true"
+            class="absolute inset-0 w-full h-full object-cover z-10"
         ></video>
-
-        <!-- 如果视频背景太花导致文字看不清，可以取消注释下面这行（加一层淡淡的黑色半透明遮罩） -->
-        <!-- <div class="absolute inset-0 bg-black/20 z-0"></div> -->
-
-        <!-- 悬浮在视频上方的文字和按钮 (提到了 z-10) -->
-        <div class="relative z-10 flex flex-col items-center w-full px-6 text-center animate-sway">
-            
-            <!-- 💡 姚老师提示：如果你的 MP4 视频里面已经自带了这几个大字，你可以把下面这 2 行 <h1...> 和 <p...> 直接删掉！ -->
-            <h1 class="text-4xl sm:text-5xl font-black text-white mb-2 drop-shadow-lg">活在热爱里</h1>
-            <p class="text-white font-bold tracking-widest mb-16 drop-shadow-md">LIVING YOUR PASSION</p>
-
-            <button id="btn-start" class="bg-red-500 hover:bg-red-600 text-white font-bold py-4 px-12 rounded-full shadow-[0_10px_20px_rgba(239,68,68,0.4)] transform transition hover:scale-105 active:scale-95 text-xl animate-pulse mt-10">
-                开启探索之旅
-            </button>
-        </div>
     </div>
 
     <!-- ================= 视图 2：旋转手机提示页 ================= -->
@@ -244,7 +234,7 @@
         </div>
     </div>
 
-    <script>
+        <script>
         // === 屏幕状态与横竖屏检测 ===
         const viewIntro = document.getElementById('view-intro');
         const viewRotate = document.getElementById('view-rotate');
@@ -272,13 +262,19 @@
             checkOrientation(); 
         });
 
-        // 🌟 魔法 2：视频播放完毕后，自动跳转到地图
+        // 🌟 魔法 2：视频处理逻辑
         const introVideo = document.getElementById('intro-video');
         if (introVideo) {
+            // 播完自动跳地图
             introVideo.addEventListener('ended', () => {
                 hasStarted = true;
                 checkOrientation();
             });
+
+            // 🌟 微信防拦截魔法：尝试在微信环境准备好时强制唤醒播放
+            document.addEventListener("WeixinJSBridgeReady", function() {
+                introVideo.play().catch(() => {});
+            }, false);
         }
 
         window.addEventListener('resize', checkOrientation);
