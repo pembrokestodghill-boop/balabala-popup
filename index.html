@@ -249,7 +249,7 @@
         const viewIntro = document.getElementById('view-intro');
         const viewRotate = document.getElementById('view-rotate');
         const viewMap = document.getElementById('view-map');
-        const btnStart = document.getElementById('btn-start');
+        
         let hasStarted = false;
 
         function checkOrientation() {
@@ -266,10 +266,20 @@
             }
         }
 
-        btnStart.addEventListener('click', () => {
+        // 🌟 魔法 1：点击整个屏幕的任何地方，直接跳转到地图
+        viewIntro.addEventListener('click', () => {
             hasStarted = true;
             checkOrientation(); 
         });
+
+        // 🌟 魔法 2：视频播放完毕后，自动跳转到地图
+        const introVideo = document.getElementById('intro-video');
+        if (introVideo) {
+            introVideo.addEventListener('ended', () => {
+                hasStarted = true;
+                checkOrientation();
+            });
+        }
 
         window.addEventListener('resize', checkOrientation);
         window.addEventListener('orientationchange', () => { setTimeout(checkOrientation, 200); });
