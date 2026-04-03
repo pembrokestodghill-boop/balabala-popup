@@ -63,7 +63,6 @@
         }
         .animate-pan { animation: pan 4s ease-in-out infinite; }
 
-        /* 核销通行证的扫描光效 */
         @keyframes scanGlow {
             0% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.3); }
             50% { box-shadow: 0 0 30px rgba(16, 185, 129, 0.8); border-color: rgba(16, 185, 129, 1); }
@@ -81,7 +80,6 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
-        /* 弹窗内容切换淡入淡出 */
         .fade-in { animation: fadeIn 0.3s ease-in-out forwards; }
         @keyframes fadeIn {
             0% { opacity: 0; transform: translateY(10px); }
@@ -124,7 +122,6 @@
 
         .fallback-icon { font-size: 3rem; line-height: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); }
         
-        /* 针对长篇安全须知的滚动条美化 */
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
@@ -167,61 +164,51 @@
                 
                 <img src="assets/map-horizontal-2.jpg" alt="活动地图" class="map-bg-img" onerror="console.error('找不到地图背景，请检查路径')">
 
-                <!-- 1. 男孩 Boy -->
                 <div class="hotspot-ip z-20" style="top: 44%; left: 11%;" data-zone="entrance">
                     <img src="assets/ip-boy.png" alt="男孩" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway hidden">👦</div>
                 </div>
 
-                <!-- 2. 大熊 Bear (攀岩墙) -->
                 <div class="hotspot-ip z-20" style="top: -14%; left: 16%;" data-zone="climbing">
                     <img src="assets/ip-bear.png" alt="大熊" class="w-32 h-32 sm:w-48 sm:h-48 object-contain animate-sway delay-1 drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-1 hidden">🐻</div>
                 </div>
 
-                <!-- 3. 青蛙 Frog -->
                 <div class="hotspot-ip z-20" style="top: 17%; left: 22%;" data-zone="stage">
                     <img src="assets/ip-frog.png" alt="青蛙" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway delay-2 drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-2 hidden">🐸</div>
                 </div>
 
-                <!-- 4. 巴士 Bus 1 -->
                 <div class="absolute z-30 flex flex-col items-center pointer-events-none" style="top: 47%; left: 34%;">
                     <img src="assets/ip-bus.png" alt="巴士" class="w-60 sm:w-[350px] object-contain animate-pan drop-shadow-xl" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-pan hidden">🚌</div>
                 </div>
 
-                <!-- 5. 兔子 Rabbit -->
                 <div class="hotspot-ip z-20" style="top: 15%; left: 51%;" data-zone="shop">
                     <img src="assets/ip-rabbit.png" alt="兔子" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway delay-1 drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-1 hidden">🐰</div>
                 </div>
 
-                <!-- 6. 章鱼/粉色球 Octopus (泡泡乐园) -->
                 <div class="hotspot-ip z-20" style="top: 19%; left: 64%;" data-zone="bubble">
                     <img src="assets/ip-octopus.png" alt="章鱼" class="w-24 h-24 sm:w-36 sm:h-36 object-contain animate-sway delay-3 drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-3 hidden">🐙</div>
                 </div>
 
-                <!-- 7. 大象 Elephant (动力街区) -->
                 <div class="hotspot-ip z-20" style="top: 24%; left: 70%;" data-zone="powerblock">
                     <img src="assets/ip-elephant.png" alt="大象" class="w-24 h-24 sm:w-32 sm:h-32 object-contain animate-sway delay-2 drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-2 hidden">🐘</div>
                 </div>
 
-                <!-- 8. 巴士 Bus 2 -->
                 <div class="absolute z-30 flex flex-col items-center pointer-events-none" style="top: 49%; left: 72%;">
                     <img src="assets/ip-bus.png" alt="巴士" class="w-60 sm:w-[350px] object-contain animate-pan delay-1 drop-shadow-xl" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-pan delay-1 hidden">🚌</div>
                 </div>
 
-                <!-- 9. 企鹅 Penguin -->
                 <div class="hotspot-ip z-20" style="top: 2%; left: 79%;" data-zone="pet">
                     <img src="assets/ip-penguin.png" alt="企鹅" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway delay-1 drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-1 hidden">🐧</div>
                 </div>
 
-                <!-- 10. 第二只小熊 Bear -->
                 <div class="absolute z-10 flex flex-col items-center pointer-events-none" style="top: 2%; left: 86%;">
                     <img src="assets/ip-bear.png" alt="小熊" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway delay-3 drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-3 hidden">🐻</div>
@@ -230,32 +217,27 @@
             </div>
         </div>
 
-        <!-- ================= 🌟 右下角固定悬浮菜单 (不在滚动层内) ================= -->
+        <!-- ================= 🌟 右下角固定悬浮菜单 (不再使用图片查看器，改用代码生成) ================= -->
         <div id="floating-menu" class="fixed right-3 bottom-6 sm:right-6 sm:bottom-8 z-40 flex flex-col gap-3 transition-opacity duration-300" style="display: none;">
-            <!-- 1. 打卡福利 -->
-            <button class="float-btn relative w-10 h-10 sm:w-12 sm:h-12 bg-white/80 backdrop-blur-md rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.15)] flex items-center justify-center border border-white/60 transform transition active:scale-90" data-img="assets/float-1.png">
+            <button class="float-btn relative w-10 h-10 sm:w-12 sm:h-12 bg-white/80 backdrop-blur-md rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.15)] flex items-center justify-center border border-white/60 transform transition active:scale-90" data-float="benefit">
                 <span class="text-xl sm:text-2xl drop-shadow-sm">🎁</span>
             </button>
-            <!-- 2. 金币攻略 -->
-            <button class="float-btn relative w-10 h-10 sm:w-12 sm:h-12 bg-white/80 backdrop-blur-md rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.15)] flex items-center justify-center border border-white/60 transform transition active:scale-90" data-img="assets/float-2.jpg">
+            <button class="float-btn relative w-10 h-10 sm:w-12 sm:h-12 bg-white/80 backdrop-blur-md rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.15)] flex items-center justify-center border border-white/60 transform transition active:scale-90" data-float="coin">
                 <span class="text-xl sm:text-2xl drop-shadow-sm">💰</span>
             </button>
-            <!-- 3. 快闪店 -->
-            <button class="float-btn relative w-10 h-10 sm:w-12 sm:h-12 bg-white/80 backdrop-blur-md rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.15)] flex items-center justify-center border border-white/60 transform transition active:scale-90" data-img="assets/float-3.png">
+            <button class="float-btn relative w-10 h-10 sm:w-12 sm:h-12 bg-white/80 backdrop-blur-md rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.15)] flex items-center justify-center border border-white/60 transform transition active:scale-90" data-float="shop">
                 <span class="text-xl sm:text-2xl drop-shadow-sm">🏪</span>
             </button>
-            <!-- 4. 活动课表 -->
-            <button class="float-btn relative w-10 h-10 sm:w-12 sm:h-12 bg-white/80 backdrop-blur-md rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.15)] flex items-center justify-center border border-white/60 transform transition active:scale-90" data-img="assets/float-4.jpg">
+            <button class="float-btn relative w-10 h-10 sm:w-12 sm:h-12 bg-white/80 backdrop-blur-md rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.15)] flex items-center justify-center border border-white/60 transform transition active:scale-90" data-float="calendar">
                 <span class="text-xl sm:text-2xl drop-shadow-sm">📅</span>
             </button>
-            <!-- 5. 时间地点 -->
-            <button class="float-btn relative w-10 h-10 sm:w-12 sm:h-12 bg-white/80 backdrop-blur-md rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.15)] flex items-center justify-center border border-white/60 transform transition active:scale-90" data-img="assets/float-5.png">
+            <button class="float-btn relative w-10 h-10 sm:w-12 sm:h-12 bg-white/80 backdrop-blur-md rounded-full shadow-[0_4px_16px_rgba(0,0,0,0.15)] flex items-center justify-center border border-white/60 transform transition active:scale-90" data-float="location">
                 <span class="text-xl sm:text-2xl drop-shadow-sm">📍</span>
             </button>
         </div>
     </div>
 
-    <!-- ================= 🌟 弹窗组件：Apple 高级磨砂玻璃质感版 ================= -->
+    <!-- ================= 🌟 弹窗组件：通用磨砂框 ================= -->
     <div id="info-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity cursor-pointer" id="modal-overlay"></div>
         <div id="modal-card" class="w-full max-w-lg max-h-[85dvh] rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 flex flex-col modal-enter relative border border-white/60" style="background-color: rgba(255, 255, 255, 0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
@@ -264,13 +246,6 @@
             <!-- 动态内容注入区 -->
             <div id="modal-dynamic-content" class="w-full flex-1 flex flex-col overflow-hidden relative z-10"></div>
         </div>
-    </div>
-
-    <!-- ================= 🌟 全新：悬浮标专属的高级图片阅读器 ================= -->
-    <div id="image-viewer-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/85 backdrop-blur-md transition-opacity cursor-pointer" id="image-viewer-overlay"></div>
-        <img id="image-viewer-content" src="" class="relative z-10 max-w-full max-h-[90dvh] object-contain rounded-xl shadow-2xl modal-enter cursor-pointer" alt="查看详情">
-        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/50 text-xs sm:text-sm tracking-widest pointer-events-none z-20">点击任意处关闭</div>
     </div>
 
     <script>
@@ -289,12 +264,12 @@
                 viewIntro.style.display = 'none';
                 viewRotate.style.display = 'none';
                 viewMap.style.display = 'flex';
-                floatingMenu.style.display = 'flex'; // 显示悬浮菜单
+                floatingMenu.style.display = 'flex'; 
             } else {
                 viewIntro.style.display = 'none';
                 viewMap.style.display = 'none';
                 viewRotate.style.display = 'flex';
-                floatingMenu.style.display = 'none'; // 隐藏悬浮菜单
+                floatingMenu.style.display = 'none'; 
             }
         }
 
@@ -318,31 +293,10 @@
         window.addEventListener('orientationchange', () => { setTimeout(checkOrientation, 200); });
         viewIntro.style.display = 'flex';
 
-        // ==========================================
-        // 🌟 悬浮标图片查看器逻辑
-        // ==========================================
-        const imageViewerModal = document.getElementById('image-viewer-modal');
-        const imageViewerOverlay = document.getElementById('image-viewer-overlay');
-        const imageViewerContent = document.getElementById('image-viewer-content');
-
-        document.querySelectorAll('.float-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation(); // 阻止地图拖拽误触
-                const imgSrc = btn.getAttribute('data-img');
-                imageViewerContent.src = imgSrc;
-                imageViewerModal.classList.remove('hidden');
-            });
-        });
-
-        const closeImageViewer = () => imageViewerModal.classList.add('hidden');
-        imageViewerOverlay.addEventListener('click', closeImageViewer);
-        imageViewerContent.addEventListener('click', closeImageViewer);
-
 
         // ==========================================
-        // 🌟 核心数据字典与长篇 HTML 配置区
+        // 🌟 1. 热区入场须知数据 (保持不变)
         // ==========================================
-        
         const commonFooterHtml = `
             <div>
                 <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">天气与活动调整</h4>
@@ -357,272 +311,314 @@
             </div>
         `;
 
-        const climbingRulesHtml = `
-            <div class="bg-orange-100/80 p-3 rounded-xl text-orange-900 border border-orange-200/60">
-                <strong>【重要提示】</strong> 为确保活动安全有序进行，保障每一位参与者的人身安全与良好体验，请您在入场前仔细阅读本须知。入场即视为您已充分理解并自愿接受以下全部条款。
-            </div>
-            <div>
-                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">1. 开放时间</h4>
-                <p class="text-gray-600">周六周日及节假日：10:00 - 19:00</p>
-            </div>
-            <div>
-                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">2. 参与流程</h4>
-                <ul class="list-disc pl-4 space-y-1 text-gray-700">
-                    <li><strong>现场报名：</strong>有意参与的用户请在现场工作人员处登记报名，按报名顺序依次体验。</li>
-                    <li><strong>教学安排：</strong>品牌方邀请专业攀岩教练在场提供基础教学与帮助，每次教学时长不超过15分钟。</li>
-                    <li><strong>体验时长：</strong>每人每次体验（含教学）不超过15分钟，结束后如需再次参与，请重新报名排队。</li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">3. 入场条件与限制声明</h4>
-                <p class="font-bold text-red-600 mb-2">参与者须确认自身健康状况适宜攀岩运动，隐瞒病史执意参与者，一切后果自负。</p>
-                <ol class="list-decimal pl-4 space-y-1 text-gray-700">
-                    <li>仅限身高1.2米(含)以上的游客进入，每位儿童须由至少一名成人全程陪同。</li>
-                    <li>强制签署协议：入场前须现场签署《攀岩墙免责协议》，未签署者一律不得进入。未成年人须由监护人代为签署。</li>
-                    <li>游客须具备参与本活动的良好身体状况，能够独立行动并遵守安全规则，未成年人须在监护人全程陪同和看管下入场。</li>
-                    <li>有下列情况禁止入场：患有心脏病、高血压、癫痫、传染病、精神疾病等不适宜剧烈运动的疾病者；存在发烧、感冒、咳喘传染性皮肤病、呕吐、腹泻等不适合参与本活动的身体状况者；醉酒、情绪失控或不服从管理者。孕妇、老人及行动不便者。</li>
-                    <li>着装要求：(1) 须穿着适合运动的服装及鞋履（建议攀岩鞋或运动鞋） (2) 禁止穿着拖鞋、高跟鞋、裙装等不适合运动的装束。</li>
-                </ol>
-            </div>
-            <div>
-                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">4. 风险告知与责任豁免</h4>
-                <ol class="list-decimal pl-4 space-y-2 text-gray-700">
-                    <li><strong>设施性质说明：</strong>攀岩墙为徐汇滨江公共设施，品牌方仅在此组织体验活动，不参与设施的建设、维护与管理。参与者须充分知悉并自愿承担使用公共设施可能产生的风险。</li>
-                    <li><strong>运动风险告知：</strong>攀岩运动属于【高风险体育运动】，可能存在以下危险：(1) 跌落、滑坠导致的骨折、扭伤、擦伤 (2) 碰撞导致的软组织损伤或脑震荡 (3) 绳索、装备使用不当导致的意外伤害 (4) 因体力不支、技术失误导致的突发状况</li>
-                    <li><strong>教练服务范围：</strong>(1) 现场教练仅提供【基础技术指导与安全提示】 (2) 不提供一对一全程保护服务 (3) 参与者须在指导下【自主完成攀爬】，并全程对自身安全负责</li>
-                    <li><strong>参与者义务：</strong>(1) 严格遵守教练及工作人员的安全指引 (2) 未经允许不得擅自攀爬、越线或进行危险动作 (3) 发现身体不适或装备异常须立即停止活动并报告</li>
-                    <li><strong>责任豁免条款：</strong>凡因以下情形导致的任何人身伤害或财产损失，品牌方不承担任何法律责任：(1) 参与者隐瞒健康状况、年龄不符或监护人未陪同（未成年人） (2) 参与者未遵守安全指引、擅自行动或操作不当 (3) 参与者未正确使用安全装备或拒绝接受教练指导 (4) 公共设施本身存在的设计缺陷或维护问题 (5) 不可抗力因素</li>
-                </ol>
-            </div>
-            ${commonFooterHtml}
-        `;
-
-        const bubbleRulesHtml = `
-            <div class="bg-orange-100/80 p-3 rounded-xl text-orange-900 border border-orange-200/60">
-                <strong>【重要提示】</strong> 为确保活动安全有序进行，保障每一位参与者的人身安全与良好体验，请您在入场前仔细阅读本须知。入场即视为您已充分理解并自愿接受以下全部条款。
-            </div>
-            <div>
-                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-2">1. 开放时间</h4>
-                <div class="overflow-hidden rounded-xl border border-orange-200 mb-2">
-                    <table class="w-full text-center text-[10px] sm:text-xs">
-                        <thead class="bg-orange-200/50 text-orange-800">
-                            <tr><th class="py-2 px-1 border-r border-orange-200">泡泡乐园</th><th class="py-2 px-1 border-r border-orange-200">工作日</th><th class="py-2 px-1">周末及节假日</th></tr>
-                        </thead>
-                        <tbody class="text-gray-600 bg-white">
-                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第一场</td><td class="py-1.5 border-r border-orange-100">14:00 - 14:40</td><td class="py-1.5">10:00 - 10:40</td></tr>
-                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第二场</td><td class="py-1.5 border-r border-orange-100">15:00 - 15:40</td><td class="py-1.5">11:00 - 11:40</td></tr>
-                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第三场</td><td class="py-1.5 border-r border-orange-100">16:00 - 16:40</td><td class="py-1.5">13:00 - 13:40</td></tr>
-                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第四场</td><td class="py-1.5 border-r border-orange-100">18:00 - 18:40</td><td class="py-1.5">14:00 - 14:40</td></tr>
-                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第五场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">15:00 - 15:40</td></tr>
-                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第六场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">16:00 - 16:40</td></tr>
-                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第七场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">18:00 - 18:40</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <p class="text-gray-600 text-xs mt-2">体验时间：整点开始，限时40分钟。<br>清场与清洁：结束后进行20分钟清场，用于场地清洁、设施整理及秩序维护。<br>*清场期间暂停入场，请配合现场工作人员指引有序离场。</p>
-            </div>
-            <div>
-                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">2. 入场条件与限制</h4>
-                <ol class="list-decimal pl-4 space-y-1 text-gray-700">
-                    <li>仅限身高1.2米(含)以上, 70周岁以下的游客进入，每位儿童须由至少一名成人全程陪同。</li>
-                    <li>游客须具备参与本活动的良好身体状况，能够独立行动并遵守安全规则，未成年人须在监护人全程陪同和看管下入场。</li>
-                    <li>有下列情况禁止入场: 患有心脏病、高血压、癫痫、传染病、精神疾病等不适宜剧烈活动的疾病者；存在发烧、感冒、咳喘传染性皮肤病、呕吐、腹泻等不适合参与本活动的身体状况者；醉酒、情绪失控或不服从管理者；孕妇、老人及行动不便者。</li>
-                    <li>为确保公共安全，工作人员有权根据游客及现场情况进行安全评估，并有权拒绝不符合入场条件者入内。</li>
-                    <li>场地内设有人数上限，每个场次最多可同时容纳60人，达到承载量后将暂停入场，满员后请听从现场工作人员的安排。</li>
-                </ol>
-            </div>
-            <div>
-                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">3. 安全注意事项</h4>
-                <p class="text-gray-700">入场前请仔细阅读现场安全提示，遵守设施使用规则。请勿在池内奔跑、推搡、跳跃或进行任何危险动作。请妥善保管个人物品，贵重物品建议寄存或随身看管。请勿携带尖锐物品、食物、饮料及宠物入场。如遇身体不适或突发情况，请立即联系现场工作人员。</p>
-            </div>
-            ${commonFooterHtml}
-        `;
-
-        const rcRulesHtml = `
-            <div class="bg-orange-100/80 p-3 rounded-xl text-orange-900 border border-orange-200/60">
-                <strong>【重要提示】</strong> 为确保活动安全有序进行，保障每一位参与者的人身安全与良好体验，请您在入场前仔细阅读本须知。入场即视为您已充分理解并自愿接受以下全部条款。
-            </div>
-            <div>
-                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-2">1. 开放时间</h4>
-                <div class="overflow-hidden rounded-xl border border-orange-200 mb-2">
-                    <table class="w-full text-center text-[10px] sm:text-xs">
-                        <thead class="bg-orange-200/50 text-orange-800">
-                            <tr><th class="py-2 px-1 border-r border-orange-200">RC车区</th><th class="py-2 px-1 border-r border-orange-200">工作日</th><th class="py-2 px-1">周末及节假日</th></tr>
-                        </thead>
-                        <tbody class="text-gray-600 bg-white">
-                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第一场</td><td class="py-1.5 border-r border-orange-100">14:00 - 14:40</td><td class="py-1.5">10:00 - 10:40</td></tr>
-                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第二场</td><td class="py-1.5 border-r border-orange-100">15:00 - 15:40</td><td class="py-1.5">11:00 - 11:40</td></tr>
-                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第三场</td><td class="py-1.5 border-r border-orange-100">16:00 - 16:40</td><td class="py-1.5">13:00 - 13:40</td></tr>
-                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第四场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">14:00 - 14:40</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <p class="text-gray-600 text-xs mt-2">体验时间：整点开始，限时40分钟。<br>清场与清洁：结束后进行20分钟清场，用于场地清洁、设施整理及秩序维护。<br>*清场期间暂停入场，请配合现场工作人员指引有序离场。</p>
-            </div>
-            <div>
-                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">2. 入场条件与限制</h4>
-                <ol class="list-decimal pl-4 space-y-1 text-gray-700">
-                    <li>仅限身高1.2米(含)以上的游客进入，每位儿童须由至少一名成人全程陪同。</li>
-                    <li>游客须具备参与本活动的良好身体状况，能够独立行动并遵守安全规则，未成年人须在监护人全程陪同和看管下入场。</li>
-                    <li>有下列情况禁止入场: 患有心脏病、高血压、癫痫、传染病、精神疾病等不适宜剧烈活动的疾病者；存在发烧、感冒、咳喘传染性皮肤病、呕吐、腹泻等不适合参与本活动的身体状况者；醉酒、情绪失控或不服从管理者；孕妇、老人及行动不便者。</li>
-                    <li>为确保公共安全，工作人员有权根据游客及现场情况进行安全评估，并有权拒绝不符合入场条件者入内。</li>
-                    <li>场地内设有人数上限，每个场次最多可同时容纳10人，达到承载量后将暂停入场，满员后请听从现场工作人员的安排。</li>
-                </ol>
-            </div>
-            <div>
-                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">3. 设备与游玩规则</h4>
-                <ol class="list-decimal pl-4 space-y-1 text-gray-700">
-                    <li><strong>设备提供：</strong>品牌方提供符合安全标准的限速遥控车供现场体验（数量5辆），参与者无须自备设备。</li>
-                    <li><strong>体验时长：</strong>每人每次体验时长为40分钟，请按时结束离场，以便后续参与者使用。如需再次体验，请重新排队报名。</li>
-                    <li><strong>操作区域：</strong>请在指定赛道或操作区域内操控遥控车，严禁将车辆驶出规定范围。</li>
-                    <li><strong>操作规范：</strong>请文明操控，避免故意撞击、追逐他人车辆或进行任何危险操作。</li>
-                    <li><strong>设备损坏赔偿：</strong>请爱护公共设备，若因人为不当操作或故意损坏导致设备故障，须照价赔偿。</li>
-                </ol>
-            </div>
-            <div>
-                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">4. 安全须知</h4>
-                <p class="text-gray-700">入场前请仔细阅读本须知，严格遵守现场工作人员的安全指引。严禁在操控区内奔跑、推搡或擅自进入赛道捡拾车辆，如需帮助请联系工作人员妥善保管个人物品。请随身携带或寄存，场地不承担物品保管责任。严禁携带食物饮料进入操作区域，以免污染或损坏设备。如遇设备故障、失控或其他异常情况，请立即停止使用并通知工作人员处理。严禁自行拆卸或维修设备。体验过程中请时刻注意周围环境及他人安全，避免发生碰撞事故。</p>
-            </div>
-            ${commonFooterHtml}
-        `;
-
-        const skateRulesHtml = `
-            <div class="bg-orange-100/80 p-3 rounded-xl text-orange-900 border border-orange-200/60">
-                <strong>【重要提示】</strong> 为确保活动安全有序进行，保障每一位参与者的人身安全与良好体验，请您在入场前仔细阅读本须知。入场即视为您已充分理解并自愿接受以下全部条款。
-            </div>
-            <div>
-                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-2">1. 开放时间</h4>
-                <div class="overflow-hidden rounded-xl border border-orange-200 mb-2">
-                    <table class="w-full text-center text-[10px] sm:text-xs">
-                        <thead class="bg-orange-200/50 text-orange-800">
-                            <tr><th class="py-2 px-1 border-r border-orange-200">滑板区</th><th class="py-2 px-1 border-r border-orange-200">工作日</th><th class="py-2 px-1">周末及节假日</th></tr>
-                        </thead>
-                        <tbody class="text-gray-600 bg-white">
-                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第一场</td><td class="py-1.5 border-r border-orange-100">17:00 - 17:40</td><td class="py-1.5">15:00 - 15:40</td></tr>
-                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第二场</td><td class="py-1.5 border-r border-orange-100">18:00 - 18:40</td><td class="py-1.5">16:00 - 16:40</td></tr>
-                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第三场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">17:00 - 17:40</td></tr>
-                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第四场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">18:00 - 18:40</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div>
-                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">2. 入场条件与限制</h4>
-                <ol class="list-decimal pl-4 space-y-1 text-gray-700">
-                    <li><strong>装备要求（强制）：</strong>参与者须自备符合安全标准的滑板，现场不提供滑板租赁服务。滑板须满足以下条件：(1) 板面完好，无断裂、分层或严重磨损 (2) 轮轴稳固，支架无松动，轮子转动正常 (3) 砂纸防滑面无大面积脱落 (4) 整体无破损、无改装安全隐患。入场前须经工作人员检查装备合格后方可进入。不合格装备禁止入场。</li>
-                    <li><strong>技术基础要求（强制）：</strong>参与者须具备一定的滑板基础与滑行经验，能够独立完成以下基本动作：(1) 平稳上板与直线滑行 (2) 有效控制速度与方向 (3) 安全制动与紧急停板 (4) 摔倒时的自我保护动作。本区域不设任何教学指导服务，零基础者谢绝入场。</li>
-                    <li><strong>年龄与监护要求：</strong>(1) 建议12周岁及以上人员参与 (2) 未满18周岁者须由法定监护人全程陪同入场，监护人须全程保持有效看护，不得擅自离开 (3) 监护人须代为签署免责协议，并承担被监护人的全部监护责任。</li>
-                    <li><strong>健康状况：</strong>参与者须身体健康，无心脏病、高血压、癫痫、骨骼关节损伤、眩晕症等不适宜剧烈运动的疾病史或身体状况。特别提醒：隐瞒健康状况、技术能力不足或装备不合格执意入场者，一切后果自负。</li>
-                    <li>场地内设有人数上限，每个场次最多可同时容纳10人，达到承载量后将暂停入场，满员后请听从现场工作人员的安排。</li>
-                </ol>
-            </div>
-            <div>
-                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">3. 安全规范与行为准则</h4>
-                <ol class="list-decimal pl-4 space-y-1 text-gray-700">
-                    <li><strong>强制签署协议：</strong>入场前须现场签署《滑板区免责协议》，未签署者一律不得进入。未成年人须由监护人代为签署。</li>
-                    <li><strong>防护装备建议：</strong>强烈建议佩戴以下专业防护装备：(1) 头盔（必备） (2) 护膝、护肘、护腕（建议全套佩戴）。未佩戴防护装备者，视为自愿承担由此增加的受伤风险。</li>
-                    <li><strong>场地使用规则：</strong>(1) 严格遵守场地标识及工作人员指引，在规定区域内滑行，严禁进入非滑行区域 (2) 滑行前须观察周围环境，确保安全后方可起步 (3) 严禁在滑行过程中佩戴耳机，手持手机或其他分散注意力的物品 (4) 严禁在场地内追逐打闹、进行危险动作（包括但不限于腾空跳跃、高速俯冲、逆向滑行）或妨碍他人滑行 (5) 摔倒后须迅速撤离滑行区域，避免二次碰撞。</li>
-                    <li><strong>个人物品保管：</strong>请妥善保管个人物品，贵重物品建议寄存或随身看管。场地不承担任何物品保管责任，遗失或损坏概不负责。</li>
-                </ol>
-            </div>
-            ${commonFooterHtml}
-        `;
+        // (此处省略了之前写好的长篇HTML规则变量，为了代码不冗长，逻辑均保留并复用)
+        const climbingRulesHtml = `<div class="bg-orange-100/80 p-3 rounded-xl text-orange-900 border border-orange-200/60"><strong>【重要提示】</strong> 为确保活动安全有序进行，保障每一位参与者的人身安全与良好体验，请您在入场前仔细阅读本须知。入场即视为您已充分理解并自愿接受以下全部条款。</div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">1. 开放时间</h4><p class="text-gray-600">周六周日及节假日：10:00 - 19:00</p></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">2. 参与流程</h4><ul class="list-disc pl-4 space-y-1 text-gray-700"><li><strong>现场报名：</strong>有意参与的用户请在现场工作人员处登记报名，按报名顺序依次体验。</li><li><strong>教学安排：</strong>品牌方邀请专业攀岩教练在场提供基础教学与帮助，每次教学时长不超过15分钟。</li><li><strong>体验时长：</strong>每人每次体验（含教学）不超过15分钟，结束后如需再次参与，请重新报名排队。</li></ul></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">3. 入场条件与限制声明</h4><p class="font-bold text-red-600 mb-2">参与者须确认自身健康状况适宜攀岩运动，隐瞒病史执意参与者，一切后果自负。</p><ol class="list-decimal pl-4 space-y-1 text-gray-700"><li>仅限身高1.2米(含)以上的游客进入，每位儿童须由至少一名成人全程陪同。</li><li>强制签署协议：入场前须现场签署《攀岩墙免责协议》，未签署者一律不得进入。未成年人须由监护人代为签署。</li><li>游客须具备参与本活动的良好身体状况，能够独立行动并遵守安全规则，未成年人须在监护人全程陪同和看管下入场。</li><li>有下列情况禁止入场：患有心脏病、高血压、癫痫、传染病、精神疾病等不适宜剧烈运动的疾病者；存在发烧、感冒、咳喘传染性皮肤病、呕吐、腹泻等不适合参与本活动的身体状况者；醉酒、情绪失控或不服从管理者。孕妇、老人及行动不便者。</li><li>着装要求：(1) 须穿着适合运动的服装及鞋履（建议攀岩鞋或运动鞋） (2) 禁止穿着拖鞋、高跟鞋、裙装等不适合运动的装束。</li></ol></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">4. 风险告知与责任豁免</h4><ol class="list-decimal pl-4 space-y-2 text-gray-700"><li><strong>设施性质说明：</strong>攀岩墙为徐汇滨江公共设施，品牌方仅在此组织体验活动，不参与设施的建设、维护与管理。参与者须充分知悉并自愿承担使用公共设施可能产生的风险。</li><li><strong>运动风险告知：</strong>攀岩运动属于【高风险体育运动】，可能存在以下危险：(1) 跌落、滑坠导致的骨折、扭伤、擦伤 (2) 碰撞导致的软组织损伤或脑震荡 (3) 绳索、装备使用不当导致的意外伤害 (4) 因体力不支、技术失误导致的突发状况</li><li><strong>教练服务范围：</strong>(1) 现场教练仅提供【基础技术指导与安全提示】 (2) 不提供一对一全程保护服务 (3) 参与者须在指导下【自主完成攀爬】，并全程对自身安全负责</li><li><strong>参与者义务：</strong>(1) 严格遵守教练及工作人员的安全指引 (2) 未经允许不得擅自攀爬、越线或进行危险动作 (3) 发现身体不适或装备异常须立即停止活动并报告</li><li><strong>责任豁免条款：</strong>凡因以下情形导致的任何人身伤害或财产损失，品牌方不承担任何法律责任：(1) 参与者隐瞒健康状况、年龄不符或监护人未陪同（未成年人） (2) 参与者未遵守安全指引、擅自行动或操作不当 (3) 参与者未正确使用安全装备或拒绝接受教练指导 (4) 公共设施本身存在的设计缺陷或维护问题 (5) 不可抗力因素</li></ol></div>${commonFooterHtml}`;
+        const bubbleRulesHtml = `<div class="bg-orange-100/80 p-3 rounded-xl text-orange-900 border border-orange-200/60"><strong>【重要提示】</strong> 为确保活动安全有序进行，保障每一位参与者的人身安全与良好体验，请您在入场前仔细阅读本须知。入场即视为您已充分理解并自愿接受以下全部条款。</div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-2">1. 开放时间</h4><div class="overflow-hidden rounded-xl border border-orange-200 mb-2"><table class="w-full text-center text-[10px] sm:text-xs"><thead class="bg-orange-200/50 text-orange-800"><tr><th class="py-2 px-1 border-r border-orange-200">泡泡乐园</th><th class="py-2 px-1 border-r border-orange-200">工作日</th><th class="py-2 px-1">周末及节假日</th></tr></thead><tbody class="text-gray-600 bg-white"><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第一场</td><td class="py-1.5 border-r border-orange-100">14:00 - 14:40</td><td class="py-1.5">10:00 - 10:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第二场</td><td class="py-1.5 border-r border-orange-100">15:00 - 15:40</td><td class="py-1.5">11:00 - 11:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第三场</td><td class="py-1.5 border-r border-orange-100">16:00 - 16:40</td><td class="py-1.5">13:00 - 13:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第四场</td><td class="py-1.5 border-r border-orange-100">18:00 - 18:40</td><td class="py-1.5">14:00 - 14:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第五场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">15:00 - 15:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第六场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">16:00 - 16:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第七场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">18:00 - 18:40</td></tr></tbody></table></div><p class="text-gray-600 text-xs mt-2">体验时间：整点开始，限时40分钟。<br>清场与清洁：结束后进行20分钟清场，用于场地清洁、设施整理及秩序维护。<br>*清场期间暂停入场，请配合现场工作人员指引有序离场。</p></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">2. 入场条件与限制</h4><ol class="list-decimal pl-4 space-y-1 text-gray-700"><li>仅限身高1.2米(含)以上, 70周岁以下的游客进入，每位儿童须由至少一名成人全程陪同。</li><li>游客须具备参与本活动的良好身体状况，能够独立行动并遵守安全规则，未成年人须在监护人全程陪同和看管下入场。</li><li>有下列情况禁止入场: 患有心脏病、高血压、癫痫、传染病、精神疾病等不适宜剧烈活动的疾病者；存在发烧、感冒、咳喘传染性皮肤病、呕吐、腹泻等不适合参与本活动的身体状况者；醉酒、情绪失控或不服从管理者；孕妇、老人及行动不便者。</li><li>为确保公共安全，工作人员有权根据游客及现场情况进行安全评估，并有权拒绝不符合入场条件者入内。</li><li>场地内设有人数上限，每个场次最多可同时容纳60人，达到承载量后将暂停入场，满员后请听从现场工作人员的安排。</li></ol></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">3. 安全注意事项</h4><p class="text-gray-700">入场前请仔细阅读现场安全提示，遵守设施使用规则。请勿在池内奔跑、推搡、跳跃或进行任何危险动作。请妥善保管个人物品，贵重物品建议寄存或随身看管。请勿携带尖锐物品、食物、饮料及宠物入场。如遇身体不适或突发情况，请立即联系现场工作人员。</p></div>${commonFooterHtml}`;
+        const rcRulesHtml = `<div class="bg-orange-100/80 p-3 rounded-xl text-orange-900 border border-orange-200/60"><strong>【重要提示】</strong> 为确保活动安全有序进行，保障每一位参与者的人身安全与良好体验，请您在入场前仔细阅读本须知。入场即视为您已充分理解并自愿接受以下全部条款。</div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-2">1. 开放时间</h4><div class="overflow-hidden rounded-xl border border-orange-200 mb-2"><table class="w-full text-center text-[10px] sm:text-xs"><thead class="bg-orange-200/50 text-orange-800"><tr><th class="py-2 px-1 border-r border-orange-200">RC车区</th><th class="py-2 px-1 border-r border-orange-200">工作日</th><th class="py-2 px-1">周末及节假日</th></tr></thead><tbody class="text-gray-600 bg-white"><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第一场</td><td class="py-1.5 border-r border-orange-100">14:00 - 14:40</td><td class="py-1.5">10:00 - 10:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第二场</td><td class="py-1.5 border-r border-orange-100">15:00 - 15:40</td><td class="py-1.5">11:00 - 11:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第三场</td><td class="py-1.5 border-r border-orange-100">16:00 - 16:40</td><td class="py-1.5">13:00 - 13:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第四场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">14:00 - 14:40</td></tr></tbody></table></div><p class="text-gray-600 text-xs mt-2">体验时间：整点开始，限时40分钟。<br>清场与清洁：结束后进行20分钟清场，用于场地清洁、设施整理及秩序维护。<br>*清场期间暂停入场，请配合现场工作人员指引有序离场。</p></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">2. 入场条件与限制</h4><ol class="list-decimal pl-4 space-y-1 text-gray-700"><li>仅限身高1.2米(含)以上的游客进入，每位儿童须由至少一名成人全程陪同。</li><li>游客须具备参与本活动的良好身体状况，能够独立行动并遵守安全规则，未成年人须在监护人全程陪同和看管下入场。</li><li>有下列情况禁止入场: 患有心脏病、高血压、癫痫、传染病、精神疾病等不适宜剧烈活动的疾病者；存在发烧、感冒、咳喘传染性皮肤病、呕吐、腹泻等不适合参与本活动的身体状况者；醉酒、情绪失控或不服从管理者；孕妇、老人及行动不便者。</li><li>为确保公共安全，工作人员有权根据游客及现场情况进行安全评估，并有权拒绝不符合入场条件者入内。</li><li>场地内设有人数上限，每个场次最多可同时容纳10人，达到承载量后将暂停入场，满员后请听从现场工作人员的安排。</li></ol></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">3. 设备与游玩规则</h4><ol class="list-decimal pl-4 space-y-1 text-gray-700"><li><strong>设备提供：</strong>品牌方提供符合安全标准的限速遥控车供现场体验（数量5辆），参与者无须自备设备。</li><li><strong>体验时长：</strong>每人每次体验时长为40分钟，请按时结束离场，以便后续参与者使用。如需再次体验，请重新排队报名。</li><li><strong>操作区域：</strong>请在指定赛道或操作区域内操控遥控车，严禁将车辆驶出规定范围。</li><li><strong>操作规范：</strong>请文明操控，避免故意撞击、追逐他人车辆或进行任何危险操作。</li><li><strong>设备损坏赔偿：</strong>请爱护公共设备，若因人为不当操作或故意损坏导致设备故障，须照价赔偿。</li></ol></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">4. 安全须知</h4><p class="text-gray-700">入场前请仔细阅读本须知，严格遵守现场工作人员的安全指引。严禁在操控区内奔跑、推搡或擅自进入赛道捡拾车辆，如需帮助请联系工作人员妥善保管个人物品。请随身携带或寄存，场地不承担物品保管责任。严禁携带食物饮料进入操作区域，以免污染或损坏设备。如遇设备故障、失控或其他异常情况，请立即停止使用并通知工作人员处理。严禁自行拆卸或维修设备。体验过程中请时刻注意周围环境及他人安全，避免发生碰撞事故。</p></div>${commonFooterHtml}`;
+        const skateRulesHtml = `<div class="bg-orange-100/80 p-3 rounded-xl text-orange-900 border border-orange-200/60"><strong>【重要提示】</strong> 为确保活动安全有序进行，保障每一位参与者的人身安全与良好体验，请您在入场前仔细阅读本须知。入场即视为您已充分理解并自愿接受以下全部条款。</div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-2">1. 开放时间</h4><div class="overflow-hidden rounded-xl border border-orange-200 mb-2"><table class="w-full text-center text-[10px] sm:text-xs"><thead class="bg-orange-200/50 text-orange-800"><tr><th class="py-2 px-1 border-r border-orange-200">滑板区</th><th class="py-2 px-1 border-r border-orange-200">工作日</th><th class="py-2 px-1">周末及节假日</th></tr></thead><tbody class="text-gray-600 bg-white"><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第一场</td><td class="py-1.5 border-r border-orange-100">17:00 - 17:40</td><td class="py-1.5">15:00 - 15:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第二场</td><td class="py-1.5 border-r border-orange-100">18:00 - 18:40</td><td class="py-1.5">16:00 - 16:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第三场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">17:00 - 17:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第四场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">18:00 - 18:40</td></tr></tbody></table></div></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">2. 入场条件与限制</h4><ol class="list-decimal pl-4 space-y-1 text-gray-700"><li><strong>装备要求（强制）：</strong>参与者须自备符合安全标准的滑板，现场不提供滑板租赁服务。滑板须满足以下条件：(1) 板面完好，无断裂、分层或严重磨损 (2) 轮轴稳固，支架无松动，轮子转动正常 (3) 砂纸防滑面无大面积脱落 (4) 整体无破损、无改装安全隐患。入场前须经工作人员检查装备合格后方可进入。不合格装备禁止入场。</li><li><strong>技术基础要求（强制）：</strong>参与者须具备一定的滑板基础与滑行经验，能够独立完成以下基本动作：(1) 平稳上板与直线滑行 (2) 有效控制速度与方向 (3) 安全制动与紧急停板 (4) 摔倒时的自我保护动作。本区域不设任何教学指导服务，零基础者谢绝入场。</li><li><strong>年龄与监护要求：</strong>(1) 建议12周岁及以上人员参与 (2) 未满18周岁者须由法定监护人全程陪同入场，监护人须全程保持有效看护，不得擅自离开 (3) 监护人须代为签署免责协议，并承担被监护人的全部监护责任。</li><li><strong>健康状况：</strong>参与者须身体健康，无心脏病、高血压、癫痫、骨骼关节损伤、眩晕症等不适宜剧烈运动的疾病史或身体状况。特别提醒：隐瞒健康状况、技术能力不足或装备不合格执意入场者，一切后果自负。</li><li>场地内设有人数上限，每个场次最多可同时容纳10人，达到承载量后将暂停入场，满员后请听从现场工作人员的安排。</li></ol></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">3. 安全规范与行为准则</h4><ol class="list-decimal pl-4 space-y-1 text-gray-700"><li><strong>强制签署协议：</strong>入场前须现场签署《滑板区免责协议》，未签署者一律不得进入。未成年人须由监护人代为签署。</li><li><strong>防护装备建议：</strong>强烈建议佩戴以下专业防护装备：(1) 头盔（必备） (2) 护膝、护肘、护腕（建议全套佩戴）。未佩戴防护装备者，视为自愿承担由此增加的受伤风险。</li><li><strong>场地使用规则：</strong>(1) 严格遵守场地标识及工作人员指引，在规定区域内滑行，严禁进入非滑行区域 (2) 滑行前须观察周围环境，确保安全后方可起步 (3) 严禁在滑行过程中佩戴耳机，手持手机或其他分散注意力的物品 (4) 严禁在场地内追逐打闹、进行危险动作（包括但不限于腾空跳跃、高速俯冲、逆向滑行）或妨碍他人滑行 (5) 摔倒后须迅速撤离滑行区域，避免二次碰撞。</li><li><strong>个人物品保管：</strong>请妥善保管个人物品，贵重物品建议寄存或随身看管。场地不承担任何物品保管责任，遗失或损坏概不负责。</li></ol></div>${commonFooterHtml}`;
 
         const zonesData = {
-            'entrance': {
-                type: 'standard',
-                title: '👦 核心出入口',
-                themeColor: '#EF4444', highlightColor: '#FEE2E2', highlightText: '#DC2626',
-                highlight: '领取你的专属热爱地图！',
-                rules: [
-                    '📍 <strong>Step 1</strong>：扫码关注官方账号',
-                    '🗺️ <strong>Step 2</strong>：向工作人员领取纸质地图',
-                    '🎁 <strong>Step 3</strong>：开启你的快闪探索之旅！'
-                ],
-                notice: '小提示：地图限量发放，先到先得哦~'
+            'entrance': { type: 'standard', title: '👦 核心出入口', themeColor: '#EF4444', highlightColor: '#FEE2E2', highlightText: '#DC2626', highlight: '领取你的专属热爱地图！', rules: ['📍 <strong>Step 1</strong>：扫码关注官方账号', '🗺️ <strong>Step 2</strong>：向工作人员领取纸质地图', '🎁 <strong>Step 3</strong>：开启你的快闪探索之旅！'], notice: '小提示：地图限量发放，先到先得哦~' },
+            'climbing': { type: 'flow', title: '🐻 B区 攀岩墙', themeColor: '#D97706', highlight: '喜欢攀岩的孩子不会下坠，只会在下坠时开始飞翔', subHighlight: 'A child who loves climbing never falls— They just start flying.', rulesTitle: '[B区攀岩墙] · 入场安全须知', rulesHtml: climbingRulesHtml },
+            'bubble': { type: 'flow', title: '🐙 I区 泡泡乐园', themeColor: '#D97706', highlight: '每一种热爱都是柔软的触点<br>愿你在海洋球的回弹中快乐徜徉', subHighlight: 'Every passion starts with a gentle touch—<br>Let joy bounce back at.', rulesTitle: '[I区泡泡乐园] · 入场安全须知', rulesHtml: bubbleRulesHtml },
+            'powerblock': { id: 'powerblock', type: 'multi-flow', title: '🐘 J区 动力街区', themeColor: '#D97706', highlight: '心怀热爱，自可翻越万千阻碍<br>怀揣勇气，便能让热爱乘风而行', subHighlight: 'With passion, all barriers fall. With courage,<br>your passion sails beyond them all.', options: [{ btnText: '🏎️ RC遥控车区入场须知', rulesTitle: '[J区动力街区-RC遥控车区] · 入场安全须知', rulesHtml: rcRulesHtml }, { btnText: '🛹 滑板区入场须知', rulesTitle: '[J区动力街区-滑板区] · 入场安全须知', rulesHtml: skateRulesHtml }] },
+            'stage': { type: 'standard', title: '🐸 露营互动区', themeColor: '#F59E0B', highlightColor: '#FEF3C7', highlightText: '#D97706', highlight: '寻找热爱亮点，参与高燃互动！', rules: ['✨ <strong>精彩演出</strong>：定时随机掉落 IP 巡游', '🎮 <strong>互动游戏</strong>：参与问答，赢取金币', '📸 <strong>拍照打卡</strong>：最佳出片机位，千万别错过'] },
+            'shop': { type: 'standard', title: '🐰 热爱买手店', themeColor: '#10B981', highlightColor: '#D1FAE5', highlightText: '#059669', highlight: '总有一款是你热爱！', rules: ['👗 汇聚暖心美食与时尚鞋服', '💰 <strong>金币兑换</strong>：使用收集的金币兑换专属权益和盲盒礼品！'] },
+            'pet': { type: 'standard', title: '🐧 宠物治愈区', themeColor: '#3B82F6', highlightColor: '#DBEAFE', highlightText: '#2563EB', highlight: '带上毛孩子一起嗨！', rules: ['🦴 <strong>专属区域</strong>：为爱宠提供饮水与玩耍空间', '🎨 <strong>涂鸦共创</strong>：旁边的 Painting 区域可留下专属涂鸦'], notice: '请给宠物牵好绳索，保持现场整洁哦' }
+        };
+
+        // ==========================================
+        // 🌟 2. 新增：悬浮菜单 5大福利界面的纯 HTML 结构
+        // ==========================================
+        const floatData = {
+            'benefit': {
+                themeColor: '#EA580C', // 橙色系
+                content: `
+                    <div class="p-5 sm:p-8 flex flex-col h-full overflow-y-auto custom-scrollbar fade-in bg-[#FDF2E2]">
+                        <h2 class="text-xl sm:text-2xl font-black text-white bg-orange-600 rounded-full py-2 px-6 mx-auto w-max mb-6 shadow-md border-2 border-orange-200">热爱社区打卡特别福利</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:divide-x divide-dashed divide-orange-300 bg-white/50 rounded-2xl p-5 border border-orange-100 shadow-sm">
+                            <div class="text-center space-y-4">
+                                <div class="w-8 h-8 rounded-full bg-orange-400 text-white font-bold flex items-center justify-center mx-auto shadow-sm">1</div>
+                                <p class="font-bold text-orange-900">关注小红书「巴拉巴拉」官方账号</p>
+                                <div class="bg-white rounded-full border border-red-500 py-1.5 px-4 inline-flex items-center text-red-500 font-bold text-sm shadow-sm">
+                                    <span class="mr-2">小红书</span> <span class="bg-gray-100 px-3 py-0.5 rounded-full text-gray-600">🔍 巴拉巴拉</span>
+                                </div>
+                            </div>
+                            <div class="text-center space-y-4 pt-4 sm:pt-0 border-t border-dashed border-orange-300 sm:border-0">
+                                <div class="w-8 h-8 rounded-full bg-orange-400 text-white font-bold flex items-center justify-center mx-auto shadow-sm">2</div>
+                                <p class="font-bold text-orange-900 text-sm leading-relaxed">7大点位拍满 ≥ 7张美照<br>发布小红书话题<br><span class="text-red-500">#活在热爱里#中国小朋友</span><br>@巴拉巴拉</p>
+                            </div>
+                        </div>
+                        <div class="mt-6 bg-orange-100 rounded-2xl p-4 text-center border border-orange-300 shadow-inner">
+                            <span class="text-orange-800 font-bold text-sm sm:text-base">即可参与现场体验并 <strong class="text-orange-600 text-xl mx-1 bg-white px-2 py-0.5 rounded-md shadow-sm">得</strong></span>
+                            <div class="mt-2 text-orange-600 font-black text-lg sm:text-xl">治愈玩偶1只 + 巴拉巴拉金币1枚</div>
+                        </div>
+                        <p class="text-center text-[10px] text-orange-400 mt-4 font-medium">温馨提示：治愈玩偶每人限领1只，数量有限，领完即止。</p>
+                    </div>
+                `
             },
-            'climbing': {
-                type: 'flow', 
-                title: '🐻 B区 攀岩墙',
-                themeColor: '#D97706', 
-                highlight: '喜欢攀岩的孩子不会下坠，只会在下坠时开始飞翔',
-                subHighlight: 'A child who loves climbing never falls— They just start flying.',
-                rulesTitle: '[B区攀岩墙] · 入场安全须知',
-                rulesHtml: climbingRulesHtml
-            },
-            'bubble': {
-                type: 'flow', 
-                title: '🐙 I区 泡泡乐园',
-                themeColor: '#D97706', 
-                highlight: '每一种热爱都是柔软的触点<br>愿你在海洋球的回弹中快乐徜徉',
-                subHighlight: 'Every passion starts with a gentle touch—<br>Let joy bounce back at.',
-                rulesTitle: '[I区泡泡乐园] · 入场安全须知',
-                rulesHtml: bubbleRulesHtml
-            },
-            'powerblock': {
-                id: 'powerblock',
-                type: 'multi-flow', 
-                title: '🐘 J区 动力街区',
-                themeColor: '#D97706', 
-                highlight: '心怀热爱，自可翻越万千阻碍<br>怀揣勇气，便能让热爱乘风而行',
-                subHighlight: 'With passion, all barriers fall. With courage,<br>your passion sails beyond them all.',
-                options: [
-                    {
-                        btnText: '🏎️ RC遥控车区入场须知',
-                        rulesTitle: '[J区动力街区-RC遥控车区] · 入场安全须知',
-                        rulesHtml: rcRulesHtml
-                    },
-                    {
-                        btnText: '🛹 滑板区入场须知',
-                        rulesTitle: '[J区动力街区-滑板区] · 入场安全须知',
-                        rulesHtml: skateRulesHtml
-                    }
-                ]
-            },
-            'stage': {
-                type: 'standard',
-                title: '🐸 露营互动区',
-                themeColor: '#F59E0B', highlightColor: '#FEF3C7', highlightText: '#D97706',
-                highlight: '寻找热爱亮点，参与高燃互动！',
-                rules: [
-                    '✨ <strong>精彩演出</strong>：定时随机掉落 IP 巡游',
-                    '🎮 <strong>互动游戏</strong>：参与问答，赢取金币',
-                    '📸 <strong>拍照打卡</strong>：最佳出片机位，千万别错过'
-                ]
+            'coin': {
+                themeColor: '#EAB308', // 金色系
+                content: `
+                    <div class="p-5 sm:p-8 flex flex-col h-full overflow-y-auto custom-scrollbar fade-in bg-[#FFF8E7]">
+                        <h2 class="text-xl sm:text-2xl font-black text-white bg-yellow-500 rounded-full py-2 px-6 mx-auto w-max mb-3 shadow-md border-2 border-yellow-200">巴拉巴拉金币怎么花</h2>
+                        <p class="text-center text-yellow-700 font-bold text-xs sm:text-sm mb-6 px-2">抽奖赢好礼 + 与跨界品牌超值权益双重福利上线<br>轻松解锁超多惊喜！</p>
+                        
+                        <div class="space-y-5">
+                            <div class="bg-white rounded-2xl p-4 border border-yellow-200 shadow-sm relative overflow-hidden">
+                                <div class="absolute top-0 left-0 w-1.5 h-full bg-yellow-400"></div>
+                                <h3 class="font-black text-yellow-600 text-base sm:text-lg mb-2 flex items-center"><span class="bg-yellow-100 px-2 py-0.5 rounded text-xs mr-2">福利一</span> 金币抽奖</h3>
+                                <p class="text-sm font-bold text-gray-800 mb-1">幸运开盲盒，好礼抱回家</p>
+                                <p class="text-xs text-gray-600 leading-relaxed">凭巴拉巴拉金币，即可参与现场抽奖海量品牌好礼任性派送！巴拉巴拉产品最高抵扣88元，更有机会赢取iPad大奖。</p>
+                            </div>
+                            
+                            <div class="bg-white rounded-2xl p-4 border border-yellow-200 shadow-sm relative overflow-hidden">
+                                <div class="absolute top-0 left-0 w-1.5 h-full bg-yellow-500"></div>
+                                <h3 class="font-black text-yellow-600 text-base sm:text-lg mb-3 flex items-center"><span class="bg-yellow-100 px-2 py-0.5 rounded text-xs mr-2">福利二</span> 金币特权 (异业联盟)</h3>
+                                <div class="grid grid-cols-2 gap-3 text-center">
+                                    <div class="bg-yellow-50 rounded-xl p-2 border border-yellow-100">
+                                        <p class="text-[10px] text-gray-500 mb-1 font-bold">Lavakan绒浴(滨江店)</p>
+                                        <p class="text-yellow-600 font-black text-lg">85<span class="text-xs">折</span></p>
+                                    </div>
+                                    <div class="bg-yellow-50 rounded-xl p-2 border border-yellow-100">
+                                        <p class="text-[10px] text-gray-500 mb-1 font-bold">野啤Yeppi(滨江店)</p>
+                                        <p class="text-yellow-600 font-black text-lg">85<span class="text-xs">折</span></p>
+                                    </div>
+                                    <div class="bg-yellow-50 rounded-xl p-2 border border-yellow-100">
+                                        <p class="text-[10px] text-gray-500 mb-1 font-bold">Sweetie's(滨江店)</p>
+                                        <p class="text-yellow-600 font-black text-lg">85<span class="text-xs">折</span></p>
+                                    </div>
+                                    <div class="bg-yellow-50 rounded-xl p-2 border border-yellow-100">
+                                        <p class="text-[10px] text-gray-500 mb-1 font-bold">Birdie Cup Coffee</p>
+                                        <p class="text-yellow-600 font-black text-lg">9<span class="text-xs">折</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
             },
             'shop': {
-                type: 'standard',
-                title: '🐰 热爱买手店',
-                themeColor: '#10B981', highlightColor: '#D1FAE5', highlightText: '#059669',
-                highlight: '总有一款是你热爱！',
-                rules: [
-                    '👗 汇聚暖心美食与时尚鞋服',
-                    '💰 <strong>金币兑换</strong>：使用收集的金币兑换专属权益和盲盒礼品！'
-                ]
+                themeColor: '#DC2626', // 红色系
+                content: `
+                    <div class="p-5 sm:p-8 flex flex-col h-full overflow-y-auto custom-scrollbar fade-in bg-[#FFF1F0]">
+                        <h2 class="text-xl sm:text-2xl font-black text-white bg-red-600 rounded-full py-2 px-6 mx-auto w-max mb-3 shadow-md border-2 border-red-200">巴拉巴拉限时快闪店</h2>
+                        <p class="text-center text-red-700 font-bold text-xs sm:text-sm mb-6">汇聚鞋服潮玩与暖心美食等多元好物<br>总有一款，戳中你的热爱！</p>
+                        
+                        <div class="space-y-4">
+                            <!-- 会员福利 -->
+                            <div class="bg-white rounded-2xl p-4 border border-red-200 shadow-sm relative overflow-hidden">
+                                <div class="absolute top-0 left-0 w-1.5 h-full bg-red-400"></div>
+                                <h3 class="font-black text-red-600 mb-2">🎈 会员专享福利</h3>
+                                <div class="flex flex-col sm:flex-row gap-3">
+                                    <div class="flex-1 bg-red-50 rounded-xl p-3 flex justify-between items-center border border-red-100">
+                                        <span class="text-xs font-bold text-gray-700">凭金币指定产品</span>
+                                        <span class="text-red-500 font-black text-xl">折上9折</span>
+                                    </div>
+                                    <div class="flex-1 bg-red-50 rounded-xl p-3 flex justify-between items-center border border-red-100">
+                                        <span class="text-xs font-bold text-gray-700">加入会员享3件</span>
+                                        <span class="text-red-500 font-black text-xl">88折</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 买赠权益 -->
+                            <div class="bg-white rounded-2xl p-4 border border-red-200 shadow-sm relative overflow-hidden">
+                                <div class="absolute top-0 left-0 w-1.5 h-full bg-red-500"></div>
+                                <h3 class="font-black text-red-600 mb-3">🎁 买赠特权权益</h3>
+                                <ul class="text-xs sm:text-sm space-y-2 text-gray-700">
+                                    <li class="flex items-start"><span class="text-red-500 mr-2 mt-0.5">●</span>满299元享 <strong class="text-red-500 ml-1">DIY烫印服务</strong> (限5个烫印贴)</li>
+                                    <li class="flex items-start"><span class="text-red-500 mr-2 mt-0.5">●</span>买指定洞洞鞋享 <strong class="text-red-500 ml-1">鞋花DIY体验</strong> (赠5颗鞋花)</li>
+                                    <li class="flex items-start"><span class="text-red-500 mr-2 mt-0.5">●</span>消费满599元享 <strong class="text-red-500 mx-1">巨型IP棉花糖</strong> 或 <strong class="text-red-500 ml-1">拼豆DIY</strong></li>
+                                </ul>
+                            </div>
+
+                            <!-- 糖水铺 -->
+                            <div class="bg-white rounded-2xl p-4 border border-red-200 shadow-sm relative overflow-hidden">
+                                <div class="absolute top-0 left-0 w-1.5 h-full bg-red-600"></div>
+                                <h3 class="font-black text-red-600 mb-1">🍧 巴拉巴拉糖水铺</h3>
+                                <p class="text-xs text-gray-600 mb-2">携手红鲤手作甜蜜联动</p>
+                                <p class="text-sm font-bold text-gray-800">凭金币可享全品类产品 <span class="text-red-500 text-xl font-black ml-1">85折</span></p>
+                            </div>
+                        </div>
+                    </div>
+                `
             },
-            'pet': {
-                type: 'standard',
-                title: '🐧 宠物治愈区',
-                themeColor: '#3B82F6', highlightColor: '#DBEAFE', highlightText: '#2563EB',
-                highlight: '带上毛孩子一起嗨！',
-                rules: [
-                    '🦴 <strong>专属区域</strong>：为爱宠提供饮水与玩耍空间',
-                    '🎨 <strong>涂鸦共创</strong>：旁边的 Painting 区域可留下专属涂鸦'
-                ],
-                notice: '请给宠物牵好绳索，保持现场整洁哦'
+            'calendar': {
+                themeColor: '#F97316', // 活力橙色系
+                content: `
+                    <div class="p-4 sm:p-6 flex flex-col h-full overflow-y-auto custom-scrollbar fade-in bg-orange-50">
+                        <div class="flex items-center justify-between mb-6 border-b border-orange-200 pb-4">
+                            <div>
+                                <h2 class="text-2xl sm:text-3xl font-black text-orange-600">活动课表</h2>
+                                <p class="text-xs font-bold tracking-widest text-orange-400 mt-1">CALENDAR</p>
+                            </div>
+                            <div class="text-3xl">🗓️</div>
+                        </div>
+                        
+                        <!-- 全新设计的纯代码时间轴 (Timeline) 替代原本拥挤的表格 -->
+                        <div class="space-y-0 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-orange-300 before:to-transparent">
+                            
+                            <!-- 4.25 -->
+                            <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active mb-6">
+                                <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-orange-500 text-white font-bold shadow-md shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">25</div>
+                                <div class="w-[calc(100%-3rem)] md:w-[calc(50%-2.5rem)] p-3 rounded-2xl bg-white border border-orange-100 shadow-sm ml-2 md:ml-0">
+                                    <div class="text-orange-500 font-bold text-xs mb-2">4月25日 (周六)</div>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="bg-blue-100 text-blue-600 text-[10px] font-bold px-2 py-1 rounded-md">RC遥控车竞速</span>
+                                        <span class="bg-pink-100 text-pink-600 text-[10px] font-bold px-2 py-1 rounded-md">小马宝莉见面会</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 4.26 -->
+                            <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active mb-6">
+                                <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-orange-400 text-white font-bold shadow-md shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">26</div>
+                                <div class="w-[calc(100%-3rem)] md:w-[calc(50%-2.5rem)] p-3 rounded-2xl bg-white border border-orange-100 shadow-sm ml-2 md:ml-0">
+                                    <div class="text-orange-500 font-bold text-xs mb-2">4月26日 (周日)</div>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="bg-green-100 text-green-600 text-[10px] font-bold px-2 py-1 rounded-md">热爱自由追风跑</span>
+                                        <span class="bg-yellow-100 text-yellow-700 text-[10px] font-bold px-2 py-1 rounded-md">亲子公益集市</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 4.28 & 4.30 -->
+                            <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active mb-6">
+                                <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-gray-300 text-white font-bold shadow-md shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">平</div>
+                                <div class="w-[calc(100%-3rem)] md:w-[calc(50%-2.5rem)] p-3 rounded-2xl bg-white border border-gray-100 shadow-sm ml-2 md:ml-0">
+                                    <div class="text-gray-500 font-bold text-xs mb-2">4.28 (二) / 4.30 (四)</div>
+                                    <span class="bg-purple-100 text-purple-600 text-[10px] font-bold px-2 py-1 rounded-md block w-max">神秘IP限定产品抽奖日</span>
+                                </div>
+                            </div>
+
+                            <!-- 5.1 -->
+                            <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active mb-6">
+                                <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-orange-500 text-white font-bold shadow-md shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">1</div>
+                                <div class="w-[calc(100%-3rem)] md:w-[calc(50%-2.5rem)] p-3 rounded-2xl bg-white border border-orange-100 shadow-sm ml-2 md:ml-0">
+                                    <div class="text-orange-500 font-bold text-xs mb-2">5月1日 (周五)</div>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-1 rounded-md">银河通用机器人互动</span>
+                                        <span class="bg-cyan-100 text-cyan-600 text-[10px] font-bold px-2 py-1 rounded-md">热爱板仔初体验</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 5.2 -->
+                            <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active mb-6">
+                                <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-orange-500 text-white font-bold shadow-md shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">2</div>
+                                <div class="w-[calc(100%-3rem)] md:w-[calc(50%-2.5rem)] p-3 rounded-2xl bg-white border border-orange-100 shadow-sm ml-2 md:ml-0">
+                                    <div class="text-orange-500 font-bold text-xs mb-2">5月2日 (周六)</div>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="bg-orange-100 text-orange-600 text-[10px] font-bold px-2 py-1 rounded-md">宠衣焕新秀</span>
+                                        <span class="bg-blue-100 text-blue-600 text-[10px] font-bold px-2 py-1 rounded-md">汪汪队见面会</span>
+                                        <span class="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-1 rounded-md">风火轮开箱</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 5.3 -->
+                            <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active mb-6">
+                                <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-orange-400 text-white font-bold shadow-md shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">3</div>
+                                <div class="w-[calc(100%-3rem)] md:w-[calc(50%-2.5rem)] p-3 rounded-2xl bg-white border border-orange-100 shadow-sm ml-2 md:ml-0">
+                                    <div class="text-orange-500 font-bold text-xs mb-2">5月3日 (周日)</div>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="bg-green-100 text-green-600 text-[10px] font-bold px-2 py-1 rounded-md">创意手工坊</span>
+                                        <span class="bg-blue-100 text-blue-600 text-[10px] font-bold px-2 py-1 rounded-md">汪汪队见面会</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 5.4 & 5.5 -->
+                            <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active mb-6">
+                                <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-orange-500 text-white font-bold shadow-md shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">4</div>
+                                <div class="w-[calc(100%-3rem)] md:w-[calc(50%-2.5rem)] p-3 rounded-2xl bg-white border border-orange-100 shadow-sm ml-2 md:ml-0">
+                                    <div class="text-orange-500 font-bold text-xs mb-2">5.4 (一) / 5.5 (二)</div>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="bg-pink-100 text-pink-600 text-[10px] font-bold px-2 py-1 rounded-md">小马宝莉见面会</span>
+                                        <span class="bg-rose-100 text-rose-600 text-[10px] font-bold px-2 py-1 rounded-md">手作烘焙时光(5.4)</span>
+                                        <span class="bg-yellow-100 text-yellow-700 text-[10px] font-bold px-2 py-1 rounded-md">亲子公益集市(5.5)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 省略部分平淡工作日，直接展示高潮周末 -->
+                            <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active mb-2">
+                                <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-orange-400 text-white font-bold shadow-md shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">末</div>
+                                <div class="w-[calc(100%-3rem)] md:w-[calc(50%-2.5rem)] p-3 rounded-2xl bg-white border border-orange-100 shadow-sm ml-2 md:ml-0">
+                                    <div class="text-orange-500 font-bold text-xs mb-2">5.10 / 5.16 / 5.17</div>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-1 rounded-md">潮酷唱跳街舞秀</span>
+                                        <span class="bg-purple-100 text-purple-600 text-[10px] font-bold px-2 py-1 rounded-md">自然美育学堂</span>
+                                        <span class="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-1 rounded-md">IP神秘抽奖</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                `
+            },
+            'location': {
+                themeColor: '#EA580C', // 橙色系
+                content: `
+                    <div class="p-6 sm:p-10 flex flex-col justify-center h-full fade-in bg-[#FDF2E2]">
+                        <h2 class="text-2xl sm:text-3xl font-black text-orange-600 mb-8 text-center border-b border-orange-200 pb-4">开放时间与地点</h2>
+                        
+                        <div class="space-y-8">
+                            <div class="flex items-start">
+                                <div class="bg-orange-100 w-12 h-12 rounded-full flex justify-center items-center text-2xl shrink-0 shadow-sm">🕒</div>
+                                <div class="ml-4">
+                                    <p class="font-black text-lg sm:text-xl text-orange-900 tracking-wide mb-1">2026.04.25 — 05.17</p>
+                                    <p class="text-xs sm:text-sm font-bold text-orange-600">工作日: 10:00 - 20:00</p>
+                                    <p class="text-xs sm:text-sm font-bold text-orange-600">周末/节假日: 10:00 - 21:00</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start">
+                                <div class="bg-orange-100 w-12 h-12 rounded-full flex justify-center items-center text-2xl shrink-0 shadow-sm">📍</div>
+                                <div class="ml-4">
+                                    <p class="font-black text-base sm:text-lg text-orange-900 leading-snug mb-1">上海徐汇滨江塔吊南广场<br>及攀岩墙周边区域</p>
+                                    <p class="text-xs sm:text-sm font-bold text-orange-600/80 bg-orange-100/50 inline-block px-2 py-1 rounded">地图搜索：上海徐汇滨江攀岩墙</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-12 opacity-50 flex justify-center">
+                            <svg class="w-24 h-6 text-orange-400" viewBox="0 0 100 20" fill="currentColor"><path d="M50 10c-5.5 0-10 4.5-10 10h20c0-5.5-4.5-10-10-10zm-30 0c-5.5 0-10 4.5-10 10h20c0-5.5-4.5-10-10-10zm60 0c-5.5 0-10 4.5-10 10h20c0-5.5-4.5-10-10-10z"/></svg>
+                        </div>
+                    </div>
+                `
             }
         };
 
-        const hotspots = document.querySelectorAll('.hotspot-ip');
-        const modal = document.getElementById('info-modal');
-        const modalOverlay = document.getElementById('modal-overlay');
         const modalCard = document.getElementById('modal-card');
         const modalDynamicContent = document.getElementById('modal-dynamic-content');
+        const modal = document.getElementById('info-modal');
+        const modalOverlay = document.getElementById('modal-overlay');
+
+        // 🌟 绑定右下角悬浮按钮的纯前端排版页面
+        document.querySelectorAll('.float-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation(); // 阻止地图拖拽
+                const floatKey = btn.getAttribute('data-float');
+                const data = floatData[floatKey];
+                
+                if (data) {
+                    document.getElementById('modal-glow').style.setProperty('--theme-color', data.themeColor);
+                    modalDynamicContent.innerHTML = data.content;
+                    
+                    modalCard.classList.remove('modal-enter');
+                    void modalCard.offsetWidth; 
+                    modalCard.classList.add('modal-enter');
+                    modal.classList.remove('hidden');
+                }
+            });
+        });
 
         // ==========================================
-        // 🌟 动态渲染函数：三种不同的工作流
+        // 🌟 3. 各种弹窗的渲染逻辑 (与之前保持一致)
         // ==========================================
-
         function renderStandardModal(data) {
             document.getElementById('modal-glow').style.setProperty('--theme-color', data.themeColor);
             const rulesHtml = data.rules.map(rule => `
@@ -648,7 +644,6 @@
             `;
         }
 
-        // 🌟 优化：增加了上下滑动自适应机制 (overflow-y-auto custom-scrollbar)
         function renderFlowStep1(data) {
             document.getElementById('modal-glow').style.setProperty('--theme-color', data.themeColor);
             modalDynamicContent.innerHTML = `
@@ -670,10 +665,8 @@
             });
         }
 
-        // 🌟 优化：大象专属，增加上下滑动支持，确保所有按钮都清晰可见
         function renderMultiFlowStep1(data) {
             document.getElementById('modal-glow').style.setProperty('--theme-color', data.themeColor);
-            
             const buttonsHtml = data.options.map((opt, index) => `
                 <button onclick="window.triggerMultiOption('${data.id}', ${index})" class="w-full flex-shrink-0 bg-orange-500 hover:bg-orange-600 text-white font-bold py-3.5 px-6 rounded-2xl shadow-[0_8px_20px_rgba(249,115,22,0.3)] transform transition active:scale-95 text-sm sm:text-base mb-3.5">
                     ${opt.btnText}
@@ -740,7 +733,7 @@
             `;
         }
 
-        // === 点击事件绑定 ===
+        const hotspots = document.querySelectorAll('.hotspot-ip');
         hotspots.forEach(hotspot => {
             hotspot.addEventListener('click', () => {
                 const zoneId = hotspot.getAttribute('data-zone');
@@ -763,7 +756,7 @@
             });
         });
 
-        // 点击遮罩层关闭弹窗
+        // 统一的关闭弹窗事件
         const closeModal = () => modal.classList.add('hidden');
         modalOverlay.addEventListener('click', closeModal);
     </script>
