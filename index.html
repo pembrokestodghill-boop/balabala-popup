@@ -162,16 +162,14 @@
         <div class="scroll-container">
             <div class="map-wrapper">
                 
-                <!-- 🌟 更换为新的 webp 地图 -->
                 <img src="assets/map-horizontal.webp" alt="活动地图" class="map-bg-img" onerror="console.error('找不到地图背景，请检查路径')">
 
-                <!-- 🌟 新增：A区 热爱启程 (痛车) - 暂定放在最左侧，你可以用网格微调 -->
+                <!-- 🌟 痛车 (修改为 animate-pan 平移动画) -->
                 <div class="hotspot-ip z-20" style="top: 45%; left: 4%;" data-zone="departure">
-                    <img src="assets/ip_tongche.webp" alt="痛车" class="w-40 sm:w-56 object-contain animate-sway drop-shadow-xl" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                    <div class="fallback-icon animate-sway hidden">🚙</div>
+                    <img src="assets/ip_tongche.webp" alt="痛车" class="w-40 sm:w-56 object-contain animate-pan drop-shadow-xl" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="fallback-icon animate-pan hidden">🚙</div>
                 </div>
 
-                <!-- 1. 男孩 Boy -->
                 <div class="hotspot-ip z-20" style="top: 44%; left: 11%;" data-zone="entrance">
                     <img src="assets/ip-boy.png" alt="男孩" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway hidden">👦</div>
@@ -225,18 +223,18 @@
             </div>
         </div>
 
-        <!-- ================= 🌟 左下角固定开放时间 ================= -->
-        <div id="fixed-time-display" class="fixed left-3 bottom-4 sm:left-6 sm:bottom-6 z-40 flex flex-col transition-opacity duration-300 drop-shadow-md" style="display: none;">
-            <div class="text-orange-600 font-black text-lg sm:text-2xl tracking-wider flex items-center mb-0.5">
-                <span class="mr-1.5 sm:mr-2 text-xl sm:text-2xl opacity-90">🕒</span> 
+        <!-- ================= 🌟 缩小后的左下角固定时间 ================= -->
+        <div id="fixed-time-display" class="fixed left-3 bottom-3 sm:left-5 sm:bottom-4 z-40 flex flex-col transition-opacity duration-300 drop-shadow-md" style="display: none;">
+            <div class="text-orange-600 font-black text-sm sm:text-lg tracking-wider flex items-center mb-0.5">
+                <span class="mr-1.5 sm:mr-2 text-base sm:text-xl opacity-90">🕒</span> 
                 2026.04.25 <span class="mx-1 sm:mx-2 font-normal text-orange-500/80">—</span> 2026.05.17
             </div>
-            <div class="text-orange-600 font-black text-[10px] sm:text-sm tracking-widest ml-7 sm:ml-9 flex items-center">
+            <div class="text-orange-600 font-black text-[8px] sm:text-xs tracking-widest ml-6 sm:ml-8 flex items-center">
                 工作日: 10:00-20:00 <span class="mx-1 sm:mx-2 opacity-50 font-normal">|</span> 周末/节假日: 10:00-21:00
             </div>
         </div>
 
-        <!-- ================= 🌟 右下角横向毛绒悬浮菜单 ================= -->
+        <!-- ================= 右下角横向毛绒悬浮菜单 ================= -->
         <div id="floating-menu" class="fixed right-3 bottom-4 sm:right-6 sm:bottom-6 z-40 flex flex-row items-end gap-1 sm:gap-3 transition-opacity duration-300" style="display: none;">
             <button class="float-btn relative w-12 h-14 sm:w-16 sm:h-20 transform transition active:scale-90" data-float="benefit">
                 <img src="assets/small icon 1.png" class="w-full h-full object-contain filter drop-shadow-[0_4px_6px_rgba(0,0,0,0.3)]" alt="打卡福利">
@@ -256,7 +254,7 @@
         </div>
     </div>
 
-    <!-- ================= 🌟 弹窗组件：通用磨砂框 ================= -->
+    <!-- ================= 弹窗组件 ================= -->
     <div id="info-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity cursor-pointer" id="modal-overlay"></div>
         <div id="modal-card" class="w-full max-w-lg max-h-[85dvh] rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 flex flex-col modal-enter relative border border-white/60" style="background-color: rgba(255, 255, 255, 0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
@@ -266,7 +264,6 @@
     </div>
 
     <script>
-        // === 屏幕状态与横竖屏检测 ===
         const viewIntro = document.getElementById('view-intro');
         const viewRotate = document.getElementById('view-rotate');
         const viewMap = document.getElementById('view-map');
@@ -315,7 +312,7 @@
 
 
         // ==========================================
-        // 🌟 1. 热区入场须知数据与长篇 HTML 
+        // 🌟 1. 热区入场须知数据与安全协议配置
         // ==========================================
         const commonFooterHtml = `
             <div>
@@ -331,23 +328,29 @@
             </div>
         `;
 
+        // === 攀岩墙 ===
         const climbingRulesHtml = `<div class="bg-orange-100/80 p-3 rounded-xl text-orange-900 border border-orange-200/60"><strong>【重要提示】</strong> 为确保活动安全有序进行，保障每一位参与者的人身安全与良好体验，请您在入场前仔细阅读本须知。入场即视为您已充分理解并自愿接受以下全部条款。</div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">1. 开放时间</h4><p class="text-gray-600">周六周日及节假日：10:00 - 19:00</p></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">2. 参与流程</h4><ul class="list-disc pl-4 space-y-1 text-gray-700"><li><strong>现场报名：</strong>有意参与的用户请在现场工作人员处登记报名，按报名顺序依次体验。</li><li><strong>教学安排：</strong>品牌方邀请专业攀岩教练在场提供基础教学与帮助，每次教学时长不超过15分钟。</li><li><strong>体验时长：</strong>每人每次体验（含教学）不超过15分钟，结束后如需再次参与，请重新报名排队。</li></ul></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">3. 入场条件与限制声明</h4><p class="font-bold text-red-600 mb-2">参与者须确认自身健康状况适宜攀岩运动，隐瞒病史执意参与者，一切后果自负。</p><ol class="list-decimal pl-4 space-y-1 text-gray-700"><li>仅限身高1.2米(含)以上的游客进入，每位儿童须由至少一名成人全程陪同。</li><li>强制签署协议：入场前须现场签署《攀岩墙免责协议》，未签署者一律不得进入。未成年人须由监护人代为签署。</li><li>游客须具备参与本活动的良好身体状况，能够独立行动并遵守安全规则，未成年人须在监护人全程陪同和看管下入场。</li><li>有下列情况禁止入场：患有心脏病、高血压、癫痫、传染病、精神疾病等不适宜剧烈运动的疾病者；存在发烧、感冒、咳喘传染性皮肤病、呕吐、腹泻等不适合参与本活动的身体状况者；醉酒、情绪失控或不服从管理者。孕妇、老人及行动不便者。</li><li>着装要求：(1) 须穿着适合运动的服装及鞋履（建议攀岩鞋或运动鞋） (2) 禁止穿着拖鞋、高跟鞋、裙装等不适合运动的装束。</li></ol></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">4. 风险告知与责任豁免</h4><ol class="list-decimal pl-4 space-y-2 text-gray-700"><li><strong>设施性质说明：</strong>攀岩墙为徐汇滨江公共设施，品牌方仅在此组织体验活动，不参与设施的建设、维护与管理。参与者须充分知悉并自愿承担使用公共设施可能产生的风险。</li><li><strong>运动风险告知：</strong>攀岩运动属于【高风险体育运动】，可能存在以下危险：(1) 跌落、滑坠导致的骨折、扭伤、擦伤 (2) 碰撞导致的软组织损伤或脑震荡 (3) 绳索、装备使用不当导致的意外伤害 (4) 因体力不支、技术失误导致的突发状况</li><li><strong>教练服务范围：</strong>(1) 现场教练仅提供【基础技术指导与安全提示】 (2) 不提供一对一全程保护服务 (3) 参与者须在指导下【自主完成攀爬】，并全程对自身安全负责</li><li><strong>参与者义务：</strong>(1) 严格遵守教练及工作人员的安全指引 (2) 未经允许不得擅自攀爬、越线或进行危险动作 (3) 发现身体不适或装备异常须立即停止活动并报告</li><li><strong>责任豁免条款：</strong>凡因以下情形导致的任何人身伤害或财产损失，品牌方不承担任何法律责任：(1) 参与者隐瞒健康状况、年龄不符或监护人未陪同（未成年人） (2) 参与者未遵守安全指引、擅自行动或操作不当 (3) 参与者未正确使用安全装备或拒绝接受教练指导 (4) 公共设施本身存在的设计缺陷或维护问题 (5) 不可抗力因素</li></ol></div>${commonFooterHtml}`;
+        
+        const climbingAgreementHtml = `<div class="text-left space-y-4 text-gray-700 text-xs sm:text-sm"><p class="font-bold text-orange-600 bg-orange-100 p-2 rounded-lg">本人（及监护人）确认 ：参与“攀岩墙”活动前，已阅读、理解并自愿接受本协议全部内容。</p><div><h4 class="font-black text-orange-800 mb-1">一、健康状况与装备</h4><ul class="list-disc pl-5 space-y-1"><li>本人确认身体健康，无心脏病、高血压、癫痫、传染病、精神疾病、感冒、咳喘、传染性皮肤病等不适宜参与攀岩运动的疾病或身体状况。</li><li>本人确认不存在醉酒、情绪失控等影响自身或他人安全的情形。</li><li>本人知晓本活动对身高、年龄的限制（身高1.2米以上），并承诺符合入场条件。</li><li>本人承诺穿着适合运动的服装及鞋履（运动鞋或攀岩鞋），不穿着拖鞋、高跟鞋、裙装等不适合运动的装束。</li><li>未成年人须由监护人全程陪同，监护人承诺履行现场监护责任。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">二、行为规范</h4><ul class="list-disc pl-5 space-y-1"><li>本人承诺严格遵守教练及工作人员的安全指引，未经允许不得擅自攀爬或进行危险动作。</li><li>本人知晓现场教练仅提供基础技术指导与安全提示，不提供一对一全程保护服务，本人须在指导下自主完成攀爬，并全程对自身安全负责。</li><li>本人承诺发现身体不适或装备异常时立即停止活动并报告工作人员。</li><li>本人承诺不携带尖锐物品、食物、饮料及宠物入场。</li><li>本人承诺妥善保管个人物品，贵重物品丢失责任自负。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">三、主办方义务</h4><p>主办方承诺：提供具备资质的专业攀岩教练进行基础教学与安全提示，确保活动组织过程符合基本安全标准，配备必要的现场工作人员及急救用品，并在活动前进行安全提示。</p></div><div><h4 class="font-black text-orange-800 mb-1">四、风险告知与责任划分</h4><p><strong class="text-orange-600">风险告知 ：</strong>本人充分了解攀岩运动属于高风险体育运动，可能导致跌落、滑坠、骨折、扭伤、擦伤、碰撞、脑震荡等严重人身伤害，甚至死亡。</p><p><strong class="text-orange-600">设施性质说明 ：</strong>本人知晓攀岩墙为公共设施，品牌方仅在此组织体验活动，不参与设施的建设、维护与管理。本人自愿承担使用公共设施可能产生的风险。</p><p><strong class="text-orange-600">责任划分 ：</strong></p><ul class="list-disc pl-5 space-y-1"><li>因本人未遵守本协议、未听从教练或工作人员指引、隐瞒健康状况、未正确使用装备或自身原因造成损害的，由本人依法承担相应责任。</li><li>因主办方存在故意或重大过失造成损害的，主办方依法承担相应责任。</li><li>因第三方行为造成损害的，由行为人依法承担相应责任。</li><li>因公共设施本身存在的设计缺陷或维护问题造成损害的，由相关责任方依法承担相应责任。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">五、未成年人监护</h4><p>监护人承诺全程陪同并监督未成年人遵守本协议及现场规定，因未成年人未遵守规定造成的损害，由监护人及未成年人依法承担责任。</p></div><div><h4 class="font-black text-orange-800 mb-1">六、其他</h4><ul class="list-disc pl-5 space-y-1"><li>本人确认：参与本次活动纯属自愿，并非受任何压力或诱导。</li><li>本协议适用中华人民共和国法律。争议协商不成的，向主办方所在地人民法院起诉。</li><li>本协议自签字之日起生效。</li></ul></div></div>`;
+
+        // === 泡泡乐园 ===
         const bubbleRulesHtml = `<div class="bg-orange-100/80 p-3 rounded-xl text-orange-900 border border-orange-200/60"><strong>【重要提示】</strong> 为确保活动安全有序进行，保障每一位参与者的人身安全与良好体验，请您在入场前仔细阅读本须知。入场即视为您已充分理解并自愿接受以下全部条款。</div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-2">1. 开放时间</h4><div class="overflow-hidden rounded-xl border border-orange-200 mb-2"><table class="w-full text-center text-[10px] sm:text-xs"><thead class="bg-orange-200/50 text-orange-800"><tr><th class="py-2 px-1 border-r border-orange-200">泡泡乐园</th><th class="py-2 px-1 border-r border-orange-200">工作日</th><th class="py-2 px-1">周末及节假日</th></tr></thead><tbody class="text-gray-600 bg-white"><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第一场</td><td class="py-1.5 border-r border-orange-100">14:00 - 14:40</td><td class="py-1.5">10:00 - 10:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第二场</td><td class="py-1.5 border-r border-orange-100">15:00 - 15:40</td><td class="py-1.5">11:00 - 11:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第三场</td><td class="py-1.5 border-r border-orange-100">16:00 - 16:40</td><td class="py-1.5">13:00 - 13:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第四场</td><td class="py-1.5 border-r border-orange-100">18:00 - 18:40</td><td class="py-1.5">14:00 - 14:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第五场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">15:00 - 15:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第六场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">16:00 - 16:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第七场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">18:00 - 18:40</td></tr></tbody></table></div><p class="text-gray-600 text-xs mt-2">体验时间：整点开始，限时40分钟。<br>清场与清洁：结束后进行20分钟清场，用于场地清洁、设施整理及秩序维护。<br>*清场期间暂停入场，请配合现场工作人员指引有序离场。</p></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">2. 入场条件与限制</h4><ol class="list-decimal pl-4 space-y-1 text-gray-700"><li>仅限身高1.2米(含)以上, 70周岁以下的游客进入，每位儿童须由至少一名成人全程陪同。</li><li>游客须具备参与本活动的良好身体状况，能够独立行动并遵守安全规则，未成年人须在监护人全程陪同和看管下入场。</li><li>有下列情况禁止入场: 患有心脏病、高血压、癫痫、传染病、精神疾病等不适宜剧烈活动的疾病者；存在发烧、感冒、咳喘传染性皮肤病、呕吐、腹泻等不适合参与本活动的身体状况者；醉酒、情绪失控或不服从管理者；孕妇、老人及行动不便者。</li><li>为确保公共安全，工作人员有权根据游客及现场情况进行安全评估，并有权拒绝不符合入场条件者入内。</li><li>场地内设有人数上限，每个场次最多可同时容纳60人，达到承载量后将暂停入场，满员后请听从现场工作人员的安排。</li></ol></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">3. 安全注意事项</h4><p class="text-gray-700">入场前请仔细阅读现场安全提示，遵守设施使用规则。请勿在池内奔跑、推搡、跳跃或进行任何危险动作。请妥善保管个人物品，贵重物品建议寄存或随身看管。请勿携带尖锐物品、食物、饮料及宠物入场。如遇身体不适或突发情况，请立即联系现场工作人员。</p></div>${commonFooterHtml}`;
+        
+        const bubbleAgreementHtml = `<div class="text-left space-y-4 text-gray-700 text-xs sm:text-sm"><p class="font-bold text-orange-600 bg-orange-100 p-2 rounded-lg">本人（及监护人）确认 ：参与“泡泡乐园”活动前，已阅读、理解并自愿接受本协议全部内容。</p><div><h4 class="font-black text-orange-800 mb-1">一、健康状况与装备</h4><ul class="list-disc pl-5 space-y-1"><li>本人确认身体健康，无心脏病、高血压、癫痫、传染病、精神疾病、感冒、咳喘、传染性皮肤病等不适宜参与本活动的疾病或身体状况。</li><li>本人确认不存在醉酒、情绪失控等影响自身或他人安全的情形。</li><li>本人知晓本活动对身高、年龄的限制（身高1.2米以上，70周岁以下），并承诺符合入场条件。</li><li>未成年人须由监护人全程陪同，监护人承诺履行现场监护责任。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">二、行为规范</h4><ul class="list-disc pl-5 space-y-1"><li>本人承诺遵守现场安全提示及工作人员指引，不在场内奔跑、推搡、跳跃或进行任何危险动作。</li><li>本人承诺不携带尖锐物品、食物、饮料及宠物入场。</li><li>本人承诺妥善保管个人物品，贵重物品丢失责任自负。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">三、风险告知与责任划分</h4><p><strong class="text-orange-600">风险告知 ：</strong>本人充分了解泡泡乐园活动存在一定风险，可能导致擦伤、扭伤、碰撞等意外伤害。</p><p><strong class="text-orange-600">责任划分 ：</strong></p><ul class="list-disc pl-5 space-y-1"><li>因本人未遵守本协议、未听从工作人员指引或自身原因造成损害的，由本人依法承担相应责任。</li><li>因主办方存在故意或重大过失造成损害的，主办方依法承担相应责任。</li><li>因第三方行为造成损害的，由行为人依法承担相应责任。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">四、未成年人监护</h4><p>监护人承诺全程陪同并监督未成年人遵守本协议及现场规定，因未成年人未遵守规定造成的损害，由监护人及未成年人依法承担责任。</p></div><div><h4 class="font-black text-orange-800 mb-1">五、其他</h4><ul class="list-disc pl-5 space-y-1"><li>本人确认：参与本次活动纯属自愿，并非受任何压力或诱导。</li><li>本协议适用中华人民共和国法律。争议协商不成的，向主办方所在地人民法院起诉。</li><li>本协议自签字之日起生效。</li></ul></div></div>`;
+
+        // === 动力街区 ===
         const rcRulesHtml = `<div class="bg-orange-100/80 p-3 rounded-xl text-orange-900 border border-orange-200/60"><strong>【重要提示】</strong> 为确保活动安全有序进行，保障每一位参与者的人身安全与良好体验，请您在入场前仔细阅读本须知。入场即视为您已充分理解并自愿接受以下全部条款。</div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-2">1. 开放时间</h4><div class="overflow-hidden rounded-xl border border-orange-200 mb-2"><table class="w-full text-center text-[10px] sm:text-xs"><thead class="bg-orange-200/50 text-orange-800"><tr><th class="py-2 px-1 border-r border-orange-200">RC车区</th><th class="py-2 px-1 border-r border-orange-200">工作日</th><th class="py-2 px-1">周末及节假日</th></tr></thead><tbody class="text-gray-600 bg-white"><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第一场</td><td class="py-1.5 border-r border-orange-100">14:00 - 14:40</td><td class="py-1.5">10:00 - 10:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第二场</td><td class="py-1.5 border-r border-orange-100">15:00 - 15:40</td><td class="py-1.5">11:00 - 11:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第三场</td><td class="py-1.5 border-r border-orange-100">16:00 - 16:40</td><td class="py-1.5">13:00 - 13:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第四场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">14:00 - 14:40</td></tr></tbody></table></div><p class="text-gray-600 text-xs mt-2">体验时间：整点开始，限时40分钟。<br>清场与清洁：结束后进行20分钟清场，用于场地清洁、设施整理及秩序维护。<br>*清场期间暂停入场，请配合现场工作人员指引有序离场。</p></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">2. 入场条件与限制</h4><ol class="list-decimal pl-4 space-y-1 text-gray-700"><li>仅限身高1.2米(含)以上的游客进入，每位儿童须由至少一名成人全程陪同。</li><li>游客须具备参与本活动的良好身体状况，能够独立行动并遵守安全规则，未成年人须在监护人全程陪同和看管下入场。</li><li>有下列情况禁止入场: 患有心脏病、高血压、癫痫、传染病、精神疾病等不适宜剧烈活动的疾病者；存在发烧、感冒、咳喘传染性皮肤病、呕吐、腹泻等不适合参与本活动的身体状况者；醉酒、情绪失控或不服从管理者；孕妇、老人及行动不便者。</li><li>为确保公共安全，工作人员有权根据游客及现场情况进行安全评估，并有权拒绝不符合入场条件者入内。</li><li>场地内设有人数上限，每个场次最多可同时容纳10人，达到承载量后将暂停入场，满员后请听从现场工作人员的安排。</li></ol></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">3. 设备与游玩规则</h4><ol class="list-decimal pl-4 space-y-1 text-gray-700"><li><strong>设备提供：</strong>品牌方提供符合安全标准的限速遥控车供现场体验（数量5辆），参与者无须自备设备。</li><li><strong>体验时长：</strong>每人每次体验时长为40分钟，请按时结束离场，以便后续参与者使用。如需再次体验，请重新排队报名。</li><li><strong>操作区域：</strong>请在指定赛道或操作区域内操控遥控车，严禁将车辆驶出规定范围。</li><li><strong>操作规范：</strong>请文明操控，避免故意撞击、追逐他人车辆或进行任何危险操作。</li><li><strong>设备损坏赔偿：</strong>请爱护公共设备，若因人为不当操作或故意损坏导致设备故障，须照价赔偿。</li></ol></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">4. 安全须知</h4><p class="text-gray-700">入场前请仔细阅读本须知，严格遵守现场工作人员的安全指引。严禁在操控区内奔跑、推搡或擅自进入赛道捡拾车辆，如需帮助请联系工作人员妥善保管个人物品。请随身携带或寄存，场地不承担物品保管责任。严禁携带食物饮料进入操作区域，以免污染或损坏设备。如遇设备故障、失控或其他异常情况，请立即停止使用并通知工作人员处理。严禁自行拆卸或维修设备。体验过程中请时刻注意周围环境及他人安全，避免发生碰撞事故。</p></div>${commonFooterHtml}`;
+        
         const skateRulesHtml = `<div class="bg-orange-100/80 p-3 rounded-xl text-orange-900 border border-orange-200/60"><strong>【重要提示】</strong> 为确保活动安全有序进行，保障每一位参与者的人身安全与良好体验，请您在入场前仔细阅读本须知。入场即视为您已充分理解并自愿接受以下全部条款。</div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-2">1. 开放时间</h4><div class="overflow-hidden rounded-xl border border-orange-200 mb-2"><table class="w-full text-center text-[10px] sm:text-xs"><thead class="bg-orange-200/50 text-orange-800"><tr><th class="py-2 px-1 border-r border-orange-200">滑板区</th><th class="py-2 px-1 border-r border-orange-200">工作日</th><th class="py-2 px-1">周末及节假日</th></tr></thead><tbody class="text-gray-600 bg-white"><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第一场</td><td class="py-1.5 border-r border-orange-100">17:00 - 17:40</td><td class="py-1.5">15:00 - 15:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第二场</td><td class="py-1.5 border-r border-orange-100">18:00 - 18:40</td><td class="py-1.5">16:00 - 16:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第三场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">17:00 - 17:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第四场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">18:00 - 18:40</td></tr></tbody></table></div></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">2. 入场条件与限制</h4><ol class="list-decimal pl-4 space-y-1 text-gray-700"><li><strong>装备要求（强制）：</strong>参与者须自备符合安全标准的滑板，现场不提供滑板租赁服务。滑板须满足以下条件：(1) 板面完好，无断裂、分层或严重磨损 (2) 轮轴稳固，支架无松动，轮子转动正常 (3) 砂纸防滑面无大面积脱落 (4) 整体无破损、无改装安全隐患。入场前须经工作人员检查装备合格后方可进入。不合格装备禁止入场。</li><li><strong>技术基础要求（强制）：</strong>参与者须具备一定的滑板基础与滑行经验，能够独立完成以下基本动作：(1) 平稳上板与直线滑行 (2) 有效控制速度与方向 (3) 安全制动与紧急停板 (4) 摔倒时的自我保护动作。本区域不设任何教学指导服务，零基础者谢绝入场。</li><li><strong>年龄与监护要求：</strong>(1) 建议12周岁及以上人员参与 (2) 未满18周岁者须由法定监护人全程陪同入场，监护人须全程保持有效看护，不得擅自离开 (3) 监护人须代为签署免责协议，并承担被监护人的全部监护责任。</li><li><strong>健康状况：</strong>参与者须身体健康，无心脏病、高血压、癫痫、骨骼关节损伤、眩晕症等不适宜剧烈运动的疾病史或身体状况。特别提醒：隐瞒健康状况、技术能力不足或装备不合格执意入场者，一切后果自负。</li><li>场地内设有人数上限，每个场次最多可同时容纳10人，达到承载量后将暂停入场，满员后请听从现场工作人员的安排。</li></ol></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">3. 安全规范与行为准则</h4><ol class="list-decimal pl-4 space-y-1 text-gray-700"><li><strong>强制签署协议：</strong>入场前须现场签署《滑板区免责协议》，未签署者一律不得进入。未成年人须由监护人代为签署。</li><li><strong>防护装备建议：</strong>强烈建议佩戴以下专业防护装备：(1) 头盔（必备） (2) 护膝、护肘、护腕（建议全套佩戴）。未佩戴防护装备者，视为自愿承担由此增加的受伤风险。</li><li><strong>场地使用规则：</strong>(1) 严格遵守场地标识及工作人员指引，在规定区域内滑行，严禁进入非滑行区域 (2) 滑行前须观察周围环境，确保安全后方可起步 (3) 严禁在滑行过程中佩戴耳机，手持手机或其他分散注意力的物品 (4) 严禁在场地内追逐打闹、进行危险动作（包括但不限于腾空跳跃、高速俯冲、逆向滑行）或妨碍他人滑行 (5) 摔倒后须迅速撤离滑行区域，避免二次碰撞。</li><li><strong>个人物品保管：</strong>请妥善保管个人物品，贵重物品建议寄存或随身看管。场地不承担任何物品保管责任，遗失或损坏概不负责。</li></ol></div>${commonFooterHtml}`;
 
+        const skateAgreementHtml = `<div class="text-left space-y-4 text-gray-700 text-xs sm:text-sm"><p class="font-bold text-orange-600 bg-orange-100 p-2 rounded-lg">本人（及监护人）确认 ：参与“潮玩街”滑板区活动前，已阅读、理解并自愿接受本协议全部内容。</p><div><h4 class="font-black text-orange-800 mb-1">一、健康状况与装备</h4><ul class="list-disc pl-5 space-y-1"><li>本人确认身体健康，无不适宜滑板运动的疾病或生理状态。</li><li>本人承诺使用符合安全标准的滑板及护具（头盔、护膝、护肘等），并全程佩戴。</li><li>本人知晓本区域不设教练，所有技术及风险由本人自行判断与承担。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">二、风险告知与责任</h4><p><strong class="text-orange-600">风险告知 ：</strong>本人充分了解滑板运动存在高风险，可能导致擦伤、扭伤、骨折、脑震荡、残疾甚至死亡等后果。</p><p><strong class="text-orange-600">责任划分 ：</strong></p><ul class="list-disc pl-5 space-y-1"><li>因本人未遵守规定、未佩戴护具、操作不当等自身原因造成损害的，由本人依法承担主要责任。</li><li>因主办方存在故意或重大过失造成损害的，主办方依法承担相应责任。</li><li>因第三方行为造成损害的，由行为人依法承担相应责任。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">三、未成年人监护</h4><p>监护人承诺全程监督未成年人遵守本协议及现场规定，<strong class="text-red-500">监护人不得在活动期间离开滑板区</strong>。因未成年人未遵守规定造成的损害，由监护人及未成年人依法承担责任。</p></div><div><h4 class="font-black text-orange-800 mb-1">四、其他</h4><ul class="list-disc pl-5 space-y-1"><li>本人确认：参与本次活动纯属自愿，并非受任何压力或诱导。</li><li>本协议适用中华人民共和国法律。争议协商不成的，向主办方所在地人民法院起诉。</li><li>本协议自签字之日起生效。</li></ul></div></div>`;
+
         const zonesData = {
-            'departure': { 
-                type: 'intro', 
-                title: 'A区 热爱启程', 
-                themeColor: '#EA580C', 
-                highlight: '软萌IP痛车亮相<br>从这里开启你的热爱之旅', 
-                subHighlight: 'Cute anime cars debut—start your passion<br>Journey here.' 
-            },
+            'departure': { type: 'intro', title: 'A区 热爱启程', themeColor: '#EA580C', highlight: '软萌IP痛车亮相<br>从这里开启你的热爱之旅', subHighlight: 'Cute anime cars debut—start your passion<br>Journey here.' },
             'entrance': { type: 'standard', title: '👦 核心出入口', themeColor: '#EF4444', highlightColor: '#FEE2E2', highlightText: '#DC2626', highlight: '领取你的专属热爱地图！', rules: ['📍 <strong>Step 1</strong>：扫码关注官方账号', '🗺️ <strong>Step 2</strong>：向工作人员领取纸质地图', '🎁 <strong>Step 3</strong>：开启你的快闪探索之旅！'], notice: '小提示：地图限量发放，先到先得哦~' },
-            'climbing': { type: 'flow', title: '🐻 B区 攀岩墙', themeColor: '#D97706', highlight: '喜欢攀岩的孩子不会下坠，只会在下坠时开始飞翔', subHighlight: 'A child who loves climbing never falls— They just start flying.', rulesTitle: '[B区攀岩墙] · 入场安全须知', rulesHtml: climbingRulesHtml },
-            'bubble': { type: 'flow', title: '🐙 I区 泡泡乐园', themeColor: '#D97706', highlight: '每一种热爱都是柔软的触点<br>愿你在海洋球的回弹中快乐徜徉', subHighlight: 'Every passion starts with a gentle touch—<br>Let joy bounce back at.', rulesTitle: '[I区泡泡乐园] · 入场安全须知', rulesHtml: bubbleRulesHtml },
-            'powerblock': { id: 'powerblock', type: 'multi-flow', title: '🐘 J区 动力街区', themeColor: '#D97706', highlight: '心怀热爱，自可翻越万千阻碍<br>怀揣勇气，便能让热爱乘风而行', subHighlight: 'With passion, all barriers fall. With courage,<br>your passion sails beyond them all.', options: [{ btnText: '🏎️ RC遥控车区入场须知', rulesTitle: '[J区动力街区-RC遥控车区] · 入场安全须知', rulesHtml: rcRulesHtml }, { btnText: '🛹 滑板区入场须知', rulesTitle: '[J区动力街区-滑板区] · 入场安全须知', rulesHtml: skateRulesHtml }] },
+            'climbing': { type: 'flow', title: '🐻 B区 攀岩墙', themeColor: '#D97706', highlight: '喜欢攀岩的孩子不会下坠，只会在下坠时开始飞翔', subHighlight: 'A child who loves climbing never falls— They just start flying.', rulesTitle: '[B区攀岩墙] · 入场安全须知', rulesHtml: climbingRulesHtml, agreementTitle: '攀岩墙活动参与协议', agreementHtml: climbingAgreementHtml },
+            'bubble': { type: 'flow', title: '🐙 I区 泡泡乐园', themeColor: '#D97706', highlight: '每一种热爱都是柔软的触点<br>愿你在海洋球的回弹中快乐徜徉', subHighlight: 'Every passion starts with a gentle touch—<br>Let joy bounce back at.', rulesTitle: '[I区泡泡乐园] · 入场安全须知', rulesHtml: bubbleRulesHtml, agreementTitle: '泡泡乐园活动参与协议', agreementHtml: bubbleAgreementHtml },
+            'powerblock': { id: 'powerblock', type: 'multi-flow', title: '🐘 J区 动力街区', themeColor: '#D97706', highlight: '心怀热爱，自可翻越万千阻碍<br>怀揣勇气，便能让热爱乘风而行', subHighlight: 'With passion, all barriers fall. With courage,<br>your passion sails beyond them all.', options: [{ btnText: '🏎️ RC遥控车区入场须知', rulesTitle: '[J区动力街区-RC遥控车区] · 入场安全须知', rulesHtml: rcRulesHtml, agreementTitle: null, agreementHtml: null }, { btnText: '🛹 滑板区入场须知', rulesTitle: '[J区动力街区-滑板区] · 入场安全须知', rulesHtml: skateRulesHtml, agreementTitle: '滑板区活动参与协议', agreementHtml: skateAgreementHtml }] },
             'stage': { type: 'standard', title: '🐸 露营互动区', themeColor: '#F59E0B', highlightColor: '#FEF3C7', highlightText: '#D97706', highlight: '寻找热爱亮点，参与高燃互动！', rules: ['✨ <strong>精彩演出</strong>：定时随机掉落 IP 巡游', '🎮 <strong>互动游戏</strong>：参与问答，赢取金币', '📸 <strong>拍照打卡</strong>：最佳出片机位，千万别错过'] },
             'shop': { type: 'standard', title: '🐰 热爱买手店', themeColor: '#10B981', highlightColor: '#D1FAE5', highlightText: '#059669', highlight: '总有一款是你热爱！', rules: ['👗 汇聚暖心美食与时尚鞋服', '💰 <strong>金币兑换</strong>：使用收集的金币兑换专属权益和盲盒礼品！'] },
             'pet': { type: 'standard', title: '🐧 宠物治愈区', themeColor: '#3B82F6', highlightColor: '#DBEAFE', highlightText: '#2563EB', highlight: '带上毛孩子一起嗨！', rules: ['🦴 <strong>专属区域</strong>：为爱宠提供饮水与玩耍空间', '🎨 <strong>涂鸦共创</strong>：旁边的 Painting 区域可留下专属涂鸦'], notice: '请给宠物牵好绳索，保持现场整洁哦' }
@@ -357,8 +360,8 @@
         // 🌟 2. 提取并整理的“课表内每个胶囊的点击数据”
         // ==========================================
         const calendarEventsData = {
-            'rc': { type: 'rules', title: '[J区动力街区-RC遥控车区] · 入场安全须知', html: rcRulesHtml },
-            'skate': { type: 'rules', title: '[J区动力街区-滑板区] · 入场安全须知', html: skateRulesHtml },
+            'rc': { type: 'rules', title: '[J区动力街区-RC遥控车区] · 入场安全须知', html: rcRulesHtml, agreementTitle: null, agreementHtml: null },
+            'skate': { type: 'rules', title: '[J区动力街区-滑板区] · 入场安全须知', html: skateRulesHtml, agreementTitle: '滑板区活动参与协议', agreementHtml: skateAgreementHtml },
             'pony': { type: 'simple', title: '小马宝莉见面会', subtitle: '快来和可爱的IP互动合影吧！' },
             'run': { type: 'simple', title: '热爱自由追风跑', subtitle: '滨江亲子快乐跑' },
             'market': { type: 'simple', title: '亲子公益集市', subtitle: '传递爱心，共享欢乐时光' },
@@ -467,12 +470,10 @@
             'calendar': {
                 themeColor: '#F97316', 
                 content: `
-                    <!-- 🌟 修复版：全宽滚动区域，确保图片撑满不缩水 -->
                     <div class="w-full h-full overflow-y-auto custom-scrollbar bg-[#ED6129]">
                         <div class="relative w-full block m-0 p-0 fade-in">
                             <img src="assets/timetable.png" class="w-full h-auto block pointer-events-none" alt="活动课表">
                             
-                            <!-- 🌟 像素级悬浮网格：精确定位到底图的格子里 -->
                             <div class="absolute inset-0" style="top: 24.5%; bottom: 1.5%; left: 0.5%; right: 0.5%;">
                                 <div class="grid grid-cols-7 grid-rows-4 w-full h-full">
                                     
@@ -649,16 +650,14 @@
             });
         });
 
-        // 🌟 打通：课表(Calendar)里的胶囊点击事件
+        // 🌟 课表(Calendar)里的胶囊点击事件
         window.openCalendarEvent = (eventId) => {
             const eventData = calendarEventsData[eventId];
             if (!eventData) return;
 
             if (eventData.type === 'rules') {
-                // 跳重磅长文安全须知，并添加"返回"按钮
-                renderFlowStep2(eventData.title, eventData.html, "window.openFloat('calendar')");
+                renderFlowStep2(eventData.title, eventData.html, "window.openFloat('calendar')", eventData.agreementTitle, eventData.agreementHtml);
             } else {
-                // 跳小弹窗，并添加"返回"按钮
                 const subHtml = eventData.subtitle ? `<p class="text-sm font-bold text-orange-600/80 mt-2">${eventData.subtitle}</p>` : '';
                 modalDynamicContent.innerHTML = `
                     <div class="flex flex-col h-full fade-in max-h-[85dvh]">
@@ -681,7 +680,7 @@
         };
 
         // ==========================================
-        // 🌟 3. 主地图 IP 热区弹窗逻辑
+        // 🌟 3. 主地图 IP 热区弹窗及电子签署逻辑
         // ==========================================
         function renderStandardModal(data) {
             document.getElementById('modal-glow').style.setProperty('--theme-color', data.themeColor);
@@ -708,7 +707,6 @@
             `;
         }
 
-        // 🌟 新增：纯介绍型弹窗（用于 A区 痛车）
         function renderIntroModal(data) {
             document.getElementById('modal-glow').style.setProperty('--theme-color', data.themeColor);
             modalDynamicContent.innerHTML = `
@@ -741,7 +739,7 @@
                 </div>
             `;
             document.getElementById('btn-read-safety').addEventListener('click', () => {
-                renderFlowStep2(data.rulesTitle, data.rulesHtml);
+                renderFlowStep2(data.rulesTitle, data.rulesHtml, null, data.agreementTitle, data.agreementHtml);
             });
         }
 
@@ -771,16 +769,19 @@
 
         window.triggerMultiOption = (zoneId, optionIndex) => {
             const opt = zonesData[zoneId].options[optionIndex];
-            renderFlowStep2(opt.rulesTitle, opt.rulesHtml);
+            renderFlowStep2(opt.rulesTitle, opt.rulesHtml, null, opt.agreementTitle, opt.agreementHtml);
         };
 
-        // 🌟 增加了 backAction 变量支持，方便从课表返回
-        window.renderFlowStep2 = function(rulesTitle, rulesHtml, backAction = null) {
+        // 🌟 带有电子签署跳转逻辑的 Step 2
+        window.renderFlowStep2 = function(rulesTitle, rulesHtml, backAction = null, agreementTitle = null, agreementHtml = null) {
             const backBtnHtml = backAction ? `
                 <button onclick="${backAction}" class="absolute left-4 top-6 text-orange-600 font-bold text-sm flex items-center z-20 active:scale-95 transition">
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>返回
                 </button>
             ` : '';
+
+            // 判断是否有专属协议，如果有，按钮文案改变
+            const btnText = agreementHtml ? '已阅须知，下一步：签署安全协议' : '我已阅读并接受此须知，为自己安全负责';
 
             modalDynamicContent.innerHTML = `
                 <div class="flex flex-col h-full fade-in max-h-[85dvh]">
@@ -793,12 +794,49 @@
                     </div>
                     <div class="p-4 bg-white/80 backdrop-blur-md border-t border-gray-100 flex-shrink-0 rounded-b-[32px]">
                         <button id="btn-accept-rules" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transform transition active:scale-95 text-sm sm:text-base flex justify-center items-center">
-                            我已阅读并接受此须知，为自己安全负责
+                            ${btnText}
                         </button>
                     </div>
                 </div>
             `;
-            document.getElementById('btn-accept-rules').addEventListener('click', renderPassStep3);
+            
+            document.getElementById('btn-accept-rules').addEventListener('click', () => {
+                if (agreementHtml) {
+                    renderAgreementStep(agreementTitle, agreementHtml, rulesTitle, rulesHtml, backAction);
+                } else {
+                    renderPassStep3();
+                }
+            });
+        }
+
+        // 🌟 新增：独立且严肃的电子签署 Step 2.5
+        window.renderAgreementStep = function(title, html, rulesTitle, rulesHtml, originalBackAction) {
+            // 返回到刚才的规则阅读界面
+            window.goBackToRules = function() {
+                renderFlowStep2(rulesTitle, rulesHtml, originalBackAction, title, html);
+            };
+
+            modalDynamicContent.innerHTML = `
+                <div class="flex flex-col h-full fade-in max-h-[85dvh]">
+                    <div class="pt-6 pb-3 px-4 text-center border-b border-orange-200/50 flex-shrink-0 relative flex justify-center items-center bg-orange-50">
+                        <button onclick="window.goBackToRules()" class="absolute left-4 top-6 text-orange-600 font-bold text-sm flex items-center z-20 active:scale-95 transition">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>返回
+                        </button>
+                        <h3 class="text-lg sm:text-xl font-black text-orange-800 leading-snug px-10">${title}</h3>
+                    </div>
+                    <div class="p-5 sm:p-6 overflow-y-auto custom-scrollbar flex-1 bg-white/60">
+                        ${html}
+                    </div>
+                    <div class="p-4 bg-white/90 backdrop-blur-md border-t border-gray-200 flex-shrink-0 rounded-b-[32px] flex flex-col items-center">
+                        <p class="text-xs text-gray-500 mb-3 text-center">点击下方按钮即表示您（及监护人）已阅读并同意本协议</p>
+                        <button id="btn-sign-agreement" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-[0_8px_20px_rgba(16,185,129,0.3)] transform transition active:scale-95 text-sm sm:text-base flex justify-center items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                            同意并电子签署协议
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('btn-sign-agreement').addEventListener('click', renderPassStep3);
         }
 
         function renderPassStep3() {
@@ -811,11 +849,11 @@
                     <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 flex items-center justify-center mb-6 animate-scan bg-green-50">
                         <svg class="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                     </div>
-                    <h2 class="text-2xl sm:text-3xl font-black text-green-600 mb-2">安全须知已确认</h2>
+                    <h2 class="text-2xl sm:text-3xl font-black text-green-600 mb-2">安全协议已签署</h2>
                     <p class="text-sm font-bold text-gray-500 tracking-widest mb-6 border-b border-gray-200 pb-2">TIME: ${timeString}</p>
                     <div class="bg-green-50 text-green-800 px-6 py-4 rounded-2xl text-center w-full border border-green-200 shadow-inner">
-                        <p class="font-bold text-base sm:text-lg">请向现场工作人员出示此界面</p>
-                        <p class="text-xs sm:text-sm mt-1 opacity-80">凭此界面方可入场体验</p>
+                        <p class="font-bold text-base sm:text-lg">请向现场工作人员出示此凭证</p>
+                        <p class="text-xs sm:text-sm mt-1 opacity-80">凭此绿码方可入场体验</p>
                     </div>
                 </div>
             `;
@@ -829,7 +867,7 @@
                 
                 if (data) {
                     if (data.type === 'intro') {
-                        renderIntroModal(data); // A区痛车专属
+                        renderIntroModal(data); 
                     } else if (data.type === 'flow') {
                         renderFlowStep1(data); 
                     } else if (data.type === 'multi-flow') {
@@ -846,7 +884,6 @@
             });
         });
 
-        // 统一的关闭弹窗事件
         const closeModal = () => modal.classList.add('hidden');
         modalOverlay.addEventListener('click', closeModal);
 
@@ -857,11 +894,9 @@
         gridOverlay.id = 'debug-grid';
         gridOverlay.className = 'absolute inset-0 pointer-events-none z-[100] hidden';
         
-        // 绘制 L (Left) 垂直线，每 5% 一条
         for (let i = 5; i < 100; i += 5) {
             gridOverlay.innerHTML += `<div class="absolute top-0 bottom-0 border-l border-red-500/50 border-dashed flex flex-col justify-start pt-2" style="left: ${i}%;"><span class="text-red-600 text-[10px] font-black bg-white/80 px-0.5 mt-1 block drop-shadow-sm ml-0.5">L:${i}</span></div>`;
         }
-        // 绘制 T (Top) 水平线，每 10% 一条
         for (let i = 10; i < 100; i += 10) {
             gridOverlay.innerHTML += `<div class="absolute left-0 right-0 border-t border-blue-500/50 border-dashed flex flex-row justify-start pl-2" style="top: ${i}%;"><span class="text-blue-600 text-[10px] font-black bg-white/80 px-0.5 ml-1 block drop-shadow-sm mt-0.5">T:${i}</span></div>`;
         }
@@ -882,7 +917,6 @@
             toggleBtn.classList.toggle('bg-black/80', !gridVisible);
         });
 
-        // 只有进入横屏地图模式才显示网格开关按钮
         const originalCheckOrientation = checkOrientation;
         checkOrientation = () => {
             originalCheckOrientation();
