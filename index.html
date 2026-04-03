@@ -4,10 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- 🌟 新增：尝试把部分安卓/微信底栏染成黄色 -->
     <meta name="theme-color" content="#F8D36A">
-    
-    <!-- iOS 专属沉浸式全屏配置 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
@@ -66,6 +63,14 @@
         }
         .animate-pan { animation: pan 4s ease-in-out infinite; }
 
+        /* 核销通行证的扫描光效 */
+        @keyframes scanGlow {
+            0% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(16, 185, 129, 0.8); border-color: rgba(16, 185, 129, 1); }
+            100% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.3); }
+        }
+        .animate-scan { animation: scanGlow 2s infinite; }
+
         .delay-1 { animation-delay: 0.5s; }
         .delay-2 { animation-delay: 1.2s; }
         .delay-3 { animation-delay: 1.8s; }
@@ -74,6 +79,13 @@
         @keyframes popIn {
             0% { transform: scale(0.8); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* 弹窗内容切换淡入淡出 */
+        .fade-in { animation: fadeIn 0.3s ease-in-out forwards; }
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
         .scroll-container {
@@ -111,6 +123,11 @@
         .hotspot-ip:active { transform: scale(0.95); }
 
         .fallback-icon { font-size: 3rem; line-height: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); }
+        
+        /* 针对长篇安全须知的滚动条美化 */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
     </style>
 </head>
 <body class="antialiased text-gray-800">
@@ -156,8 +173,8 @@
                     <div class="fallback-icon animate-sway hidden">👦</div>
                 </div>
 
-                <!-- 2. 大熊 Bear -->
-                <div class="absolute z-10 flex flex-col items-center pointer-events-none" style="top: -14%; left: 16%;">
+                <!-- 🌟 2. 大熊 Bear (攀岩墙) -->
+                <div class="hotspot-ip z-20" style="top: -14%; left: 16%;" data-zone="climbing">
                     <img src="assets/ip-bear.png" alt="大熊" class="w-32 h-32 sm:w-48 sm:h-48 object-contain animate-sway delay-1 drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-1 hidden">🐻</div>
                 </div>
@@ -180,14 +197,14 @@
                     <div class="fallback-icon animate-sway delay-1 hidden">🐰</div>
                 </div>
 
-                <!-- 6. 章鱼/粉色球 Octopus -->
-                <div class="absolute z-10 flex flex-col items-center pointer-events-none" style="top: 19%; left: 64%;">
+                <!-- 🌟 6. 章鱼/粉色球 Octopus (泡泡乐园) - 已激活！ -->
+                <div class="hotspot-ip z-20" style="top: 19%; left: 64%;" data-zone="bubble">
                     <img src="assets/ip-octopus.png" alt="章鱼" class="w-24 h-24 sm:w-36 sm:h-36 object-contain animate-sway delay-3 drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-3 hidden">🐙</div>
                 </div>
 
-                <!-- 7. 大象 Elephant -->
-                <div class="absolute z-10 flex flex-col items-center pointer-events-none" style="top: 24%; left: 70%;">
+                <!-- 🌟 7. 大象 Elephant (动力街区) - 已激活！ -->
+                <div class="hotspot-ip z-20" style="top: 24%; left: 70%;" data-zone="powerblock">
                     <img src="assets/ip-elephant.png" alt="大象" class="w-24 h-24 sm:w-32 sm:h-32 object-contain animate-sway delay-2 drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-2 hidden">🐘</div>
                 </div>
@@ -217,36 +234,16 @@
     <!-- ================= 🌟 弹窗组件：Apple 高级磨砂玻璃质感版 ================= -->
     <div id="info-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
         
-        <!-- 遮罩层：保留透明度，点击即可关闭 -->
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity cursor-pointer" id="modal-overlay"></div>
         
-        <!-- 卡片主体：高透光白 + 极强磨砂 + 大圆角 -->
-        <!-- 去掉了生硬的背景色块和关闭按钮 -->
-        <div id="modal-card" class="w-full max-w-sm max-h-[85dvh] rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 flex flex-col modal-enter relative border border-white/60" style="background-color: rgba(255, 255, 255, 0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
+        <div id="modal-card" class="w-full max-w-lg max-h-[85dvh] rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 flex flex-col modal-enter relative border border-white/60" style="background-color: rgba(255, 255, 255, 0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
             
-            <!-- 🌟 氛围呼吸灯 (Glow)：这是一个绝密的氛围魔法，会根据你点击的不同区域，在弹窗右上角透出柔和的主题色光晕 -->
+            <!-- 氛围呼吸灯 (Glow) -->
             <div id="modal-glow" class="absolute top-0 right-0 w-full h-48 opacity-40 pointer-events-none transition-colors duration-500" style="background: radial-gradient(circle at 80% 0%, var(--theme-color), transparent 70%);"></div>
 
-            <div class="p-6 sm:p-8 overflow-y-auto relative z-10 flex flex-col items-center">
-                
-                <!-- 标题区：极简留白 -->
-                <h2 id="modal-title" class="text-2xl sm:text-3xl font-black text-gray-800 tracking-wide mb-3">标题</h2>
-                
-                <!-- 一句话亮点：高级药丸设计 -->
-                <div id="modal-highlight" class="inline-block px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold shadow-sm border border-white/60 mb-6">
-                    一句话亮点
-                </div>
+            <!-- 动态内容注入区 -->
+            <div id="modal-dynamic-content" class="w-full flex-1 flex flex-col overflow-hidden relative z-10"></div>
 
-                <!-- 规则详情容器：包裹在一层更白的微磨砂容器里 -->
-                <div class="w-full space-y-3 bg-white/50 rounded-2xl p-4 sm:p-5 border border-white/50 shadow-inner" id="modal-rules">
-                    <!-- 动态规则注入点 -->
-                </div>
-
-                <!-- 底部弱化提示 -->
-                <div class="mt-6 text-[10px] sm:text-xs text-gray-500/80 font-medium" id="modal-notice">
-                    * 现场活动以实际安排为准
-                </div>
-            </div>
         </div>
     </div>
 
@@ -283,7 +280,6 @@
                 hasStarted = true;
                 checkOrientation();
             });
-
             document.addEventListener("WeixinJSBridgeReady", function() {
                 introVideo.play().catch(() => {});
             }, false);
@@ -293,9 +289,199 @@
         window.addEventListener('orientationchange', () => { setTimeout(checkOrientation, 200); });
         viewIntro.style.display = 'flex';
 
-        // === 热区与弹窗文案数据 ===
+        // ==========================================
+        // 🌟 核心数据字典与长篇 HTML 配置区
+        // ==========================================
+        
+        // 共享的底部 HTML
+        const commonFooterHtml = `
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">天气与活动调整</h4>
+                <ul class="list-disc pl-4 space-y-1 text-gray-700">
+                    <li>遇大风、降雨（含小雨）、雷电等恶劣天气，活动将暂停开放，请以现场公告及官方渠道通知为准。</li>
+                    <li>如遇不可抗力或活动临时调整，主办方将及时通过官方平台发布信息。</li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">其他说明</h4>
+                <p class="text-gray-700">活动期间请遵守现场秩序，听从工作人员管理。入场参加活动即视为您已仔细阅读、充分理解并同意遵守本活动的全部规则及免责条款。主办方在法律允许范围内保留对活动规则及须知的最终解释权。感谢您的理解与配合，祝您游玩愉快。</p>
+            </div>
+        `;
+
+        const climbingRulesHtml = `
+            <div class="bg-orange-100/80 p-3 rounded-xl text-orange-900 border border-orange-200/60">
+                <strong>【重要提示】</strong> 为确保活动安全有序进行，保障每一位参与者的人身安全与良好体验，请您在入场前仔细阅读本须知。入场即视为您已充分理解并自愿接受以下全部条款。
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">1. 开放时间</h4>
+                <p class="text-gray-600">周六周日及节假日：10:00 - 19:00</p>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">2. 参与流程</h4>
+                <ul class="list-disc pl-4 space-y-1 text-gray-700">
+                    <li><strong>现场报名：</strong>有意参与的用户请在现场工作人员处登记报名，按报名顺序依次体验。</li>
+                    <li><strong>教学安排：</strong>品牌方邀请专业攀岩教练在场提供基础教学与帮助，每次教学时长不超过15分钟。</li>
+                    <li><strong>体验时长：</strong>每人每次体验（含教学）不超过15分钟，结束后如需再次参与，请重新报名排队。</li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">3. 入场条件与限制声明</h4>
+                <p class="font-bold text-red-600 mb-2">参与者须确认自身健康状况适宜攀岩运动，隐瞒病史执意参与者，一切后果自负。</p>
+                <ol class="list-decimal pl-4 space-y-1 text-gray-700">
+                    <li>仅限身高1.2米(含)以上的游客进入，每位儿童须由至少一名成人全程陪同。</li>
+                    <li>强制签署协议：入场前须现场签署《攀岩墙免责协议》，未签署者一律不得进入。未成年人须由监护人代为签署。</li>
+                    <li>游客须具备参与本活动的良好身体状况，能够独立行动并遵守安全规则，未成年人须在监护人全程陪同和看管下入场。</li>
+                    <li>有下列情况禁止入场：患有心脏病、高血压、癫痫、传染病、精神疾病等不适宜剧烈运动的疾病者；存在发烧、感冒、咳喘传染性皮肤病、呕吐、腹泻等不适合参与本活动的身体状况者；醉酒、情绪失控或不服从管理者。孕妇、老人及行动不便者。</li>
+                    <li>着装要求：(1) 须穿着适合运动的服装及鞋履（建议攀岩鞋或运动鞋） (2) 禁止穿着拖鞋、高跟鞋、裙装等不适合运动的装束。</li>
+                </ol>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">4. 风险告知与责任豁免</h4>
+                <ol class="list-decimal pl-4 space-y-2 text-gray-700">
+                    <li><strong>设施性质说明：</strong>攀岩墙为徐汇滨江公共设施，品牌方仅在此组织体验活动，不参与设施的建设、维护与管理。参与者须充分知悉并自愿承担使用公共设施可能产生的风险。</li>
+                    <li><strong>运动风险告知：</strong>攀岩运动属于【高风险体育运动】，可能存在以下危险：(1) 跌落、滑坠导致的骨折、扭伤、擦伤 (2) 碰撞导致的软组织损伤或脑震荡 (3) 绳索、装备使用不当导致的意外伤害 (4) 因体力不支、技术失误导致的突发状况</li>
+                    <li><strong>教练服务范围：</strong>(1) 现场教练仅提供【基础技术指导与安全提示】 (2) 不提供一对一全程保护服务 (3) 参与者须在指导下【自主完成攀爬】，并全程对自身安全负责</li>
+                    <li><strong>参与者义务：</strong>(1) 严格遵守教练及工作人员的安全指引 (2) 未经允许不得擅自攀爬、越线或进行危险动作 (3) 发现身体不适或装备异常须立即停止活动并报告</li>
+                    <li><strong>责任豁免条款：</strong>凡因以下情形导致的任何人身伤害或财产损失，品牌方不承担任何法律责任：(1) 参与者隐瞒健康状况、年龄不符或监护人未陪同（未成年人） (2) 参与者未遵守安全指引、擅自行动或操作不当 (3) 参与者未正确使用安全装备或拒绝接受教练指导 (4) 公共设施本身存在的设计缺陷或维护问题 (5) 不可抗力因素</li>
+                </ol>
+            </div>
+            ${commonFooterHtml}
+        `;
+
+        const bubbleRulesHtml = `
+            <div class="bg-orange-100/80 p-3 rounded-xl text-orange-900 border border-orange-200/60">
+                <strong>【重要提示】</strong> 为确保活动安全有序进行，保障每一位参与者的人身安全与良好体验，请您在入场前仔细阅读本须知。入场即视为您已充分理解并自愿接受以下全部条款。
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-2">1. 开放时间</h4>
+                <div class="overflow-hidden rounded-xl border border-orange-200 mb-2">
+                    <table class="w-full text-center text-[10px] sm:text-xs">
+                        <thead class="bg-orange-200/50 text-orange-800">
+                            <tr><th class="py-2 px-1 border-r border-orange-200">泡泡乐园</th><th class="py-2 px-1 border-r border-orange-200">工作日</th><th class="py-2 px-1">周末及节假日</th></tr>
+                        </thead>
+                        <tbody class="text-gray-600 bg-white">
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第一场</td><td class="py-1.5 border-r border-orange-100">14:00 - 14:40</td><td class="py-1.5">10:00 - 10:40</td></tr>
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第二场</td><td class="py-1.5 border-r border-orange-100">15:00 - 15:40</td><td class="py-1.5">11:00 - 11:40</td></tr>
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第三场</td><td class="py-1.5 border-r border-orange-100">16:00 - 16:40</td><td class="py-1.5">13:00 - 13:40</td></tr>
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第四场</td><td class="py-1.5 border-r border-orange-100">18:00 - 18:40</td><td class="py-1.5">14:00 - 14:40</td></tr>
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第五场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">15:00 - 15:40</td></tr>
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第六场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">16:00 - 16:40</td></tr>
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第七场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">18:00 - 18:40</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-gray-600 text-xs mt-2">体验时间：整点开始，限时40分钟。<br>清场与清洁：结束后进行20分钟清场，用于场地清洁、设施整理及秩序维护。<br>*清场期间暂停入场，请配合现场工作人员指引有序离场。</p>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">2. 入场条件与限制</h4>
+                <ol class="list-decimal pl-4 space-y-1 text-gray-700">
+                    <li>仅限身高1.2米(含)以上, 70周岁以下的游客进入，每位儿童须由至少一名成人全程陪同。</li>
+                    <li>游客须具备参与本活动的良好身体状况，能够独立行动并遵守安全规则，未成年人须在监护人全程陪同和看管下入场。</li>
+                    <li>有下列情况禁止入场: 患有心脏病、高血压、癫痫、传染病、精神疾病等不适宜剧烈活动的疾病者；存在发烧、感冒、咳喘传染性皮肤病、呕吐、腹泻等不适合参与本活动的身体状况者；醉酒、情绪失控或不服从管理者；孕妇、老人及行动不便者。</li>
+                    <li>为确保公共安全，工作人员有权根据游客及现场情况进行安全评估，并有权拒绝不符合入场条件者入内。</li>
+                    <li>场地内设有人数上限，每个场次最多可同时容纳60人，达到承载量后将暂停入场，满员后请听从现场工作人员的安排。</li>
+                </ol>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">3. 安全注意事项</h4>
+                <p class="text-gray-700">入场前请仔细阅读现场安全提示，遵守设施使用规则。请勿在池内奔跑、推搡、跳跃或进行任何危险动作。请妥善保管个人物品，贵重物品建议寄存或随身看管。请勿携带尖锐物品、食物、饮料及宠物入场。如遇身体不适或突发情况，请立即联系现场工作人员。</p>
+            </div>
+            ${commonFooterHtml}
+        `;
+
+        const rcRulesHtml = `
+            <div class="bg-orange-100/80 p-3 rounded-xl text-orange-900 border border-orange-200/60">
+                <strong>【重要提示】</strong> 为确保活动安全有序进行，保障每一位参与者的人身安全与良好体验，请您在入场前仔细阅读本须知。入场即视为您已充分理解并自愿接受以下全部条款。
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-2">1. 开放时间</h4>
+                <div class="overflow-hidden rounded-xl border border-orange-200 mb-2">
+                    <table class="w-full text-center text-[10px] sm:text-xs">
+                        <thead class="bg-orange-200/50 text-orange-800">
+                            <tr><th class="py-2 px-1 border-r border-orange-200">RC车区</th><th class="py-2 px-1 border-r border-orange-200">工作日</th><th class="py-2 px-1">周末及节假日</th></tr>
+                        </thead>
+                        <tbody class="text-gray-600 bg-white">
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第一场</td><td class="py-1.5 border-r border-orange-100">14:00 - 14:40</td><td class="py-1.5">10:00 - 10:40</td></tr>
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第二场</td><td class="py-1.5 border-r border-orange-100">15:00 - 15:40</td><td class="py-1.5">11:00 - 11:40</td></tr>
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第三场</td><td class="py-1.5 border-r border-orange-100">16:00 - 16:40</td><td class="py-1.5">13:00 - 13:40</td></tr>
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第四场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">14:00 - 14:40</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-gray-600 text-xs mt-2">体验时间：整点开始，限时40分钟。<br>清场与清洁：结束后进行20分钟清场，用于场地清洁、设施整理及秩序维护。<br>*清场期间暂停入场，请配合现场工作人员指引有序离场。</p>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">2. 入场条件与限制</h4>
+                <ol class="list-decimal pl-4 space-y-1 text-gray-700">
+                    <li>仅限身高1.2米(含)以上的游客进入，每位儿童须由至少一名成人全程陪同。</li>
+                    <li>游客须具备参与本活动的良好身体状况，能够独立行动并遵守安全规则，未成年人须在监护人全程陪同和看管下入场。</li>
+                    <li>有下列情况禁止入场: 患有心脏病、高血压、癫痫、传染病、精神疾病等不适宜剧烈活动的疾病者；存在发烧、感冒、咳喘传染性皮肤病、呕吐、腹泻等不适合参与本活动的身体状况者；醉酒、情绪失控或不服从管理者；孕妇、老人及行动不便者。</li>
+                    <li>为确保公共安全，工作人员有权根据游客及现场情况进行安全评估，并有权拒绝不符合入场条件者入内。</li>
+                    <li>场地内设有人数上限，每个场次最多可同时容纳10人，达到承载量后将暂停入场，满员后请听从现场工作人员的安排。</li>
+                </ol>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">3. 设备与游玩规则</h4>
+                <ol class="list-decimal pl-4 space-y-1 text-gray-700">
+                    <li><strong>设备提供：</strong>品牌方提供符合安全标准的限速遥控车供现场体验（数量5辆），参与者无须自备设备。</li>
+                    <li><strong>体验时长：</strong>每人每次体验时长为40分钟，请按时结束离场，以便后续参与者使用。如需再次体验，请重新排队报名。</li>
+                    <li><strong>操作区域：</strong>请在指定赛道或操作区域内操控遥控车，严禁将车辆驶出规定范围。</li>
+                    <li><strong>操作规范：</strong>请文明操控，避免故意撞击、追逐他人车辆或进行任何危险操作。</li>
+                    <li><strong>设备损坏赔偿：</strong>请爱护公共设备，若因人为不当操作或故意损坏导致设备故障，须照价赔偿。</li>
+                </ol>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">4. 安全须知</h4>
+                <p class="text-gray-700">入场前请仔细阅读本须知，严格遵守现场工作人员的安全指引。严禁在操控区内奔跑、推搡或擅自进入赛道捡拾车辆，如需帮助请联系工作人员妥善保管个人物品。请随身携带或寄存，场地不承担物品保管责任。严禁携带食物饮料进入操作区域，以免污染或损坏设备。如遇设备故障、失控或其他异常情况，请立即停止使用并通知工作人员处理。严禁自行拆卸或维修设备。体验过程中请时刻注意周围环境及他人安全，避免发生碰撞事故。</p>
+            </div>
+            ${commonFooterHtml}
+        `;
+
+        const skateRulesHtml = `
+            <div class="bg-orange-100/80 p-3 rounded-xl text-orange-900 border border-orange-200/60">
+                <strong>【重要提示】</strong> 为确保活动安全有序进行，保障每一位参与者的人身安全与良好体验，请您在入场前仔细阅读本须知。入场即视为您已充分理解并自愿接受以下全部条款。
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-2">1. 开放时间</h4>
+                <div class="overflow-hidden rounded-xl border border-orange-200 mb-2">
+                    <table class="w-full text-center text-[10px] sm:text-xs">
+                        <thead class="bg-orange-200/50 text-orange-800">
+                            <tr><th class="py-2 px-1 border-r border-orange-200">滑板区</th><th class="py-2 px-1 border-r border-orange-200">工作日</th><th class="py-2 px-1">周末及节假日</th></tr>
+                        </thead>
+                        <tbody class="text-gray-600 bg-white">
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第一场</td><td class="py-1.5 border-r border-orange-100">17:00 - 17:40</td><td class="py-1.5">15:00 - 15:40</td></tr>
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第二场</td><td class="py-1.5 border-r border-orange-100">18:00 - 18:40</td><td class="py-1.5">16:00 - 16:40</td></tr>
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第三场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">17:00 - 17:40</td></tr>
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第四场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">18:00 - 18:40</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">2. 入场条件与限制</h4>
+                <ol class="list-decimal pl-4 space-y-1 text-gray-700">
+                    <li><strong>装备要求（强制）：</strong>参与者须自备符合安全标准的滑板，现场不提供滑板租赁服务。滑板须满足以下条件：(1) 板面完好，无断裂、分层或严重磨损 (2) 轮轴稳固，支架无松动，轮子转动正常 (3) 砂纸防滑面无大面积脱落 (4) 整体无破损、无改装安全隐患。入场前须经工作人员检查装备合格后方可进入。不合格装备禁止入场。</li>
+                    <li><strong>技术基础要求（强制）：</strong>参与者须具备一定的滑板基础与滑行经验，能够独立完成以下基本动作：(1) 平稳上板与直线滑行 (2) 有效控制速度与方向 (3) 安全制动与紧急停板 (4) 摔倒时的自我保护动作。本区域不设任何教学指导服务，零基础者谢绝入场。</li>
+                    <li><strong>年龄与监护要求：</strong>(1) 建议12周岁及以上人员参与 (2) 未满18周岁者须由法定监护人全程陪同入场，监护人须全程保持有效看护，不得擅自离开 (3) 监护人须代为签署免责协议，并承担被监护人的全部监护责任。</li>
+                    <li><strong>健康状况：</strong>参与者须身体健康，无心脏病、高血压、癫痫、骨骼关节损伤、眩晕症等不适宜剧烈运动的疾病史或身体状况。特别提醒：隐瞒健康状况、技术能力不足或装备不合格执意入场者，一切后果自负。</li>
+                    <li>场地内设有人数上限，每个场次最多可同时容纳10人，达到承载量后将暂停入场，满员后请听从现场工作人员的安排。</li>
+                </ol>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">3. 安全规范与行为准则</h4>
+                <ol class="list-decimal pl-4 space-y-1 text-gray-700">
+                    <li><strong>强制签署协议：</strong>入场前须现场签署《滑板区免责协议》，未签署者一律不得进入。未成年人须由监护人代为签署。</li>
+                    <li><strong>防护装备建议：</strong>强烈建议佩戴以下专业防护装备：(1) 头盔（必备） (2) 护膝、护肘、护腕（建议全套佩戴）。未佩戴防护装备者，视为自愿承担由此增加的受伤风险。</li>
+                    <li><strong>场地使用规则：</strong>(1) 严格遵守场地标识及工作人员指引，在规定区域内滑行，严禁进入非滑行区域 (2) 滑行前须观察周围环境，确保安全后方可起步 (3) 严禁在滑行过程中佩戴耳机，手持手机或其他分散注意力的物品 (4) 严禁在场地内追逐打闹、进行危险动作（包括但不限于腾空跳跃、高速俯冲、逆向滑行）或妨碍他人滑行 (5) 摔倒后须迅速撤离滑行区域，避免二次碰撞。</li>
+                    <li><strong>个人物品保管：</strong>请妥善保管个人物品，贵重物品建议寄存或随身看管。场地不承担任何物品保管责任，遗失或损坏概不负责。</li>
+                </ol>
+            </div>
+            ${commonFooterHtml}
+        `;
+
         const zonesData = {
             'entrance': {
+                type: 'standard',
                 title: '👦 核心出入口',
                 themeColor: '#EF4444', highlightColor: '#FEE2E2', highlightText: '#DC2626',
                 highlight: '领取你的专属热爱地图！',
@@ -306,7 +492,46 @@
                 ],
                 notice: '小提示：地图限量发放，先到先得哦~'
             },
+            'climbing': {
+                type: 'flow', 
+                title: '🐻 B区 攀岩墙',
+                themeColor: '#D97706', 
+                highlight: '喜欢攀岩的孩子不会下坠，只会在下坠时开始飞翔',
+                subHighlight: 'A child who loves climbing never falls— They just start flying.',
+                rulesTitle: '[B区攀岩墙] · 入场安全须知',
+                rulesHtml: climbingRulesHtml
+            },
+            'bubble': {
+                type: 'flow', 
+                title: '🐙 I区 泡泡乐园',
+                themeColor: '#D97706', 
+                highlight: '每一种热爱都是柔软的触点<br>愿你在海洋球的回弹中快乐徜徉',
+                subHighlight: 'Every passion starts with a gentle touch—<br>Let joy bounce back at.',
+                rulesTitle: '[I区泡泡乐园] · 入场安全须知',
+                rulesHtml: bubbleRulesHtml
+            },
+            'powerblock': {
+                id: 'powerblock',
+                type: 'multi-flow', 
+                title: '🐘 J区 动力街区',
+                themeColor: '#D97706', 
+                highlight: '心怀热爱，自可翻越万千阻碍<br>怀揣勇气，便能让热爱乘风而行',
+                subHighlight: 'With passion, all barriers fall. With courage,<br>your passion sails beyond them all.',
+                options: [
+                    {
+                        btnText: '🏎️ RC遥控车区入场须知',
+                        rulesTitle: '[J区动力街区-RC遥控车区] · 入场安全须知',
+                        rulesHtml: rcRulesHtml
+                    },
+                    {
+                        btnText: '🛹 滑板区入场须知',
+                        rulesTitle: '[J区动力街区-滑板区] · 入场安全须知',
+                        rulesHtml: skateRulesHtml
+                    }
+                ]
+            },
             'stage': {
+                type: 'standard',
                 title: '🐸 露营互动区',
                 themeColor: '#F59E0B', highlightColor: '#FEF3C7', highlightText: '#D97706',
                 highlight: '寻找热爱亮点，参与高燃互动！',
@@ -317,6 +542,7 @@
                 ]
             },
             'shop': {
+                type: 'standard',
                 title: '🐰 热爱买手店',
                 themeColor: '#10B981', highlightColor: '#D1FAE5', highlightText: '#059669',
                 highlight: '总有一款是你热爱！',
@@ -326,6 +552,7 @@
                 ]
             },
             'pet': {
+                type: 'standard',
                 title: '🐧 宠物治愈区',
                 themeColor: '#3B82F6', highlightColor: '#DBEAFE', highlightText: '#2563EB',
                 highlight: '带上毛孩子一起嗨！',
@@ -341,31 +568,141 @@
         const modal = document.getElementById('info-modal');
         const modalOverlay = document.getElementById('modal-overlay');
         const modalCard = document.getElementById('modal-card');
+        const modalDynamicContent = document.getElementById('modal-dynamic-content');
 
+        // ==========================================
+        // 🌟 动态渲染函数：三种不同的工作流
+        // ==========================================
+
+        function renderStandardModal(data) {
+            document.getElementById('modal-glow').style.setProperty('--theme-color', data.themeColor);
+            const rulesHtml = data.rules.map(rule => `
+                <div class="flex items-start">
+                    <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0 mt-0.5" style="color: ${data.themeColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                    <span class="text-xs sm:text-sm text-gray-700 leading-relaxed">${rule}</span>
+                </div>
+            `).join('');
+
+            const noticeHtml = data.notice ? `<div class="mt-6 text-[10px] sm:text-xs text-gray-500/80 font-medium">* ${data.notice}</div>` : '';
+
+            modalDynamicContent.innerHTML = `
+                <div class="p-6 sm:p-8 overflow-y-auto flex flex-col items-center fade-in">
+                    <h2 class="text-2xl sm:text-3xl font-black text-gray-800 tracking-wide mb-3">${data.title}</h2>
+                    <div class="inline-block px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold shadow-sm border border-white/60 mb-6" style="background-color: ${data.highlightColor}; color: ${data.highlightText};">
+                        ${data.highlight}
+                    </div>
+                    <div class="w-full space-y-3 bg-white/50 rounded-2xl p-4 sm:p-5 border border-white/50 shadow-inner">
+                        ${rulesHtml}
+                    </div>
+                    ${noticeHtml}
+                </div>
+            `;
+        }
+
+        function renderFlowStep1(data) {
+            document.getElementById('modal-glow').style.setProperty('--theme-color', data.themeColor);
+            modalDynamicContent.innerHTML = `
+                <div class="p-6 sm:p-8 flex flex-col items-center justify-center min-h-[40vh] fade-in">
+                    <h2 class="text-3xl sm:text-4xl font-black text-orange-600 tracking-widest mb-6 drop-shadow-sm">${data.title}</h2>
+                    <div class="text-center space-y-2 mb-10">
+                        <p class="text-lg sm:text-xl font-bold text-orange-800 leading-relaxed">${data.highlight}</p>
+                        <p class="text-xs sm:text-sm text-orange-600/80 font-medium leading-relaxed">${data.subHighlight}</p>
+                    </div>
+                    <button id="btn-read-safety" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3.5 px-6 rounded-2xl shadow-[0_8px_20px_rgba(249,115,22,0.3)] transform transition active:scale-95 text-sm sm:text-base">
+                        📄 阅读入场安全须知
+                    </button>
+                </div>
+            `;
+            document.getElementById('btn-read-safety').addEventListener('click', () => {
+                renderFlowStep2(data.rulesTitle, data.rulesHtml);
+            });
+        }
+
+        // 大象专属：多分支选择流
+        function renderMultiFlowStep1(data) {
+            document.getElementById('modal-glow').style.setProperty('--theme-color', data.themeColor);
+            
+            const buttonsHtml = data.options.map((opt, index) => `
+                <button onclick="window.triggerMultiOption('${data.id}', ${index})" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3.5 px-6 rounded-2xl shadow-[0_8px_20px_rgba(249,115,22,0.3)] transform transition active:scale-95 text-sm sm:text-base mb-3.5">
+                    ${opt.btnText}
+                </button>
+            `).join('');
+
+            modalDynamicContent.innerHTML = `
+                <div class="p-6 sm:p-8 flex flex-col items-center justify-center min-h-[40vh] fade-in">
+                    <h2 class="text-3xl sm:text-4xl font-black text-orange-600 tracking-widest mb-6 drop-shadow-sm">${data.title}</h2>
+                    <div class="text-center space-y-2 mb-8">
+                        <p class="text-lg sm:text-xl font-bold text-orange-800 leading-relaxed">${data.highlight}</p>
+                        <p class="text-xs sm:text-sm text-orange-600/80 font-medium leading-relaxed">${data.subHighlight}</p>
+                    </div>
+                    <div class="w-full">
+                        ${buttonsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        // 供大象分支按钮点击调用的全局函数
+        window.triggerMultiOption = (zoneId, optionIndex) => {
+            const opt = zonesData[zoneId].options[optionIndex];
+            renderFlowStep2(opt.rulesTitle, opt.rulesHtml);
+        };
+
+        // 通用的 Step2: 长篇协议阅读器
+        function renderFlowStep2(rulesTitle, rulesHtml) {
+            modalDynamicContent.innerHTML = `
+                <div class="flex flex-col h-full fade-in max-h-[85dvh]">
+                    <div class="pt-6 pb-3 px-6 text-center border-b border-orange-200/50 flex-shrink-0">
+                        <h3 class="text-lg sm:text-xl font-black text-orange-800 leading-snug">${rulesTitle}</h3>
+                    </div>
+                    <div class="p-5 sm:p-6 overflow-y-auto custom-scrollbar flex-1 text-xs sm:text-sm text-gray-800 leading-relaxed space-y-5 bg-orange-50/50">
+                        ${rulesHtml}
+                    </div>
+                    <div class="p-4 bg-white/80 backdrop-blur-md border-t border-gray-100 flex-shrink-0 rounded-b-[32px]">
+                        <button id="btn-accept-rules" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transform transition active:scale-95 text-sm sm:text-base flex justify-center items-center">
+                            我已阅读并接受此须知，为自己安全负责
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('btn-accept-rules').addEventListener('click', renderPassStep3);
+        }
+
+        // 通用的 Step3: 核销绿码/通行证
+        function renderPassStep3() {
+            document.getElementById('modal-glow').style.setProperty('--theme-color', '#10B981');
+            const now = new Date();
+            const timeString = `${now.getMonth()+1}月${now.getDate()}日 ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+            modalDynamicContent.innerHTML = `
+                <div class="p-8 flex flex-col items-center justify-center min-h-[45vh] fade-in">
+                    <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 flex items-center justify-center mb-6 animate-scan bg-green-50">
+                        <svg class="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-black text-green-600 mb-2">安全须知已确认</h2>
+                    <p class="text-sm font-bold text-gray-500 tracking-widest mb-6 border-b border-gray-200 pb-2">TIME: ${timeString}</p>
+                    <div class="bg-green-50 text-green-800 px-6 py-4 rounded-2xl text-center w-full border border-green-200 shadow-inner">
+                        <p class="font-bold text-base sm:text-lg">请向现场工作人员出示此界面</p>
+                        <p class="text-xs sm:text-sm mt-1 opacity-80">凭此界面方可入场体验</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // === 点击事件绑定 ===
         hotspots.forEach(hotspot => {
             hotspot.addEventListener('click', () => {
-                const data = zonesData[hotspot.getAttribute('data-zone')];
+                const zoneId = hotspot.getAttribute('data-zone');
+                const data = zonesData[zoneId];
+                
                 if (data) {
-                    document.getElementById('modal-title').innerText = data.title;
-                    const elHighlight = document.getElementById('modal-highlight');
-                    elHighlight.innerText = data.highlight;
-                    
-                    // 🌟 给弹窗的呼吸灯注入当前的“主题色”
-                    document.getElementById('modal-glow').style.setProperty('--theme-color', data.themeColor);
-                    
-                    elHighlight.style.backgroundColor = data.highlightColor;
-                    elHighlight.style.color = data.highlightText;
-                    
-                    document.getElementById('modal-rules').innerHTML = data.rules.map(rule => `
-                        <div class="flex items-start">
-                            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0 mt-0.5" style="color: ${data.themeColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-                            <span class="text-xs sm:text-sm text-gray-700 leading-relaxed">${rule}</span>
-                        </div>
-                    `).join('');
-
-                    const elNotice = document.getElementById('modal-notice');
-                    if (data.notice) { elNotice.innerText = data.notice; elNotice.style.display = 'block'; } 
-                    else { elNotice.style.display = 'none'; }
+                    if (data.type === 'flow') {
+                        renderFlowStep1(data); // 熊、章鱼的单流程
+                    } else if (data.type === 'multi-flow') {
+                        renderMultiFlowStep1(data); // 大象的多分支流程
+                    } else {
+                        renderStandardModal(data); // 其他小动物的标准弹窗
+                    }
 
                     modalCard.classList.remove('modal-enter');
                     void modalCard.offsetWidth; 
@@ -375,7 +712,7 @@
             });
         });
 
-        // 🌟 完全移除了 X 按钮，现在只有点击遮罩层才能关闭
+        // 点击遮罩层关闭弹窗
         const closeModal = () => modal.classList.add('hidden');
         modalOverlay.addEventListener('click', closeModal);
     </script>
