@@ -161,9 +161,17 @@
     <div id="view-map" class="view-layer" style="display: none; align-items: flex-start;">
         <div class="scroll-container">
             <div class="map-wrapper">
-                <img src="assets/map-horizontal-2.jpg" alt="活动地图" class="map-bg-img" onerror="console.error('找不到地图背景，请检查路径')">
+                
+                <!-- 🌟 更换为新的 webp 地图 -->
+                <img src="assets/map-horizontal.webp" alt="活动地图" class="map-bg-img" onerror="console.error('找不到地图背景，请检查路径')">
 
-                <!-- IPs -->
+                <!-- 🌟 新增：A区 热爱启程 (痛车) - 暂定放在最左侧，你可以用网格微调 -->
+                <div class="hotspot-ip z-20" style="top: 45%; left: 4%;" data-zone="departure">
+                    <img src="assets/ip_tongche.webp" alt="痛车" class="w-40 sm:w-56 object-contain animate-sway drop-shadow-xl" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="fallback-icon animate-sway hidden">🚙</div>
+                </div>
+
+                <!-- 1. 男孩 Boy -->
                 <div class="hotspot-ip z-20" style="top: 44%; left: 11%;" data-zone="entrance">
                     <img src="assets/ip-boy.png" alt="男孩" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway hidden">👦</div>
@@ -329,6 +337,13 @@
         const skateRulesHtml = `<div class="bg-orange-100/80 p-3 rounded-xl text-orange-900 border border-orange-200/60"><strong>【重要提示】</strong> 为确保活动安全有序进行，保障每一位参与者的人身安全与良好体验，请您在入场前仔细阅读本须知。入场即视为您已充分理解并自愿接受以下全部条款。</div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-2">1. 开放时间</h4><div class="overflow-hidden rounded-xl border border-orange-200 mb-2"><table class="w-full text-center text-[10px] sm:text-xs"><thead class="bg-orange-200/50 text-orange-800"><tr><th class="py-2 px-1 border-r border-orange-200">滑板区</th><th class="py-2 px-1 border-r border-orange-200">工作日</th><th class="py-2 px-1">周末及节假日</th></tr></thead><tbody class="text-gray-600 bg-white"><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第一场</td><td class="py-1.5 border-r border-orange-100">17:00 - 17:40</td><td class="py-1.5">15:00 - 15:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第二场</td><td class="py-1.5 border-r border-orange-100">18:00 - 18:40</td><td class="py-1.5">16:00 - 16:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第三场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">17:00 - 17:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第四场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">18:00 - 18:40</td></tr></tbody></table></div></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">2. 入场条件与限制</h4><ol class="list-decimal pl-4 space-y-1 text-gray-700"><li><strong>装备要求（强制）：</strong>参与者须自备符合安全标准的滑板，现场不提供滑板租赁服务。滑板须满足以下条件：(1) 板面完好，无断裂、分层或严重磨损 (2) 轮轴稳固，支架无松动，轮子转动正常 (3) 砂纸防滑面无大面积脱落 (4) 整体无破损、无改装安全隐患。入场前须经工作人员检查装备合格后方可进入。不合格装备禁止入场。</li><li><strong>技术基础要求（强制）：</strong>参与者须具备一定的滑板基础与滑行经验，能够独立完成以下基本动作：(1) 平稳上板与直线滑行 (2) 有效控制速度与方向 (3) 安全制动与紧急停板 (4) 摔倒时的自我保护动作。本区域不设任何教学指导服务，零基础者谢绝入场。</li><li><strong>年龄与监护要求：</strong>(1) 建议12周岁及以上人员参与 (2) 未满18周岁者须由法定监护人全程陪同入场，监护人须全程保持有效看护，不得擅自离开 (3) 监护人须代为签署免责协议，并承担被监护人的全部监护责任。</li><li><strong>健康状况：</strong>参与者须身体健康，无心脏病、高血压、癫痫、骨骼关节损伤、眩晕症等不适宜剧烈运动的疾病史或身体状况。特别提醒：隐瞒健康状况、技术能力不足或装备不合格执意入场者，一切后果自负。</li><li>场地内设有人数上限，每个场次最多可同时容纳10人，达到承载量后将暂停入场，满员后请听从现场工作人员的安排。</li></ol></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">3. 安全规范与行为准则</h4><ol class="list-decimal pl-4 space-y-1 text-gray-700"><li><strong>强制签署协议：</strong>入场前须现场签署《滑板区免责协议》，未签署者一律不得进入。未成年人须由监护人代为签署。</li><li><strong>防护装备建议：</strong>强烈建议佩戴以下专业防护装备：(1) 头盔（必备） (2) 护膝、护肘、护腕（建议全套佩戴）。未佩戴防护装备者，视为自愿承担由此增加的受伤风险。</li><li><strong>场地使用规则：</strong>(1) 严格遵守场地标识及工作人员指引，在规定区域内滑行，严禁进入非滑行区域 (2) 滑行前须观察周围环境，确保安全后方可起步 (3) 严禁在滑行过程中佩戴耳机，手持手机或其他分散注意力的物品 (4) 严禁在场地内追逐打闹、进行危险动作（包括但不限于腾空跳跃、高速俯冲、逆向滑行）或妨碍他人滑行 (5) 摔倒后须迅速撤离滑行区域，避免二次碰撞。</li><li><strong>个人物品保管：</strong>请妥善保管个人物品，贵重物品建议寄存或随身看管。场地不承担任何物品保管责任，遗失或损坏概不负责。</li></ol></div>${commonFooterHtml}`;
 
         const zonesData = {
+            'departure': { 
+                type: 'intro', 
+                title: 'A区 热爱启程', 
+                themeColor: '#EA580C', 
+                highlight: '软萌IP痛车亮相<br>从这里开启你的热爱之旅', 
+                subHighlight: 'Cute anime cars debut—start your passion<br>Journey here.' 
+            },
             'entrance': { type: 'standard', title: '👦 核心出入口', themeColor: '#EF4444', highlightColor: '#FEE2E2', highlightText: '#DC2626', highlight: '领取你的专属热爱地图！', rules: ['📍 <strong>Step 1</strong>：扫码关注官方账号', '🗺️ <strong>Step 2</strong>：向工作人员领取纸质地图', '🎁 <strong>Step 3</strong>：开启你的快闪探索之旅！'], notice: '小提示：地图限量发放，先到先得哦~' },
             'climbing': { type: 'flow', title: '🐻 B区 攀岩墙', themeColor: '#D97706', highlight: '喜欢攀岩的孩子不会下坠，只会在下坠时开始飞翔', subHighlight: 'A child who loves climbing never falls— They just start flying.', rulesTitle: '[B区攀岩墙] · 入场安全须知', rulesHtml: climbingRulesHtml },
             'bubble': { type: 'flow', title: '🐙 I区 泡泡乐园', themeColor: '#D97706', highlight: '每一种热爱都是柔软的触点<br>愿你在海洋球的回弹中快乐徜徉', subHighlight: 'Every passion starts with a gentle touch—<br>Let joy bounce back at.', rulesTitle: '[I区泡泡乐园] · 入场安全须知', rulesHtml: bubbleRulesHtml },
@@ -693,6 +708,22 @@
             `;
         }
 
+        // 🌟 新增：纯介绍型弹窗（用于 A区 痛车）
+        function renderIntroModal(data) {
+            document.getElementById('modal-glow').style.setProperty('--theme-color', data.themeColor);
+            modalDynamicContent.innerHTML = `
+                <div class="p-6 sm:p-8 flex flex-col items-center justify-center min-h-[40vh] fade-in">
+                    <div class="my-auto w-full flex flex-col items-center">
+                        <h2 class="text-3xl sm:text-4xl font-black text-orange-600 tracking-widest mb-6 drop-shadow-sm flex-shrink-0">${data.title}</h2>
+                        <div class="text-center space-y-4 mb-4 flex-shrink-0">
+                            <p class="text-lg sm:text-xl font-bold text-orange-800 leading-relaxed">${data.highlight}</p>
+                            <p class="text-xs sm:text-sm text-orange-600/80 font-medium leading-relaxed">${data.subHighlight}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         function renderFlowStep1(data) {
             document.getElementById('modal-glow').style.setProperty('--theme-color', data.themeColor);
             modalDynamicContent.innerHTML = `
@@ -797,7 +828,9 @@
                 const data = zonesData[zoneId];
                 
                 if (data) {
-                    if (data.type === 'flow') {
+                    if (data.type === 'intro') {
+                        renderIntroModal(data); // A区痛车专属
+                    } else if (data.type === 'flow') {
                         renderFlowStep1(data); 
                     } else if (data.type === 'multi-flow') {
                         renderMultiFlowStep1(data); 
@@ -816,6 +849,54 @@
         // 统一的关闭弹窗事件
         const closeModal = () => modal.classList.add('hidden');
         modalOverlay.addEventListener('click', closeModal);
+
+        // ==========================================
+        // 🌟 黑科技：开发调试网格系统 (可随时开启/关闭)
+        // ==========================================
+        const gridOverlay = document.createElement('div');
+        gridOverlay.id = 'debug-grid';
+        gridOverlay.className = 'absolute inset-0 pointer-events-none z-[100] hidden';
+        
+        // 绘制 L (Left) 垂直线，每 5% 一条
+        for (let i = 5; i < 100; i += 5) {
+            gridOverlay.innerHTML += `<div class="absolute top-0 bottom-0 border-l border-red-500/50 border-dashed flex flex-col justify-start pt-2" style="left: ${i}%;"><span class="text-red-600 text-[10px] font-black bg-white/80 px-0.5 mt-1 block drop-shadow-sm ml-0.5">L:${i}</span></div>`;
+        }
+        // 绘制 T (Top) 水平线，每 10% 一条
+        for (let i = 10; i < 100; i += 10) {
+            gridOverlay.innerHTML += `<div class="absolute left-0 right-0 border-t border-blue-500/50 border-dashed flex flex-row justify-start pl-2" style="top: ${i}%;"><span class="text-blue-600 text-[10px] font-black bg-white/80 px-0.5 ml-1 block drop-shadow-sm mt-0.5">T:${i}</span></div>`;
+        }
+        document.querySelector('.map-wrapper').appendChild(gridOverlay);
+
+        const toggleBtn = document.createElement('button');
+        toggleBtn.className = 'fixed top-4 left-4 sm:top-6 sm:left-6 z-[999] bg-black/80 text-white text-xs sm:text-sm font-bold px-4 py-2 rounded-full shadow-xl border border-white/20 active:scale-95 transition hidden backdrop-blur-md';
+        toggleBtn.id = 'grid-toggle-btn';
+        toggleBtn.innerHTML = '📏 开启网格参考线';
+        document.body.appendChild(toggleBtn);
+
+        let gridVisible = false;
+        toggleBtn.addEventListener('click', () => {
+            gridVisible = !gridVisible;
+            gridOverlay.style.display = gridVisible ? 'block' : 'none';
+            toggleBtn.innerHTML = gridVisible ? '📏 关闭网格' : '📏 开启网格参考线';
+            toggleBtn.classList.toggle('bg-red-600', gridVisible);
+            toggleBtn.classList.toggle('bg-black/80', !gridVisible);
+        });
+
+        // 只有进入横屏地图模式才显示网格开关按钮
+        const originalCheckOrientation = checkOrientation;
+        checkOrientation = () => {
+            originalCheckOrientation();
+            if (hasStarted && window.innerWidth > window.innerHeight) {
+                toggleBtn.style.display = 'block';
+            } else {
+                toggleBtn.style.display = 'none';
+                gridVisible = false;
+                gridOverlay.style.display = 'none';
+                toggleBtn.innerHTML = '📏 开启网格参考线';
+                toggleBtn.classList.remove('bg-red-600');
+                toggleBtn.classList.add('bg-black/80');
+            }
+        }
     </script>
 </body>
 </html>
