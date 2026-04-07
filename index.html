@@ -63,7 +63,6 @@
         }
         .animate-pan { animation: pan 4s ease-in-out infinite; }
 
-        /* 🌟 为痛车专属定制的前后平移驾驶动画 */
         @keyframes drive {
             0%, 100% { transform: translateX(0px); }
             50% { transform: translateX(15px); }
@@ -124,8 +123,15 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            /* 🌟 新增：高级中心点偏移控制，完美兼容摇摆动画 */
+            --tx: 0px;
+            --ty: 0px;
+            --scale: 1;
+            transform: translate(var(--tx), var(--ty)) scale(var(--scale));
         }
-        .hotspot-ip:active { transform: scale(0.95); }
+        .hotspot-ip:active { 
+            --scale: 0.95; 
+        }
 
         .fallback-icon { font-size: 3rem; line-height: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); }
         
@@ -171,23 +177,26 @@
                 
                 <img src="assets/map-horizontal.webp" alt="活动地图" class="map-bg-img" onerror="console.error('找不到地图背景，请检查路径')">
 
-                <!-- 🌟 痛车 (应用 animate-drive 行驶动画) -->
-                <div class="hotspot-ip z-20" style="top: 45%; left: 4%;" data-zone="departure">
+                <!-- 🌟 痛车 (中心点 l5 t50) -->
+                <div class="hotspot-ip z-20" style="top: 50%; left: 5%; --tx: -50%; --ty: -50%;" data-zone="departure">
                     <img src="assets/ip_tongche.webp" alt="痛车" class="w-40 sm:w-56 object-contain animate-drive drop-shadow-xl" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-drive hidden">🚙</div>
                 </div>
 
-                <div class="hotspot-ip z-20" style="top: 44%; left: 11%;" data-zone="entrance">
+                <!-- 👦 男孩 (t75) -->
+                <div class="hotspot-ip z-20" style="top: 75%; left: 11%;" data-zone="entrance">
                     <img src="assets/ip-boy.png" alt="男孩" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway hidden">👦</div>
                 </div>
 
-                <div class="hotspot-ip z-20" style="top: -14%; left: 16%;" data-zone="climbing">
+                <!-- 🐻 熊1 (中心点 t20) -->
+                <div class="hotspot-ip z-20" style="top: 20%; left: 16%; --tx: -50%; --ty: -50%;" data-zone="climbing">
                     <img src="assets/ip-bear.png" alt="大熊" class="w-32 h-32 sm:w-48 sm:h-48 object-contain animate-sway delay-1 drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-1 hidden">🐻</div>
                 </div>
 
-                <div class="hotspot-ip z-20" style="top: 17%; left: 22%;" data-zone="stage">
+                <!-- 🐸 青蛙 (中心点 l25 t22) -->
+                <div class="hotspot-ip z-20" style="top: 22%; left: 25%; --tx: -50%; --ty: -50%;" data-zone="stage">
                     <img src="assets/ip-frog.png" alt="青蛙" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway delay-2 drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-2 hidden">🐸</div>
                 </div>
@@ -202,7 +211,8 @@
                     <div class="fallback-icon animate-sway delay-1 hidden">🐰</div>
                 </div>
 
-                <div class="hotspot-ip z-20" style="top: 19%; left: 64%;" data-zone="bubble">
+                <!-- 🐙 章鱼 (t24) -->
+                <div class="hotspot-ip z-20" style="top: 24%; left: 64%;" data-zone="bubble">
                     <img src="assets/ip-octopus.png" alt="章鱼" class="w-24 h-24 sm:w-36 sm:h-36 object-contain animate-sway delay-3 drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-3 hidden">🐙</div>
                 </div>
@@ -217,12 +227,8 @@
                     <div class="fallback-icon animate-pan delay-1 hidden">🚌</div>
                 </div>
 
-                <div class="hotspot-ip z-20" style="top: 2%; left: 79%;" data-zone="pet">
-                    <img src="assets/ip-penguin.png" alt="企鹅" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway delay-1 drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                    <div class="fallback-icon animate-sway delay-1 hidden">🐧</div>
-                </div>
-
-                <div class="absolute z-10 flex flex-col items-center pointer-events-none" style="top: 2%; left: 86%;">
+                <!-- 🐻 熊2 (l85和l90中间，即87.5%) 企鹅已移除 -->
+                <div class="absolute z-10 flex flex-col items-center pointer-events-none" style="top: 2%; left: 87.5%;">
                     <img src="assets/ip-bear.png" alt="小熊" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway delay-3 drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-3 hidden">🐻</div>
                 </div>
@@ -230,7 +236,7 @@
             </div>
         </div>
 
-        <!-- ================= 🌟 优化：大幅缩小的左下角固定时间 ================= -->
+        <!-- ================= 🌟 缩小后的左下角固定时间 ================= -->
         <div id="fixed-time-display" class="fixed left-2 bottom-3 sm:left-4 sm:bottom-4 z-40 flex flex-col transition-opacity duration-300 drop-shadow-md pointer-events-none" style="display: none;">
             <div class="text-orange-600 font-black text-[11px] sm:text-xs tracking-wider flex items-center mb-0.5">
                 <span class="mr-1 text-sm sm:text-base opacity-90">🕒</span> 
@@ -318,7 +324,7 @@
         viewIntro.style.display = 'flex';
 
         // ==========================================
-        // 🌟 1. 热区入场须知数据与安全协议配置
+        // 🌟 1. 热区数据与 HTML 配置区
         // ==========================================
         const commonFooterHtml = `
             <div>
@@ -336,7 +342,6 @@
 
         const climbingRulesHtml = `<div class="bg-orange-100/80 p-3 rounded-xl text-orange-900 border border-orange-200/60"><strong>【重要提示】</strong> 为确保活动安全有序进行，保障每一位参与者的人身安全与良好体验，请您在入场前仔细阅读本须知。入场即视为您已充分理解并自愿接受以下全部条款。</div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">1. 开放时间</h4><p class="text-gray-600">周六周日及节假日：10:00 - 19:00</p></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">2. 参与流程</h4><ul class="list-disc pl-4 space-y-1 text-gray-700"><li><strong>现场报名：</strong>有意参与的用户请在现场工作人员处登记报名，按报名顺序依次体验。</li><li><strong>教学安排：</strong>品牌方邀请专业攀岩教练在场提供基础教学与帮助，每次教学时长不超过15分钟。</li><li><strong>体验时长：</strong>每人每次体验（含教学）不超过15分钟，结束后如需再次参与，请重新报名排队。</li></ul></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">3. 入场条件与限制声明</h4><p class="font-bold text-red-600 mb-2">参与者须确认自身健康状况适宜攀岩运动，隐瞒病史执意参与者，一切后果自负。</p><ol class="list-decimal pl-4 space-y-1 text-gray-700"><li>仅限身高1.2米(含)以上的游客进入，每位儿童须由至少一名成人全程陪同。</li><li>强制签署协议：入场前须现场签署《攀岩墙免责协议》，未签署者一律不得进入。未成年人须由监护人代为签署。</li><li>游客须具备参与本活动的良好身体状况，能够独立行动并遵守安全规则，未成年人须在监护人全程陪同和看管下入场。</li><li>有下列情况禁止入场：患有心脏病、高血压、癫痫、传染病、精神疾病等不适宜剧烈运动的疾病者；存在发烧、感冒、咳喘传染性皮肤病、呕吐、腹泻等不适合参与本活动的身体状况者；醉酒、情绪失控或不服从管理者。孕妇、老人及行动不便者。</li><li>着装要求：(1) 须穿着适合运动的服装及鞋履（建议攀岩鞋或运动鞋） (2) 禁止穿着拖鞋、高跟鞋、裙装等不适合运动的装束。</li></ol></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">4. 风险告知与责任豁免</h4><ol class="list-decimal pl-4 space-y-2 text-gray-700"><li><strong>设施性质说明：</strong>攀岩墙为徐汇滨江公共设施，品牌方仅在此组织体验活动，不参与设施的建设、维护与管理。参与者须充分知悉并自愿承担使用公共设施可能产生的风险。</li><li><strong>运动风险告知：</strong>攀岩运动属于【高风险体育运动】，可能存在以下危险：(1) 跌落、滑坠导致的骨折、扭伤、擦伤 (2) 碰撞导致的软组织损伤或脑震荡 (3) 绳索、装备使用不当导致的意外伤害 (4) 因体力不支、技术失误导致的突发状况</li><li><strong>教练服务范围：</strong>(1) 现场教练仅提供【基础技术指导与安全提示】 (2) 不提供一对一全程保护服务 (3) 参与者须在指导下【自主完成攀爬】，并全程对自身安全负责</li><li><strong>参与者义务：</strong>(1) 严格遵守教练及工作人员的安全指引 (2) 未经允许不得擅自攀爬、越线或进行危险动作 (3) 发现身体不适或装备异常须立即停止活动并报告</li><li><strong>责任豁免条款：</strong>凡因以下情形导致的任何人身伤害或财产损失，品牌方不承担任何法律责任：(1) 参与者隐瞒健康状况、年龄不符或监护人未陪同（未成年人） (2) 参与者未遵守安全指引、擅自行动或操作不当 (3) 参与者未正确使用安全装备或拒绝接受教练指导 (4) 公共设施本身存在的设计缺陷或维护问题 (5) 不可抗力因素</li></ol></div>${commonFooterHtml}`;
         
-        // 🌟 纯前端排版的电子协议内容
         const climbingAgreementHtml = `<div class="text-left space-y-4 text-gray-700 text-xs sm:text-sm"><p class="font-bold text-orange-600 bg-orange-100 p-2 rounded-lg">本人（及监护人）确认 ：参与“攀岩墙”活动前，已阅读、理解并自愿接受本协议全部内容。</p><div><h4 class="font-black text-orange-800 mb-1">一、健康状况与装备</h4><ul class="list-disc pl-5 space-y-1"><li>本人确认身体健康，无心脏病、高血压、癫痫、传染病、精神疾病、感冒、咳喘、传染性皮肤病等不适宜参与攀岩运动的疾病或身体状况。</li><li>本人确认不存在醉酒、情绪失控等影响自身或他人安全的情形。</li><li>本人知晓本活动对身高、年龄的限制（身高1.2米以上），并承诺符合入场条件。</li><li>本人承诺穿着适合运动的服装及鞋履（运动鞋或攀岩鞋），不穿着拖鞋、高跟鞋、裙装等不适合运动的装束。</li><li>未成年人须由监护人全程陪同，监护人承诺履行现场监护责任。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">二、行为规范</h4><ul class="list-disc pl-5 space-y-1"><li>本人承诺严格遵守教练及工作人员的安全指引，未经允许不得擅自攀爬或进行危险动作。</li><li>本人知晓现场教练仅提供基础技术指导与安全提示，不提供一对一全程保护服务，本人须在指导下自主完成攀爬，并全程对自身安全负责。</li><li>本人承诺发现身体不适或装备异常时立即停止活动并报告工作人员。</li><li>本人承诺不携带尖锐物品、食物、饮料及宠物入场。</li><li>本人承诺妥善保管个人物品，贵重物品丢失责任自负。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">三、主办方义务</h4><p>主办方承诺：提供具备资质的专业攀岩教练进行基础教学与安全提示，确保活动组织过程符合基本安全标准，配备必要的现场工作人员及急救用品，并在活动前进行安全提示。</p></div><div><h4 class="font-black text-orange-800 mb-1">四、风险告知与责任划分</h4><p><strong class="text-orange-600">风险告知 ：</strong>本人充分了解攀岩运动属于高风险体育运动，可能导致跌落、滑坠、骨折、扭伤、擦伤、碰撞、脑震荡等严重人身伤害，甚至死亡。</p><p><strong class="text-orange-600">设施性质说明 ：</strong>本人知晓攀岩墙为公共设施，品牌方仅在此组织体验活动，不参与设施的建设、维护与管理。本人自愿承担使用公共设施可能产生的风险。</p><p><strong class="text-orange-600">责任划分 ：</strong></p><ul class="list-disc pl-5 space-y-1"><li>因本人未遵守本协议、未听从教练或工作人员指引、隐瞒健康状况、未正确使用装备或自身原因造成损害的，由本人依法承担相应责任。</li><li>因主办方存在故意或重大过失造成损害的，主办方依法承担相应责任。</li><li>因第三方行为造成损害的，由行为人依法承担相应责任。</li><li>因公共设施本身存在的设计缺陷或维护问题造成损害的，由相关责任方依法承担相应责任。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">五、未成年人监护</h4><p>监护人承诺全程陪同并监督未成年人遵守本协议及现场规定，因未成年人未遵守规定造成的损害，由监护人及未成年人依法承担责任。</p></div><div><h4 class="font-black text-orange-800 mb-1">六、其他</h4><ul class="list-disc pl-5 space-y-1"><li>本人确认：参与本次活动纯属自愿，并非受任何压力或诱导。</li><li>本协议适用中华人民共和国法律。争议协商不成的，向主办方所在地人民法院起诉。</li><li>本协议自签字之日起生效。</li></ul></div></div>`;
 
         const bubbleRulesHtml = `<div class="bg-orange-100/80 p-3 rounded-xl text-orange-900 border border-orange-200/60"><strong>【重要提示】</strong> 为确保活动安全有序进行，保障每一位参与者的人身安全与良好体验，请您在入场前仔细阅读本须知。入场即视为您已充分理解并自愿接受以下全部条款。</div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-2">1. 开放时间</h4><div class="overflow-hidden rounded-xl border border-orange-200 mb-2"><table class="w-full text-center text-[10px] sm:text-xs"><thead class="bg-orange-200/50 text-orange-800"><tr><th class="py-2 px-1 border-r border-orange-200">泡泡乐园</th><th class="py-2 px-1 border-r border-orange-200">工作日</th><th class="py-2 px-1">周末及节假日</th></tr></thead><tbody class="text-gray-600 bg-white"><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第一场</td><td class="py-1.5 border-r border-orange-100">14:00 - 14:40</td><td class="py-1.5">10:00 - 10:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第二场</td><td class="py-1.5 border-r border-orange-100">15:00 - 15:40</td><td class="py-1.5">11:00 - 11:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第三场</td><td class="py-1.5 border-r border-orange-100">16:00 - 16:40</td><td class="py-1.5">13:00 - 13:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第四场</td><td class="py-1.5 border-r border-orange-100">18:00 - 18:40</td><td class="py-1.5">14:00 - 14:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第五场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">15:00 - 15:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第六场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">16:00 - 16:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第七场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">18:00 - 18:40</td></tr></tbody></table></div><p class="text-gray-600 text-xs mt-2">体验时间：整点开始，限时40分钟。<br>清场与清洁：结束后进行20分钟清场，用于场地清洁、设施整理及秩序维护。<br>*清场期间暂停入场，请配合现场工作人员指引有序离场。</p></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">2. 入场条件与限制</h4><ol class="list-decimal pl-4 space-y-1 text-gray-700"><li>仅限身高1.2米(含)以上, 70周岁以下的游客进入，每位儿童须由至少一名成人全程陪同。</li><li>游客须具备参与本活动的良好身体状况，能够独立行动并遵守安全规则，未成年人须在监护人全程陪同和看管下入场。</li><li>有下列情况禁止入场: 患有心脏病、高血压、癫痫、传染病、精神疾病等不适宜剧烈活动的疾病者；存在发烧、感冒、咳喘传染性皮肤病、呕吐、腹泻等不适合参与本活动的身体状况者；醉酒、情绪失控或不服从管理者；孕妇、老人及行动不便者。</li><li>为确保公共安全，工作人员有权根据游客及现场情况进行安全评估，并有权拒绝不符合入场条件者入内。</li><li>场地内设有人数上限，每个场次最多可同时容纳60人，达到承载量后将暂停入场，满员后请听从现场工作人员的安排。</li></ol></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">3. 安全注意事项</h4><p class="text-gray-700">入场前请仔细阅读现场安全提示，遵守设施使用规则。请勿在池内奔跑、推搡、跳跃或进行任何危险动作。请妥善保管个人物品，贵重物品建议寄存或随身看管。请勿携带尖锐物品、食物、饮料及宠物入场。如遇身体不适或突发情况，请立即联系现场工作人员。</p></div>${commonFooterHtml}`;
@@ -482,23 +487,13 @@
             'register': {
                 themeColor: '#EA580C',
                 content: `
-                    <div class="p-6 sm:p-10 flex flex-col justify-center items-center h-full fade-in bg-[#FDF2E2]">
-                        <h2 class="text-2xl sm:text-3xl font-black text-orange-600 mb-6 text-center border-b border-orange-200 pb-4 w-full">活动报名</h2>
-                        <div class="flex flex-col items-center justify-center space-y-6 w-full mt-4">
-                            <div class="bg-white p-6 rounded-3xl shadow-[0_8px_30px_rgba(234,88,12,0.15)] border border-orange-100 w-full max-w-[280px] text-center transform transition hover:scale-105">
-                                <div class="w-16 h-16 mx-auto bg-orange-100 rounded-full flex items-center justify-center mb-4 shadow-inner">
-                                    <span class="text-3xl">📝</span>
-                                </div>
-                                <h3 class="text-orange-900 font-black text-lg mb-2">官方报名通道</h3>
-                                <p class="text-orange-600/80 text-xs sm:text-sm mb-6 leading-relaxed">欢迎填写报名信息<br>开启你的热爱探索之旅</p>
-                                
-                                <a href="https://w.wjx.top/vm/wPiJGsr.aspx" target="_blank" class="block w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3.5 rounded-xl shadow-[0_8px_20px_rgba(234,88,12,0.3)] transform transition active:scale-95 text-sm sm:text-base">
-                                    立即前往填写
-                                </a>
-                            </div>
-                            <div class="text-center mt-2">
-                                <p class="text-orange-400 font-medium text-[10px] sm:text-xs">点击上方按钮将安全跳转至【问卷星】</p>
-                            </div>
+                    <div class="w-full flex flex-col h-[80dvh] sm:h-[85dvh] fade-in bg-[#FDF2E2]">
+                        <div class="pt-6 pb-4 px-4 text-center border-b border-orange-200/50 flex-shrink-0 relative flex justify-center items-center bg-orange-50 shadow-sm z-20">
+                            <h3 class="text-lg sm:text-xl font-black text-orange-800 leading-snug">活动官方报名</h3>
+                        </div>
+                        <div class="flex-1 w-full relative -webkit-overflow-scrolling: touch; overflow-y-auto">
+                            <!-- 🌟 直接内嵌问卷星表单，不需再次跳转，支持上下滚动填写 -->
+                            <iframe src="https://w.wjx.top/vm/wPiJGsr.aspx" class="absolute inset-0 w-full h-full border-0" frameborder="0" marginheight="0" marginwidth="0"></iframe>
                         </div>
                     </div>
                 `
