@@ -123,7 +123,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* 🌟 新增：高级中心点偏移控制，完美兼容摇摆动画 */
+            /* 高级中心点偏移控制，完美兼容摇摆动画 */
             --tx: 0px;
             --ty: 0px;
             --scale: 1;
@@ -183,7 +183,7 @@
                     <div class="fallback-icon animate-drive hidden">🚙</div>
                 </div>
 
-                <!-- 👦 男孩 (中心点 t78, 维持 left 11%) -->
+                <!-- 👦 男孩 (中心点 t78, left 11%) -->
                 <div class="hotspot-ip z-20" style="top: 78%; left: 11%; --tx: -50%; --ty: -50%;" data-zone="entrance">
                     <img src="assets/ip-boy.png" alt="男孩" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway hidden">👦</div>
@@ -195,7 +195,7 @@
                     <div class="fallback-icon animate-sway delay-1 hidden">🐻</div>
                 </div>
 
-                <!-- 🐸 青蛙 (中心点 t45, 维持 left 25%) -->
+                <!-- 🐸 青蛙 (中心点 l25 t45) -->
                 <div class="hotspot-ip z-20" style="top: 45%; left: 25%; --tx: -50%; --ty: -50%;" data-zone="stage">
                     <img src="assets/ip-frog.png" alt="青蛙" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway delay-2 drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-2 hidden">🐸</div>
@@ -211,7 +211,7 @@
                     <div class="fallback-icon animate-sway delay-1 hidden">🐰</div>
                 </div>
 
-                <!-- 🐙 章鱼 (t24) -->
+                <!-- 🐙 章鱼 -->
                 <div class="hotspot-ip z-20" style="top: 24%; left: 64%;" data-zone="bubble">
                     <img src="assets/ip-octopus.png" alt="章鱼" class="w-24 h-24 sm:w-36 sm:h-36 object-contain animate-sway delay-3 drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-3 hidden">🐙</div>
@@ -225,11 +225,6 @@
                 <div class="absolute z-30 flex flex-col items-center pointer-events-none" style="top: 49%; left: 72%;">
                     <img src="assets/ip-bus.png" alt="巴士" class="w-60 sm:w-[350px] object-contain animate-pan delay-1 drop-shadow-xl" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-pan delay-1 hidden">🚌</div>
-                </div>
-
-                <div class="hotspot-ip z-20" style="top: 2%; left: 79%;" data-zone="pet">
-                    <img src="assets/ip-penguin.png" alt="企鹅" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway delay-1 drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                    <div class="fallback-icon animate-sway delay-1 hidden">🐧</div>
                 </div>
 
                 <!-- 🐻 熊2 (中心点 l87 t35) 企鹅已移除 -->
@@ -329,7 +324,7 @@
         viewIntro.style.display = 'flex';
 
         // ==========================================
-        // 🌟 1. 热区数据与 HTML 配置区
+        // 🌟 1. 热区入场须知数据与安全协议配置
         // ==========================================
         const commonFooterHtml = `
             <div>
@@ -497,7 +492,6 @@
                             <h3 class="text-lg sm:text-xl font-black text-orange-800 leading-snug">活动官方报名</h3>
                         </div>
                         <div class="flex-1 w-full relative -webkit-overflow-scrolling: touch; overflow-y-auto">
-                            <!-- 🌟 直接内嵌问卷星表单，不需再次跳转，支持上下滚动填写 -->
                             <iframe src="https://w.wjx.top/vm/wPiJGsr.aspx" class="absolute inset-0 w-full h-full border-0" frameborder="0" marginheight="0" marginwidth="0"></iframe>
                         </div>
                     </div>
@@ -560,7 +554,7 @@
         };
 
         // ==========================================
-        // 🌟 3. 主地图 IP 热区弹窗及电子签署核心逻辑
+        // 🌟 3. 主地图 IP 热区弹窗及电子签署逻辑
         // ==========================================
         function renderStandardModal(data) {
             document.getElementById('modal-glow').style.setProperty('--theme-color', data.themeColor);
@@ -659,7 +653,6 @@
                 </button>
             ` : '';
 
-            // 如果有电子协议，按钮文案就变成“下一步签署”，否则直接就是“接受条款”
             const btnText = agreementHtml ? '已阅须知，下一步：签署安全协议' : '我已阅读并接受此须知，为自己安全负责';
 
             modalDynamicContent.innerHTML = `
@@ -672,7 +665,7 @@
                         ${rulesHtml}
                     </div>
                     <div class="p-4 bg-white/80 backdrop-blur-md border-t border-gray-100 flex-shrink-0 rounded-b-[32px]">
-                        <button id="btn-accept-rules" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-[0_8px_20px_rgba(234,88,12,0.3)] transform transition active:scale-95 text-sm sm:text-base flex justify-center items-center">
+                        <button id="btn-accept-rules" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transform transition active:scale-95 text-sm sm:text-base flex justify-center items-center">
                             ${btnText}
                         </button>
                     </div>
@@ -688,7 +681,6 @@
             });
         }
 
-        // 🌟 独立且严肃的电子签署 Step 2.5
         window.renderAgreementStep = function(title, html, rulesTitle, rulesHtml, originalBackAction) {
             window.goBackToRules = function() {
                 renderFlowStep2(rulesTitle, rulesHtml, originalBackAction, title, html);
@@ -721,7 +713,6 @@
             const nameInput = document.getElementById('signer-name');
             const signBtn = document.getElementById('btn-sign-agreement');
 
-            // 监听输入，只有输入了名字，签署按钮才会变绿激活
             nameInput.addEventListener('input', (e) => {
                 if (e.target.value.trim().length > 0) {
                     signBtn.disabled = false;
@@ -742,7 +733,6 @@
             });
         }
 
-        // 🌟 最终通行绿码：显示印章和签署人名字
         window.renderPassStep3 = function(signerName = '') {
             document.getElementById('modal-glow').style.setProperty('--theme-color', '#10B981');
             const now = new Date();
@@ -755,7 +745,6 @@
                         <p class="text-xs text-green-700 font-medium">电子签署人</p>
                         <p class="font-black text-green-800 text-xl tracking-widest mt-0.5">${signerName}</p>
                     </div>
-                    <!-- 电子印章特效 -->
                     <div class="absolute -right-4 -bottom-4 opacity-10 transform rotate-[-15deg] pointer-events-none">
                         <div class="border-[6px] border-green-800 rounded-full w-28 h-28 flex items-center justify-center">
                             <span class="text-green-800 font-black text-3xl">已签</span>
@@ -808,51 +797,6 @@
 
         const closeModal = () => modal.classList.add('hidden');
         modalOverlay.addEventListener('click', closeModal);
-
-        // ==========================================
-        // 🌟 开发调试网格系统 
-        // ==========================================
-        const gridOverlay = document.createElement('div');
-        gridOverlay.id = 'debug-grid';
-        gridOverlay.className = 'absolute inset-0 pointer-events-none z-[100] hidden';
-        
-        for (let i = 5; i < 100; i += 5) {
-            gridOverlay.innerHTML += `<div class="absolute top-0 bottom-0 border-l border-red-500/50 border-dashed flex flex-col justify-start pt-2" style="left: ${i}%;"><span class="text-red-600 text-[10px] font-black bg-white/80 px-0.5 mt-1 block drop-shadow-sm ml-0.5">L:${i}</span></div>`;
-        }
-        for (let i = 10; i < 100; i += 10) {
-            gridOverlay.innerHTML += `<div class="absolute left-0 right-0 border-t border-blue-500/50 border-dashed flex flex-row justify-start pl-2" style="top: ${i}%;"><span class="text-blue-600 text-[10px] font-black bg-white/80 px-0.5 ml-1 block drop-shadow-sm mt-0.5">T:${i}</span></div>`;
-        }
-        document.querySelector('.map-wrapper').appendChild(gridOverlay);
-
-        const toggleBtn = document.createElement('button');
-        toggleBtn.className = 'fixed top-4 left-4 sm:top-6 sm:left-6 z-[999] bg-black/80 text-white text-xl sm:text-2xl p-2 sm:p-3 rounded-full shadow-xl border border-white/20 active:scale-95 transition hidden backdrop-blur-md flex items-center justify-center';
-        toggleBtn.id = 'grid-toggle-btn';
-        toggleBtn.innerHTML = '📏';
-        document.body.appendChild(toggleBtn);
-
-        let gridVisible = false;
-        toggleBtn.addEventListener('click', () => {
-            gridVisible = !gridVisible;
-            gridOverlay.style.display = gridVisible ? 'block' : 'none';
-            toggleBtn.innerHTML = '📏';
-            toggleBtn.classList.toggle('bg-red-600', gridVisible);
-            toggleBtn.classList.toggle('bg-black/80', !gridVisible);
-        });
-
-        const originalCheckOrientation = checkOrientation;
-        checkOrientation = () => {
-            originalCheckOrientation();
-            if (hasStarted && window.innerWidth > window.innerHeight) {
-                toggleBtn.style.display = 'flex';
-            } else {
-                toggleBtn.style.display = 'none';
-                gridVisible = false;
-                gridOverlay.style.display = 'none';
-                toggleBtn.innerHTML = '📏';
-                toggleBtn.classList.remove('bg-red-600');
-                toggleBtn.classList.add('bg-black/80');
-            }
-        }
     </script>
 </body>
 </html>
