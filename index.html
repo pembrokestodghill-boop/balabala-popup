@@ -249,7 +249,8 @@
         </div>
 
         <!-- ================= 左上角：重开引导图指南针 ================= -->
-        <button id="btn-reopen-guide" class="fixed top-4 left-4 sm:top-6 sm:left-6 z-40 hidden active:scale-90 transition-transform duration-200 w-14 h-14 sm:w-16 sm:h-16 shrink-0 cursor-pointer">
+        <!-- 🌟 修改点：给这个按钮加上 origin-center 和更全面的 transition-all 类 -->
+        <button id="btn-reopen-guide" class="fixed top-4 left-4 sm:top-6 sm:left-6 z-40 hidden active:scale-90 transition-all duration-300 w-14 h-14 sm:w-16 sm:h-16 shrink-0 cursor-pointer origin-center">
             <img src="assets/guide-icon.png" class="w-full h-full object-contain drop-shadow-md" alt="入场指引" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
             <div class="hidden bg-white/80 backdrop-blur-md px-3 py-2 border border-white/50 rounded-xl shadow-md items-center font-bold text-orange-600 text-xs sm:text-sm">
                 <span class="text-lg mr-1">🗺️</span>指引
@@ -339,10 +340,65 @@
             }
         }
 
-        // 划到尽头点击叉叉关闭引导图
-        btnCloseGuide.addEventListener('click', () => {
+        // 🌟 划到尽头点击叉叉关闭引导图：加入高级“转场飞入”动画
+        btnCloseGuide.addEventListener('click', (e) => {
+            // 1. 瞬间锁定“叉叉”当前的屏幕物理坐标
+            const startRect = btnCloseGuide.getBoundingClientRect();
+            
             hasSeenGuide = true;
-            checkOrientation();
+            
+            // 2. 提前把左上角指南针变成透明缩小状态，假装还没出来
+            btnReopenGuide.classList.add('opacity-0', 'scale-50');
+            btnReopenGuide.style.transition = 'none'; // 禁用它的隐藏动画
+            
+            // 3. 瞬间切换视图（长图隐藏，地图显现）
+            checkOrientation(); 
+            
+            // 4. 等待一帧让浏览器渲染出目标指南针的位置
+            requestAnimationFrame(() => {
+                const targetRect = btnReopenGuide.getBoundingClientRect();
+                
+                // 5. 创建一个飞行的替身元素（叉叉图片）
+                const flyer = document.createElement('img');
+                flyer.src = 'assets/close-btn.png';
+                flyer.style.position = 'fixed';
+                flyer.style.left = startRect.left + 'px';
+                flyer.style.top = startRect.top + 'px';
+                flyer.style.width = startRect.width + 'px';
+                flyer.style.height = startRect.height + 'px';
+                flyer.style.zIndex = '9999';
+                flyer.style.transition = 'all 0.7s cubic-bezier(0.25, 1, 0.5, 1)'; // 丝滑减速曲线
+                flyer.style.pointerEvents = 'none';
+                flyer.style.filter = 'drop-shadow(0 10px 15px rgba(0,0,0,0.3))';
+                document.body.appendChild(flyer);
+                
+                // 6. 下一帧开始飞行！
+                requestAnimationFrame(() => {
+                    // 飞向指南针的位置
+                    flyer.style.left = targetRect.left + 'px';
+                    flyer.style.top = targetRect.top + 'px';
+                    flyer.style.width = targetRect.width + 'px';
+                    flyer.style.height = targetRect.height + 'px';
+                    // 渐隐并增加酷炫的旋转效果
+                    flyer.style.opacity = '0.1';
+                    flyer.style.transform = 'rotate(-360deg)';
+                    
+                    // 7. 动画结束后的善后工作
+                    setTimeout(() => {
+                        flyer.remove(); // 销毁替身
+                        
+                        // 真正的指南针带有弹性的“POP”地一声弹出来
+                        btnReopenGuide.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                        btnReopenGuide.classList.remove('opacity-0', 'scale-50');
+                        
+                        // 动画播完后清理样式，保证你正常点击时的缩小手感依然有效
+                        setTimeout(() => {
+                            btnReopenGuide.style.transition = '';
+                        }, 500);
+                        
+                    }, 700); // 700ms 飞行时间
+                });
+            });
         });
 
         // 重新打开引导图
