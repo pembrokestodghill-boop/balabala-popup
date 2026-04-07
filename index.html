@@ -252,7 +252,7 @@
             </div>
         </div>
 
-        <!-- ================= 🌟 新手引导全屏遮罩 (纯黑半透底) ================= -->
+        <!-- ================= 🌟 新手引导全屏遮罩 ================= -->
         <div id="tutorial-mask" class="absolute inset-0 z-[70] hidden bg-black/85 fade-in pointer-events-auto"></div>
 
         <!-- ================= 左上角：入场指引指南针 ================= -->
@@ -272,9 +272,11 @@
         <!-- ================= 通用弹窗组件 ================= -->
         <div id="info-modal" class="absolute inset-0 z-50 hidden flex items-center justify-center p-4">
             <div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity cursor-pointer" id="modal-overlay"></div>
-            <div id="modal-card" class="w-full max-w-lg max-h-[85dvh] rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 flex flex-col modal-enter relative transition-all duration-300 border border-white/60" style="background-color: rgba(255, 255, 255, 0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
+            <!-- 移除固定高度和 flex 相关极易引发 Bug 的设定，让内部自由撑开并在必要时限制 -->
+            <div id="modal-card" class="w-full max-w-lg rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 border border-white/60 modal-enter" style="background-color: rgba(255, 255, 255, 0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
                 <div id="modal-glow" class="absolute top-0 right-0 w-full h-48 opacity-40 pointer-events-none transition-colors duration-500" style="background: radial-gradient(circle at 80% 0%, var(--theme-color), transparent 70%);"></div>
-                <div id="modal-dynamic-content" class="w-full flex-1 flex flex-col overflow-hidden relative z-10"></div>
+                <!-- 内部容器 -->
+                <div id="modal-dynamic-content" class="w-full relative z-10"></div>
             </div>
         </div>
 
@@ -292,11 +294,14 @@
         let hasSeenGuide = false;
         let isForcedLandscape = false; 
 
+        // 🌟 防呆设计：如果是 iOS 设备，隐藏强制横屏按钮
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
         if (isIOS) {
-            document.getElementById('btn-force-landscape').style.display = 'none';
+            const forceBtn = document.getElementById('btn-force-landscape');
+            if (forceBtn) forceBtn.style.display = 'none';
         }
 
+        // 核心：屏幕状态判断与引导触发
         function checkOrientation() {
             if (!hasStarted) return; 
             
@@ -340,6 +345,7 @@
             }
         }
 
+        // 解决安卓无法旋转：强制横屏
         document.getElementById('btn-force-landscape').addEventListener('click', () => {
             isForcedLandscape = true;
             const appRoot = document.getElementById('app-root');
@@ -354,34 +360,10 @@
             checkOrientation();
         });
 
-        // 解决安卓强制横屏下滚动轴失效的问题
-        function enableForcedLandscapeScroll(containerId) {
-            const container = document.getElementById(containerId);
-            if (!container) return;
-            let isDragging = false;
-            let startY = 0;
-            let startScroll = 0;
-
-            container.addEventListener('touchstart', (e) => {
-                if (!isForcedLandscape) return;
-                isDragging = true;
-                startY = e.touches[0].clientY;
-                startScroll = container.scrollLeft;
-            }, { passive: true });
-
-            container.addEventListener('touchmove', (e) => {
-                if (!isForcedLandscape || !isDragging) return;
-                e.preventDefault(); 
-                const currentY = e.touches[0].clientY;
-                const deltaY = currentY - startY; 
-                container.scrollLeft = startScroll - deltaY;
-            }, { passive: false });
-
-            container.addEventListener('touchend', () => { isDragging = false; });
-            container.addEventListener('touchcancel', () => { isDragging = false; });
-        }
-        enableForcedLandscapeScroll('map-scroll-container');
-        enableForcedLandscapeScroll('guide-scroll-container');
+        // =========================================================================
+        // 🌟 [代码已极度净化] 删除了所有自定义阻止屏幕滚动的 TouchMove 映射黑科技
+        // 完全依赖浏览器的原生 overflow-y-auto，保证滑动和 App 一模一样丝滑！
+        // =========================================================================
 
         btnReopenGuide.addEventListener('click', (e) => {
             if (!hasSeenGuide) {
@@ -397,6 +379,7 @@
             document.getElementById('guide-modal').classList.add('hidden');
         });
 
+        // 安卓防白屏：安全的视频播放和全局触摸唤醒
         const safePlayVideo = (vid) => {
             if (!vid) return;
             const playPromise = vid.play();
@@ -432,6 +415,7 @@
         window.addEventListener('orientationchange', () => { setTimeout(checkOrientation, 200); });
         viewIntro.style.display = 'flex';
 
+        // 原生双指缩放控制
         const viewportMeta = document.getElementById('viewport-meta');
         function toggleViewportZoom(allow) {
             if(allow) {
@@ -546,11 +530,12 @@
             'nature': { type: 'simple', location: 'D区撒野营', title: '自然美育学堂', times: ['13:30 - 15:00'] }
         };
 
+        // 🌟 将所有需要滚动的长弹窗都用 Absolute 绝对定位来约束滚动容器，100% 杜绝了 flex 撑开失效的 Bug
         const floatData = {
             'benefit': {
                 themeColor: '#EA580C',
                 content: `
-                    <div class="w-full h-full overflow-y-auto relative bg-[#FDF2E2]">
+                    <div class="w-full h-full absolute inset-0 overflow-y-auto bg-[#FDF2E2]" style="-webkit-overflow-scrolling: touch;">
                         <img src="assets/dakafuli.png" class="w-full h-auto block" alt="打卡福利">
                     </div>
                 `
@@ -558,7 +543,7 @@
             'coin': {
                 themeColor: '#EAB308',
                 content: `
-                    <div class="w-full h-full overflow-y-auto relative bg-[#FFF8E7]">
+                    <div class="w-full h-full absolute inset-0 overflow-y-auto bg-[#FFF8E7]" style="-webkit-overflow-scrolling: touch;">
                         <img src="assets/jinbiwanfa.png" class="w-full h-auto block" alt="金币玩法">
                     </div>
                 `
@@ -566,7 +551,7 @@
             'shop': {
                 themeColor: '#DC2626',
                 content: `
-                    <div class="w-full h-full overflow-y-auto relative bg-[#FFF1F0]">
+                    <div class="w-full h-full absolute inset-0 overflow-y-auto bg-[#FFF1F0]" style="-webkit-overflow-scrolling: touch;">
                         <img src="assets/xianshitongdian.png" class="w-full h-auto block" alt="限时痛店">
                     </div>
                 `
@@ -574,13 +559,14 @@
             'calendar': {
                 themeColor: '#F97316', 
                 content: `
-                    <div class="w-full flex flex-col h-full bg-[#FDF2E2]">
-                        <div class="w-full flex-1 overflow-y-auto custom-scrollbar relative bg-[#FDF2E2]" style="-webkit-overflow-scrolling: touch;">
-                            <div class="relative w-full h-auto block m-0 p-0 fade-in">
+                    <div class="w-full h-[85vh] relative bg-[#FDF2E2] fade-in rounded-[32px] overflow-hidden">
+                        <!-- 滚动层：靠绝对定位强制约束，必能滚动 -->
+                        <div class="absolute inset-x-0 top-0 bottom-[40px] overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
+                            <div class="relative w-full h-auto block m-0 p-0 pb-4">
                                 <img src="assets/timetable.png" class="w-full h-auto block pointer-events-none" alt="活动课表">
                                 <div class="absolute inset-0" style="top: 24.5%; bottom: 1%; left: 0%; right: 0%;">
                                     
-                                    <!-- 🌟 精确还原图2的 7x4 极简圆角网格 -->
+                                    <!-- 精确还原图2的极简圆角网格 -->
                                     <div class="grid grid-cols-7 grid-rows-4 w-full h-full text-[6px] sm:text-[9px] md:text-[11px] font-bold text-[#4A3B2B] leading-tight">
                                         
                                         <!-- Row 1 -->
@@ -727,8 +713,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="text-center text-[10px] sm:text-xs text-[#8A7B6B] p-3 sm:p-4 shrink-0 font-medium leading-relaxed bg-[#FDF2E2] border-t border-[#EEDDB8]">
-                            因天气等不可抗因素影响，以上活动安排或将延期举办或取消，最终事宜将由工作人员另行通知，敬请留意。
+                        <div class="absolute inset-x-0 bottom-0 h-[40px] flex items-center justify-center bg-[#FDF2E2] border-t border-[#EEDDB8] text-[10px] sm:text-xs text-[#8A7B6B] px-4 font-medium z-10 text-center">
+                            因天气等不可抗因素影响，以上活动安排或将延期举办或取消，敬请留意。
                         </div>
                     </div>
                 `
@@ -736,15 +722,15 @@
             'register': {
                 themeColor: '#EA580C',
                 content: `
-                    <div class="w-full flex flex-col h-[80dvh] sm:h-[85dvh] fade-in bg-[#FDF2E2]">
-                        <div class="pt-6 pb-4 px-4 text-center border-b border-orange-200/50 flex-shrink-0 relative flex justify-center items-center bg-orange-50 shadow-sm z-20">
-                            <h3 class="text-lg sm:text-xl font-black text-orange-800 leading-snug">活动官方报名</h3>
+                    <div class="w-full h-[85vh] relative bg-[#FDF2E2] fade-in rounded-[32px] overflow-hidden">
+                        <div class="absolute inset-x-0 top-0 h-[60px] flex justify-center items-center bg-orange-50 border-b border-orange-200/50 shadow-sm z-20">
+                            <h3 class="text-lg sm:text-xl font-black text-orange-800">活动官方报名</h3>
                         </div>
-                        <div class="flex-1 w-full relative overflow-y-auto bg-gray-50 flex flex-col" style="-webkit-overflow-scrolling: touch;">
-                            <iframe src="https://w.wjx.top/vm/wPiJGsr.aspx" class="w-full h-full border-0 z-10 flex-1" frameborder="0" marginheight="0" marginwidth="0"></iframe>
-                            <div class="p-2 bg-orange-100 flex-shrink-0 text-center border-t border-orange-200 z-20">
-                                <a href="https://w.wjx.top/vm/wPiJGsr.aspx" target="_blank" class="text-orange-600 font-bold text-xs underline">画面显示异常？点此在新窗口打开报名页</a>
-                            </div>
+                        <div class="absolute inset-x-0 top-[60px] bottom-[40px] overflow-y-auto bg-gray-50" style="-webkit-overflow-scrolling: touch;">
+                            <iframe src="https://w.wjx.top/vm/wPiJGsr.aspx" class="w-full h-full border-0 block" frameborder="0"></iframe>
+                        </div>
+                        <div class="absolute inset-x-0 bottom-0 h-[40px] bg-orange-100 flex items-center justify-center border-t border-orange-200 z-20">
+                            <a href="https://w.wjx.top/vm/wPiJGsr.aspx" target="_blank" class="text-orange-600 font-bold text-xs underline">画面显示异常？点此在新窗口打开报名页</a>
                         </div>
                     </div>
                 `
@@ -756,24 +742,19 @@
         const modal = document.getElementById('info-modal');
         const modalOverlay = document.getElementById('modal-overlay');
 
-        // 🌟 统一弹窗调度管理：专门调优了课表的长宽比
         window.openFloat = (floatKey) => {
             const data = floatData[floatKey];
             if (data) {
                 document.getElementById('modal-glow').style.setProperty('--theme-color', data.themeColor);
                 
-                // 重置公共 class
-                modalCard.className = 'w-full max-h-[85dvh] rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 flex flex-col modal-enter relative transition-all duration-300';
+                modalCard.className = 'w-full rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter';
                 
                 if (floatKey === 'calendar') {
-                    // 🌟 课表专属：使用大长宽比 (最高兼容 92vw 宽屏)，还原图2中等比例悬浮的精致感
                     modalCard.classList.add('max-w-4xl', 'w-[92vw]', 'sm:w-[85vw]');
-                    modalCard.style.backgroundColor = '#FDF2E2'; // 暖色底配合底图
-                    modalCard.classList.remove('border', 'border-white/60');
+                    modalCard.style.backgroundColor = 'transparent'; 
                 } else if (['benefit', 'coin', 'shop'].includes(floatKey)) {
-                    modalCard.classList.add('max-w-lg', 'w-[90vw]');
+                    modalCard.classList.add('max-w-lg', 'w-[90vw]', 'max-h-[85vh]');
                     modalCard.style.backgroundColor = 'rgba(255, 255, 255, 1)'; 
-                    modalCard.classList.remove('border', 'border-white/60');
                 } else {
                     modalCard.classList.add('max-w-lg', 'w-[90vw]', 'border', 'border-white/60');
                     modalCard.style.backgroundColor = 'rgba(255, 255, 255, 0.65)';
@@ -808,15 +789,15 @@
                     : '';
 
                 modalDynamicContent.innerHTML = `
-                    <div class="flex flex-col h-full fade-in max-h-[85dvh]">
-                        <div class="pt-6 pb-3 px-4 text-center border-b border-orange-200/50 flex-shrink-0 relative flex justify-center items-center">
-                            <button onclick="window.openFloat('calendar')" class="absolute left-4 top-6 text-orange-600 font-bold text-sm flex items-center z-20 active:scale-95 transition">
+                    <div class="w-full h-[85vh] relative bg-[#FDF2E2] fade-in rounded-[32px] overflow-hidden">
+                        <div class="absolute inset-x-0 top-0 h-[60px] flex justify-center items-center bg-[#FDF2E2] border-b border-orange-200/50 z-20">
+                            <button onclick="window.openFloat('calendar')" class="absolute left-4 text-orange-600 font-bold text-sm flex items-center active:scale-95 transition">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>返回
                             </button>
-                            <h3 class="text-lg sm:text-xl font-black text-orange-800 leading-snug px-10">活动详情</h3>
+                            <h3 class="text-lg sm:text-xl font-black text-orange-800 px-10 truncate">活动详情</h3>
                         </div>
-                        <div class="p-6 sm:p-8 overflow-y-auto custom-scrollbar flex-1 flex flex-col items-center justify-center bg-orange-50/50 text-center">
-                            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-orange-100 w-full">
+                        <div class="absolute inset-x-0 top-[60px] bottom-0 overflow-y-auto custom-scrollbar p-6 sm:p-8 flex flex-col items-center justify-center bg-orange-50/50 text-center" style="-webkit-overflow-scrolling: touch;">
+                            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-orange-100 w-full my-auto">
                                 <div class="text-orange-600/80 font-bold mb-3 flex items-center justify-center text-xs sm:text-sm bg-orange-50 w-max mx-auto px-3 py-1 rounded-full border border-orange-100">
                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                                     ${eventData.location}
@@ -841,7 +822,7 @@
             modalCard.classList.remove('border', 'border-white/60');
             
             modalDynamicContent.innerHTML = `
-                <div class="flex flex-col items-center justify-center h-full min-h-[40vh] fade-in p-6">
+                <div class="flex flex-col items-center justify-center w-full min-h-[40vh] fade-in p-6">
                     <div class="flex items-center mb-6 drop-shadow-sm">
                         <div class="w-12 h-12 rounded-full flex items-center justify-center font-black text-lg sm:text-xl mr-3 shadow-inner" style="background-color: ${data.textColor}; color: ${data.themeColor};">
                             ${data.badge}
@@ -866,8 +847,8 @@
             modalCard.classList.remove('border', 'border-white/60');
 
             modalDynamicContent.innerHTML = `
-                <div class="flex flex-col items-center justify-center h-full min-h-[40vh] fade-in p-6 custom-scrollbar overflow-y-auto">
-                    <div class="flex items-center mb-6 drop-shadow-sm shrink-0">
+                <div class="flex flex-col items-center justify-center w-full min-h-[40vh] max-h-[85vh] fade-in p-6 custom-scrollbar overflow-y-auto" style="-webkit-overflow-scrolling: touch;">
+                    <div class="flex items-center mb-6 drop-shadow-sm shrink-0 mt-auto">
                         <div class="w-12 h-12 rounded-full flex items-center justify-center font-black text-lg sm:text-xl mr-3 shadow-inner" style="background-color: ${data.textColor}; color: ${data.themeColor};">
                             ${data.badge}
                         </div>
@@ -881,7 +862,7 @@
                         <p>${data.en1}</p>
                         <p>${data.en2}</p>
                     </div>
-                    <button id="btn-read-safety" class="w-full max-w-[280px] shrink-0 font-bold py-3.5 px-6 rounded-2xl shadow-lg transform transition active:scale-95 text-sm sm:text-base border border-transparent" style="background-color: ${data.textColor}; color: ${data.themeColor};">
+                    <button id="btn-read-safety" class="w-full max-w-[280px] shrink-0 font-bold py-3.5 px-6 rounded-2xl shadow-lg transform transition active:scale-95 text-sm sm:text-base mb-auto" style="background-color: ${data.textColor}; color: ${data.themeColor};">
                         阅读入场安全须知
                     </button>
                 </div>
@@ -906,8 +887,8 @@
             `).join('');
 
             modalDynamicContent.innerHTML = `
-                <div class="flex flex-col items-center justify-center h-full min-h-[40vh] fade-in p-6 custom-scrollbar overflow-y-auto">
-                    <div class="flex items-center mb-6 drop-shadow-sm shrink-0">
+                <div class="flex flex-col items-center justify-center w-full min-h-[40vh] max-h-[85vh] fade-in p-6 custom-scrollbar overflow-y-auto" style="-webkit-overflow-scrolling: touch;">
+                    <div class="flex items-center mb-6 drop-shadow-sm shrink-0 mt-auto">
                         <div class="w-12 h-12 rounded-full flex items-center justify-center font-black text-lg sm:text-xl mr-3 shadow-inner" style="background-color: ${data.textColor}; color: ${data.themeColor};">
                             ${data.badge}
                         </div>
@@ -921,7 +902,7 @@
                         <p>${data.en1}</p>
                         <p>${data.en2}</p>
                     </div>
-                    <div class="w-full max-w-[280px] shrink-0">
+                    <div class="w-full max-w-[280px] shrink-0 mb-auto">
                         ${buttonsHtml}
                     </div>
                 </div>
@@ -938,7 +919,7 @@
 
         window.renderFlowStep2 = function(rulesTitle, rulesHtml, backAction = null, agreementTitle = null, agreementHtml = null) {
             const backBtnHtml = backAction ? `
-                <button onclick="${backAction}" class="absolute left-4 top-6 text-orange-600 font-bold text-sm flex items-center z-20 active:scale-95 transition">
+                <button onclick="${backAction}" class="absolute left-4 text-orange-600 font-bold text-sm flex items-center active:scale-95 transition">
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>返回
                 </button>
             ` : '';
@@ -946,15 +927,15 @@
             const btnText = agreementHtml ? '已阅须知，下一步：签署安全协议' : '我已阅读并接受此须知，为自己安全负责';
 
             modalDynamicContent.innerHTML = `
-                <div class="flex flex-col h-full fade-in max-h-[85dvh]">
-                    <div class="pt-6 pb-3 px-4 text-center border-b border-orange-200/50 flex-shrink-0 relative flex justify-center items-center">
+                <div class="w-full h-[85vh] relative fade-in">
+                    <div class="absolute inset-x-0 top-0 h-[60px] flex justify-center items-center border-b border-white/40 z-20">
                         ${backBtnHtml}
-                        <h3 class="text-lg sm:text-xl font-black text-orange-800 leading-snug px-10">${rulesTitle}</h3>
+                        <h3 class="text-lg sm:text-xl font-black text-orange-800 px-10 truncate w-full text-center">${rulesTitle}</h3>
                     </div>
-                    <div class="p-5 sm:p-6 overflow-y-auto custom-scrollbar flex-1 text-xs sm:text-sm text-gray-800 leading-relaxed space-y-5 bg-orange-50/50">
+                    <div class="absolute inset-x-0 top-[60px] bottom-[72px] overflow-y-auto custom-scrollbar p-5 sm:p-6 text-xs sm:text-sm text-gray-800 leading-relaxed space-y-5" style="-webkit-overflow-scrolling: touch;">
                         ${rulesHtml}
                     </div>
-                    <div class="p-4 bg-white/80 backdrop-blur-md border-t border-gray-100 flex-shrink-0 rounded-b-[32px]">
+                    <div class="absolute inset-x-0 bottom-0 h-[72px] bg-white/80 backdrop-blur-md border-t border-gray-100 flex items-center justify-center px-4 rounded-b-[32px] z-20">
                         <button id="btn-accept-rules" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-[0_8px_20px_rgba(234,88,12,0.3)] transform transition active:scale-95 text-sm sm:text-base flex justify-center items-center">
                             ${btnText}
                         </button>
@@ -977,20 +958,19 @@
             };
 
             modalDynamicContent.innerHTML = `
-                <div class="flex flex-col h-full fade-in max-h-[85dvh]">
-                    <div class="pt-6 pb-3 px-4 text-center border-b border-orange-200/50 flex-shrink-0 relative flex justify-center items-center bg-orange-50">
-                        <button onclick="window.goBackToRules()" class="absolute left-4 top-6 text-orange-600 font-bold text-sm flex items-center z-20 active:scale-95 transition">
+                <div class="w-full h-[85vh] relative fade-in">
+                    <div class="absolute inset-x-0 top-0 h-[60px] flex justify-center items-center border-b border-white/40 z-20">
+                        <button onclick="window.goBackToRules()" class="absolute left-4 text-orange-600 font-bold text-sm flex items-center active:scale-95 transition">
                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>返回
                         </button>
-                        <h3 class="text-lg sm:text-xl font-black text-orange-800 leading-snug px-10">${title}</h3>
+                        <h3 class="text-lg sm:text-xl font-black text-orange-800 px-10 truncate w-full text-center">${title}</h3>
                     </div>
-                    <div class="p-5 sm:p-6 overflow-y-auto custom-scrollbar flex-1 bg-white/60">
+                    <div class="absolute inset-x-0 top-[60px] bottom-[140px] overflow-y-auto custom-scrollbar p-5 sm:p-6 bg-white/60" style="-webkit-overflow-scrolling: touch;">
                         ${html}
                     </div>
-                    <div class="p-4 bg-white/90 backdrop-blur-md border-t border-gray-200 flex-shrink-0 rounded-b-[32px] flex flex-col items-center">
+                    <div class="absolute inset-x-0 bottom-0 h-[140px] bg-white/90 backdrop-blur-md border-t border-gray-200 flex flex-col items-center justify-center px-4 rounded-b-[32px] z-20">
                         <div class="w-full bg-orange-50/50 p-3 rounded-xl border border-orange-100 mb-3 shadow-inner">
-                            <p class="text-xs text-orange-800 font-bold mb-2">请填写本人（或监护人）真实姓名完成签署：</p>
-                            <input type="text" id="signer-name" placeholder="请输入姓名" class="w-full bg-white border border-orange-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors">
+                            <input type="text" id="signer-name" placeholder="请填写本人（或监护人）真实姓名完成签署：" class="w-full bg-white border border-orange-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors">
                         </div>
                         <button id="btn-sign-agreement" disabled class="w-full bg-gray-400 text-white font-bold py-3.5 px-4 rounded-xl transition text-sm sm:text-base flex justify-center items-center cursor-not-allowed">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
@@ -1044,7 +1024,7 @@
             }
 
             modalDynamicContent.innerHTML = `
-                <div class="p-8 flex flex-col items-center justify-center min-h-[45vh] fade-in">
+                <div class="p-8 flex flex-col items-center justify-center w-full min-h-[45vh] fade-in">
                     <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 flex items-center justify-center mb-5 animate-scan bg-green-50">
                         <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                     </div>
