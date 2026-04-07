@@ -183,20 +183,20 @@
                     <div class="fallback-icon animate-drive hidden">🚙</div>
                 </div>
 
-                <!-- 👦 男孩 (t75) -->
-                <div class="hotspot-ip z-20" style="top: 75%; left: 11%;" data-zone="entrance">
+                <!-- 👦 男孩 (中心点 t78, 维持 left 11%) -->
+                <div class="hotspot-ip z-20" style="top: 78%; left: 11%; --tx: -50%; --ty: -50%;" data-zone="entrance">
                     <img src="assets/ip-boy.png" alt="男孩" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway hidden">👦</div>
                 </div>
 
-                <!-- 🐻 熊1 (中心点 t20) -->
-                <div class="hotspot-ip z-20" style="top: 20%; left: 16%; --tx: -50%; --ty: -50%;" data-zone="climbing">
+                <!-- 🐻 熊1 (中心点 l18 t25) -->
+                <div class="hotspot-ip z-20" style="top: 25%; left: 18%; --tx: -50%; --ty: -50%;" data-zone="climbing">
                     <img src="assets/ip-bear.png" alt="大熊" class="w-32 h-32 sm:w-48 sm:h-48 object-contain animate-sway delay-1 drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-1 hidden">🐻</div>
                 </div>
 
-                <!-- 🐸 青蛙 (中心点 l25 t22) -->
-                <div class="hotspot-ip z-20" style="top: 22%; left: 25%; --tx: -50%; --ty: -50%;" data-zone="stage">
+                <!-- 🐸 青蛙 (中心点 t45, 维持 left 25%) -->
+                <div class="hotspot-ip z-20" style="top: 45%; left: 25%; --tx: -50%; --ty: -50%;" data-zone="stage">
                     <img src="assets/ip-frog.png" alt="青蛙" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway delay-2 drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-2 hidden">🐸</div>
                 </div>
@@ -227,8 +227,13 @@
                     <div class="fallback-icon animate-pan delay-1 hidden">🚌</div>
                 </div>
 
-                <!-- 🐻 熊2 (l85和l90中间，即87.5%) 企鹅已移除 -->
-                <div class="absolute z-10 flex flex-col items-center pointer-events-none" style="top: 2%; left: 87.5%;">
+                <div class="hotspot-ip z-20" style="top: 2%; left: 79%;" data-zone="pet">
+                    <img src="assets/ip-penguin.png" alt="企鹅" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway delay-1 drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="fallback-icon animate-sway delay-1 hidden">🐧</div>
+                </div>
+
+                <!-- 🐻 熊2 (中心点 l87 t35) 企鹅已移除 -->
+                <div class="absolute z-10 flex flex-col items-center pointer-events-none" style="top: 35%; left: 87%; transform: translate(-50%, -50%);">
                     <img src="assets/ip-bear.png" alt="小熊" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway delay-3 drop-shadow-lg" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                     <div class="fallback-icon animate-sway delay-3 hidden">🐻</div>
                 </div>
