@@ -12,7 +12,6 @@
     <title>活在热爱里 - 社区地图</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* 🌟 终极修复：去除了导致安卓无法滚动的 position: fixed，保留原生防抖 */
         html, body {
             width: 100%; height: 100%;
             overflow: hidden;
@@ -37,8 +36,8 @@
 
         @keyframes phoneRotate {
             0% { transform: rotate(0deg); }
-            50% { transform: rotate(-90deg); }
-            100% { transform: rotate(-90deg); }
+            50% { transform: rotate(90deg); }
+            100% { transform: rotate(90deg); }
         }
         .animate-phone { animation: phoneRotate 2s ease-in-out infinite; }
 
@@ -83,7 +82,6 @@
             100% { opacity: 1; transform: translateY(0); }
         }
 
-        /* 🌟 核心：确保滚动层声明了正确的原生触摸行为 */
         .scroll-container {
             width: 100%; height: 100%;
             overflow-x: auto; overflow-y: hidden;
@@ -99,7 +97,6 @@
             display: inline-block; 
         }
 
-        /* 🌟 防图片拖拽冲突：这非常重要，否则安卓会把滑动识别为拖图 */
         .map-bg-img, .hotspot-ip img {
             pointer-events: none; 
             user-select: none;
@@ -164,6 +161,7 @@
                 <h2 class="text-2xl font-bold mb-2 text-white">为了更好的体验</h2>
                 <p class="text-gray-300 mb-8 text-sm sm:text-base">请解锁方向锁定，并将手机横过来观看</p>
                 
+                <!-- 🌟 防呆设计：通过 JS 判断 iOS 并自动隐藏此按钮 -->
                 <button id="btn-force-landscape" class="px-6 py-3 bg-orange-500 border border-white/30 rounded-full text-white font-bold text-sm active:scale-95 transition shadow-lg drop-shadow-md">
                     安卓机无法旋转？点此强制进入地图
                 </button>
@@ -197,7 +195,7 @@
                         <img src="assets/ip-bus.png" alt="巴士" class="w-60 sm:w-[350px] object-contain animate-pan drop-shadow-xl">
                     </div>
 
-                    <div class="hotspot-ip z-20" style="top: 15%; left: 51%;" data-zone="zone_g">
+                    <div class="hotspot-ip z-20" style="top: 15%; left: 51%; --tx: -50%; --ty: -50%;" data-zone="zone_g">
                         <img src="assets/ip-rabbit.png" alt="兔子" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway drop-shadow-lg" style="animation-delay: 0.5s;">
                     </div>
 
@@ -205,15 +203,15 @@
                         <img src="assets/golden.png" alt="金币" class="w-16 h-16 sm:w-24 sm:h-24 object-contain animate-sway drop-shadow-lg" style="animation-delay: 1.2s;" onerror="this.style.display='none';">
                     </div>
 
-                    <div class="hotspot-ip z-20" style="top: 24%; left: 64%;" data-zone="bubble">
+                    <div class="hotspot-ip z-20" style="top: 24%; left: 64%; --tx: -50%; --ty: -50%;" data-zone="bubble">
                         <img src="assets/ip-octopus.png" alt="章鱼" class="w-24 h-24 sm:w-36 sm:h-36 object-contain animate-sway drop-shadow-lg" style="animation-delay: 1.8s;">
                     </div>
 
-                    <div class="hotspot-ip z-20" style="top: 24%; left: 70%;" data-zone="powerblock">
+                    <div class="hotspot-ip z-20" style="top: 24%; left: 70%; --tx: -50%; --ty: -50%;" data-zone="powerblock">
                         <img src="assets/ip-elephant.png" alt="大象" class="w-24 h-24 sm:w-32 sm:h-32 object-contain animate-sway drop-shadow-lg" style="animation-delay: 1.2s;">
                     </div>
 
-                    <div class="absolute z-30 flex flex-col items-center pointer-events-none" style="top: 80%; left: 77%; transform: translate(-50%, -50%);">
+                    <div class="hotspot-ip z-30" style="top: 80%; left: 77%; --tx: -50%; --ty: -50%;" data-zone="zone_e2">
                         <img src="assets/ip-bus.png" alt="巴士" class="w-60 sm:w-[350px] object-contain animate-pan drop-shadow-xl" style="animation-delay: 0.5s;">
                     </div>
 
@@ -223,11 +221,6 @@
 
                 </div>
             </div>
-
-            <!-- ================= 左上角：入场指引按钮 ================= -->
-            <button id="btn-reopen-guide" class="absolute top-4 left-4 sm:top-6 sm:left-6 z-40 hidden active:scale-90 transition-transform duration-200 w-14 h-14 sm:w-16 sm:h-16 shrink-0 cursor-pointer origin-center block">
-                <img src="assets/guide-icon.png" class="w-full h-full object-contain drop-shadow-md" alt="入场指引" onerror="this.style.display='none';">
-            </button>
 
             <!-- ================= 左下角固定时间 ================= -->
             <div id="fixed-time-display" class="absolute left-2 bottom-3 sm:left-4 sm:bottom-4 z-40 flex flex-col transition-opacity duration-300 drop-shadow-md pointer-events-none" style="display: none;">
@@ -260,11 +253,16 @@
             </div>
         </div>
 
-        <!-- ================= 🌟 新手引导遮罩 (Spotlight) 强阻断纯净版 ================= -->
-        <div id="tutorial-mask" class="absolute inset-0 z-[70] hidden fade-in overflow-hidden pointer-events-auto">
-            <div id="tutorial-hole" class="absolute rounded-full shadow-[0_0_0_9999px_rgba(0,0,0,0.85)] cursor-pointer transition-all duration-300 ease-out border-[3px] border-white pointer-events-auto animate-pulse flex justify-center items-center">
-            </div>
-        </div>
+        <!-- ================= 🌟 新手引导全屏遮罩 (纯黑半透底) ================= -->
+        <div id="tutorial-mask" class="absolute inset-0 z-[70] hidden bg-black/85 fade-in pointer-events-auto"></div>
+
+        <!-- ================= 左上角：入场指引指南针 (含跟随光圈) ================= -->
+        <!-- 初始化为 z-40，新手引导时会被动态提升到 z-[80] 显示在遮罩上方 -->
+        <button id="btn-reopen-guide" class="absolute top-4 left-4 sm:top-6 sm:left-6 z-40 hidden active:scale-90 transition-transform duration-200 w-14 h-14 sm:w-16 sm:h-16 shrink-0 cursor-pointer origin-center">
+            <img src="assets/guide-icon.png" class="w-full h-full object-contain drop-shadow-md relative z-10" alt="入场指引" onerror="this.style.display='none';">
+            <!-- 🌟 结构绑定的呼吸光圈，绝对不会因为缩放和设备偏移 -->
+            <div id="tutorial-ring" class="absolute inset-[-10px] rounded-full border-2 border-white border-dashed animate-pulse hidden pointer-events-none z-0"></div>
+        </button>
 
         <!-- ================= 🌟 悬浮画廊：活动指引长图 ================= -->
         <div id="guide-modal" class="absolute inset-0 z-[60] hidden flex items-center justify-center p-4 sm:p-8">
@@ -297,7 +295,13 @@
         let hasSeenGuide = false;
         let isForcedLandscape = false; 
 
-        // 🌟 核心：兼容所有机型的屏幕状态判断
+        // 🌟 防呆设计：如果是 iOS 设备，隐藏强制横屏按钮
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        if (isIOS) {
+            document.getElementById('btn-force-landscape').style.display = 'none';
+        }
+
+        // 核心：屏幕状态判断与引导触发
         function checkOrientation() {
             if (!hasStarted) return; 
             
@@ -324,18 +328,12 @@
                 fixedTimeDisplay.style.display = 'flex';
                 btnReopenGuide.style.display = 'block';
                 
-                // 🌟 初次进入横屏，展示纯黑遮罩局部高亮引导
+                // 🌟 初次进入横屏，展示纯净版遮罩聚焦引导
                 if (!hasSeenGuide) {
                     document.getElementById('tutorial-mask').classList.remove('hidden');
-                    setTimeout(() => {
-                        const rect = btnReopenGuide.getBoundingClientRect();
-                        const hole = document.getElementById('tutorial-hole');
-                        const padding = 10;
-                        hole.style.width = (rect.width + padding * 2) + 'px';
-                        hole.style.height = (rect.height + padding * 2) + 'px';
-                        hole.style.left = (rect.left - padding) + 'px';
-                        hole.style.top = (rect.top - padding) + 'px';
-                    }, 50);
+                    // 提升指南针层级并开启光圈
+                    btnReopenGuide.classList.replace('z-40', 'z-[80]');
+                    document.getElementById('tutorial-ring').classList.remove('hidden');
                 }
             } else {
                 viewIntro.style.display = 'none';
@@ -349,7 +347,7 @@
             }
         }
 
-        // 安卓强行进入横屏模式
+        // 解决安卓无法旋转：强制横屏
         document.getElementById('btn-force-landscape').addEventListener('click', () => {
             isForcedLandscape = true;
             const appRoot = document.getElementById('app-root');
@@ -360,11 +358,11 @@
             appRoot.style.left = '50%';
             appRoot.style.width = Math.max(w, h) + 'px';
             appRoot.style.height = Math.min(w, h) + 'px';
-            appRoot.style.transform = 'translate(-50%, -50%) rotate(-90deg)';
+            appRoot.style.transform = 'translate(-50%, -50%) rotate(90deg)';
             checkOrientation();
         });
 
-        // 🌟 解决安卓强制横屏下原生横轴不可滑动的问题
+        // 解决安卓强制横屏下滚动轴失效的问题
         function enableForcedLandscapeScroll(containerId) {
             const container = document.getElementById(containerId);
             if (!container) return;
@@ -383,7 +381,7 @@
                 if (!isForcedLandscape || !isDragging) return;
                 e.preventDefault(); 
                 const currentY = e.touches[0].clientY;
-                const deltaY = currentY - startY;
+                const deltaY = currentY - startY; // 顺时针旋转下，滑动方向匹配
                 container.scrollLeft = startScroll - deltaY;
             }, { passive: false });
 
@@ -393,22 +391,21 @@
         enableForcedLandscapeScroll('map-scroll-container');
         enableForcedLandscapeScroll('guide-scroll-container');
 
-        // 🌟 点击高亮引导圈，打开引导画廊，解除地图锁定
-        document.getElementById('tutorial-hole').addEventListener('click', (e) => {
-            e.stopPropagation();
-            document.getElementById('tutorial-mask').classList.add('hidden');
+        // 🌟 点击高亮指南针圈，解除屏蔽，打开引导画廊
+        btnReopenGuide.addEventListener('click', (e) => {
+            if (!hasSeenGuide) {
+                // 如果是第一次新手点击
+                document.getElementById('tutorial-mask').classList.add('hidden');
+                btnReopenGuide.classList.replace('z-[80]', 'z-40');
+                document.getElementById('tutorial-ring').classList.add('hidden');
+                hasSeenGuide = true;
+            }
             document.getElementById('guide-modal').classList.remove('hidden');
-            hasSeenGuide = true;
         });
 
-        // 🌟 点击引导图外侧的灰色背景直接关闭
+        // 🌟 点击画廊外侧的灰色背景关闭画廊
         document.getElementById('guide-overlay').addEventListener('click', () => {
             document.getElementById('guide-modal').classList.add('hidden');
-        });
-
-        // 手动重新打开引导画廊
-        btnReopenGuide.addEventListener('click', () => {
-            document.getElementById('guide-modal').classList.remove('hidden');
         });
 
         // 安卓防白屏：安全的视频播放和全局触摸唤醒
@@ -484,7 +481,7 @@
         const skateRulesHtml = `<div class="bg-orange-100/80 p-3 rounded-xl text-orange-900 border border-orange-200/60"><strong>【重要提示】</strong> 为确保活动安全有序进行，保障每一位参与者的人身安全与良好体验，请您在入场前仔细阅读本须知。入场即视为您已充分理解并自愿接受以下全部条款。</div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-2">1. 开放时间</h4><div class="overflow-hidden rounded-xl border border-orange-200 mb-2"><table class="w-full text-center text-[10px] sm:text-xs"><thead class="bg-orange-200/50 text-orange-800"><tr><th class="py-2 px-1 border-r border-orange-200">滑板区</th><th class="py-2 px-1 border-r border-orange-200">工作日</th><th class="py-2 px-1">周末及节假日</th></tr></thead><tbody class="text-gray-600 bg-white"><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第一场</td><td class="py-1.5 border-r border-orange-100">17:00 - 17:40</td><td class="py-1.5">15:00 - 15:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第二场</td><td class="py-1.5 border-r border-orange-100">18:00 - 18:40</td><td class="py-1.5">16:00 - 16:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第三场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">17:00 - 17:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第四场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">18:00 - 18:40</td></tr></tbody></table></div></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">2. 入场条件与限制</h4><ol class="list-decimal pl-4 space-y-1 text-gray-700"><li><strong>装备要求（强制）：</strong>参与者须自备符合安全标准的滑板，现场不提供滑板租赁服务。滑板须满足以下条件：(1) 板面完好，无断裂、分层或严重磨损 (2) 轮轴稳固，支架无松动，轮子转动正常 (3) 砂纸防滑面无大面积脱落 (4) 整体无破损、无改装安全隐患。入场前须经工作人员检查装备合格后方可进入。不合格装备禁止入场。</li><li><strong>技术基础要求（强制）：</strong>参与者须具备一定的滑板基础与滑行经验，能够独立完成以下基本动作：(1) 平稳上板与直线滑行 (2) 有效控制速度与方向 (3) 安全制动与紧急停板 (4) 摔倒时的自我保护动作。本区域不设任何教学指导服务，零基础者谢绝入场。</li><li><strong>年龄与监护要求：</strong>(1) 建议12周岁及以上人员参与 (2) 未满18周岁者须由法定监护人全程陪同入场，监护人须全程保持有效看护，不得擅自离开 (3) 监护人须代为签署免责协议，并承担被监护人的全部监护责任。</li><li><strong>健康状况：</strong>参与者须身体健康，无心脏病、高血压、癫痫、骨骼关节损伤、眩晕症等不适宜剧烈运动的疾病史或身体状况。特别提醒：隐瞒健康状况、技术能力不足或装备不合格执意入场者，一切后果自负。</li><li>场地内设有人数上限，每个场次最多可同时容纳10人，达到承载量后将暂停入场，满员后请听从现场工作人员的安排。</li></ol></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">3. 安全规范与行为准则</h4><ol class="list-decimal pl-4 space-y-1 text-gray-700"><li><strong>强制签署协议：</strong>入场前须现场签署《滑板区免责协议》，未签署者一律不得进入。未成年人须由监护人代为签署。</li><li><strong>防护装备建议：</strong>强烈建议佩戴以下专业防护装备：(1) 头盔（必备） (2) 护膝、护肘、护腕（建议全套佩戴）。未佩戴防护装备者，视为自愿承担由此增加的受伤风险。</li><li><strong>场地使用规则：</strong>(1) 严格遵守场地标识及工作人员指引，在规定区域内滑行，严禁进入非滑行区域 (2) 滑行前须观察周围环境，确保安全后方可起步 (3) 严禁在滑行过程中佩戴耳机，手持手机或其他分散注意力的物品 (4) 严禁在场地内追逐打闹、进行危险动作（包括但不限于腾空跳跃、高速俯冲、逆向滑行）或妨碍他人滑行 (5) 摔倒后须迅速撤离滑行区域，避免二次碰撞。</li><li><strong>个人物品保管：</strong>请妥善保管个人物品，贵重物品建议寄存或随身看管。场地不承担任何物品保管责任，遗失或损坏概不负责。</li></ol></div>${commonFooterHtml}`;
         const skateAgreementHtml = `<div class="text-left space-y-4 text-gray-700 text-xs sm:text-sm"><p class="font-bold text-orange-600 bg-orange-100 p-2 rounded-lg">本人（及监护人）确认 ：参与“潮玩街”滑板区活动前，已阅读、理解并自愿接受本协议全部内容。</p><div><h4 class="font-black text-orange-800 mb-1">一、健康状况与装备</h4><ul class="list-disc pl-5 space-y-1"><li>本人确认身体健康，无不适宜滑板运动的疾病或生理状态。</li><li>本人承诺使用符合安全标准的滑板及护具（头盔、护膝、护肘等），并全程佩戴。</li><li>本人知晓本区域不设教练，所有技术及风险由本人自行判断与承担。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">二、风险告知与责任</h4><p><strong class="text-orange-600">风险告知 ：</strong>本人充分了解滑板运动存在高风险，可能导致擦伤、扭伤、骨折、脑震荡、残疾甚至死亡等后果。</p><p><strong class="text-orange-600">责任划分 ：</strong></p><ul class="list-disc pl-5 space-y-1"><li>因本人未遵守规定、未佩戴护具、操作不当等自身原因造成损害的，由本人依法承担主要责任。</li><li>因主办方存在故意或重大过失造成损害的，主办方依法承担相应责任。</li><li>因第三方行为造成损害的，由行为人依法承担相应责任。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">三、未成年人监护</h4><p>监护人承诺全程监督未成年人遵守本协议及现场规定，<strong class="text-red-500">监护人不得在活动期间离开滑板区</strong>。因未成年人未遵守规定造成的损害，由监护人及未成年人依法承担责任。</p></div><div><h4 class="font-black text-orange-800 mb-1">四、其他</h4><ul class="list-disc pl-5 space-y-1"><li>本人确认：参与本次活动纯属自愿，并非受任何压力或诱导。</li><li>本协议适用中华人民共和国法律。争议协商不成的，向主办方所在地人民法院起诉。</li><li>本协议自签字之日起生效。</li></ul></div></div>`;
 
-        // 🌟 统一无边框主题设置 (全员橙红底淡黄字)
+        // 🌟 统一无边框主题设置 (全员橙红底淡黄字，无 emoji)
         const zonesData = {
             'departure': { 
                 type: 'pure-intro', badge: 'A区', title: '热爱启程', themeColor: '#DF4A27', textColor: '#FDE5A9',
@@ -502,6 +499,11 @@
                 en1: 'A riverside campsite, and a poetic haven', en2: 'for the young and the young at heart.'
             },
             'zone_e': {
+                type: 'pure-intro', badge: 'E区', title: 'IP聚会场', themeColor: '#DF4A27', textColor: '#FDE5A9',
+                line1: '巴拉巴拉好朋友派对正式开场', line2: '超多IP伙伴齐聚现场，等你来赴约',
+                en1: 'Balabala Friends Party—Now On!', en2: 'Meet your favorite IP characters. Join the fun!'
+            },
+            'zone_e2': {
                 type: 'pure-intro', badge: 'E区', title: 'IP聚会场', themeColor: '#DF4A27', textColor: '#FDE5A9',
                 line1: '巴拉巴拉好朋友派对正式开场', line2: '超多IP伙伴齐聚现场，等你来赴约',
                 en1: 'Balabala Friends Party—Now On!', en2: 'Meet your favorite IP characters. Join the fun!'
@@ -541,7 +543,6 @@
             }
         };
 
-        // 🌟 课表子项数据及时间嵌入
         const calendarEventsData = {
             'rc': { type: 'rules', location: 'J区动力街区', title: '[J区动力街区-RC遥控车区] · 入场安全须知', html: rcRulesHtml, agreementTitle: null, agreementHtml: null },
             'skate': { type: 'rules', location: 'J区动力街区', title: '[J区动力街区-滑板区] · 入场安全须知', html: skateRulesHtml, agreementTitle: '滑板区活动参与协议', agreementHtml: skateAgreementHtml },
@@ -988,7 +989,6 @@
                 const data = zonesData[zoneId];
                 
                 if (data) {
-                    // 初始化重置弹窗样式
                     document.getElementById('modal-glow').style.display = 'block';
                     modalCard.style.backgroundColor = 'rgba(255, 255, 255, 0.65)';
                     modalCard.classList.add('border', 'border-white/60');
