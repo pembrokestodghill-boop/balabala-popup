@@ -190,30 +190,27 @@
                         <img src="assets/ip-frog.png" alt="青蛙" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway drop-shadow-lg" style="animation-delay: 1.2s;">
                     </div>
 
-                    <!-- 🌟 巴士1 (E区) 坐标：t80 l40 -->
                     <div class="hotspot-ip z-30" style="top: 80%; left: 40%; --tx: -50%; --ty: -50%;" data-zone="zone_e">
                         <img src="assets/ip-bus.png" alt="巴士" class="w-60 sm:w-[350px] object-contain animate-pan drop-shadow-xl">
                     </div>
 
-                    <div class="hotspot-ip z-20" style="top: 15%; left: 51%; --tx: -50%; --ty: -50%;" data-zone="zone_g">
+                    <div class="hotspot-ip z-20" style="top: 35%; left: 54%; --tx: -50%; --ty: -50%;" data-zone="zone_g">
                         <img src="assets/ip-rabbit.png" alt="兔子" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway drop-shadow-lg" style="animation-delay: 0.5s;">
                     </div>
 
-                    <!-- 🌟 金币 (H区) 坐标：t63 l61 -->
-                    <div class="hotspot-ip z-30" style="top: 63%; left: 61%; --tx: -50%; --ty: -50%;" data-zone="zone_h">
+                    <div class="hotspot-ip z-30" style="top: 63%; left: 60%; --tx: -50%; --ty: -50%;" data-zone="zone_h">
                         <img src="assets/golden.png" alt="金币" class="w-16 h-16 sm:w-24 sm:h-24 object-contain animate-sway drop-shadow-lg" style="animation-delay: 1.2s;" onerror="this.style.display='none';">
                     </div>
 
-                    <div class="hotspot-ip z-20" style="top: 24%; left: 64%; --tx: -50%; --ty: -50%;" data-zone="bubble">
+                    <div class="hotspot-ip z-20" style="top: 39%; left: 66%; --tx: -50%; --ty: -50%;" data-zone="bubble">
                         <img src="assets/ip-octopus.png" alt="章鱼" class="w-24 h-24 sm:w-36 sm:h-36 object-contain animate-sway drop-shadow-lg" style="animation-delay: 1.8s;">
                     </div>
 
-                    <div class="hotspot-ip z-20" style="top: 24%; left: 70%; --tx: -50%; --ty: -50%;" data-zone="powerblock">
+                    <div class="hotspot-ip z-20" style="top: 43%; left: 72%; --tx: -50%; --ty: -50%;" data-zone="powerblock">
                         <img src="assets/ip-elephant.png" alt="大象" class="w-24 h-24 sm:w-32 sm:h-32 object-contain animate-sway drop-shadow-lg" style="animation-delay: 1.2s;">
                     </div>
 
-                    <!-- 🌟 巴士2 坐标：t80 l77 (与巴士1完美水平对齐) -->
-                    <div class="absolute z-30 flex flex-col items-center pointer-events-none" style="top: 80%; left: 77%; transform: translate(-50%, -50%);">
+                    <div class="hotspot-ip z-30" style="top: 80%; left: 77%; --tx: -50%; --ty: -50%;" data-zone="zone_e2">
                         <img src="assets/ip-bus.png" alt="巴士" class="w-60 sm:w-[350px] object-contain animate-pan drop-shadow-xl" style="animation-delay: 0.5s;">
                     </div>
 
@@ -223,11 +220,6 @@
 
                 </div>
             </div>
-
-            <!-- ================= 左上角：入场指引按钮 ================= -->
-            <button id="btn-reopen-guide" class="absolute top-4 left-4 sm:top-6 sm:left-6 z-40 hidden active:scale-90 transition-transform duration-200 w-14 h-14 sm:w-16 sm:h-16 shrink-0 cursor-pointer origin-center block">
-                <img src="assets/guide-icon.png" class="w-full h-full object-contain drop-shadow-md" alt="入场指引" onerror="this.style.display='none';">
-            </button>
 
             <!-- ================= 左下角固定时间 ================= -->
             <div id="fixed-time-display" class="absolute left-2 bottom-3 sm:left-4 sm:bottom-4 z-40 flex flex-col transition-opacity duration-300 drop-shadow-md pointer-events-none" style="display: none;">
@@ -260,25 +252,27 @@
             </div>
         </div>
 
-        <!-- ================= 🌟 终极版：新手引导遮罩 (极简圆圈阻断) ================= -->
-        <div id="tutorial-mask" class="absolute inset-0 z-[70] hidden fade-in overflow-hidden pointer-events-auto">
-            <div id="tutorial-hole" class="absolute rounded-full shadow-[0_0_0_9999px_rgba(0,0,0,0.85)] cursor-pointer transition-all duration-300 ease-out border-[3px] border-white pointer-events-auto animate-pulse flex justify-center items-center">
-            </div>
-        </div>
+        <!-- ================= 🌟 新手引导全屏遮罩 ================= -->
+        <div id="tutorial-mask" class="absolute inset-0 z-[70] hidden bg-black/85 fade-in pointer-events-auto"></div>
 
-        <!-- ================= 🌟 悬浮画廊：活动指引长图 (优化框体比例留白) ================= -->
+        <!-- ================= 左上角：入场指引指南针 ================= -->
+        <button id="btn-reopen-guide" class="absolute top-4 left-4 sm:top-6 sm:left-6 z-40 hidden active:scale-90 transition-transform duration-200 w-14 h-14 sm:w-16 sm:h-16 shrink-0 cursor-pointer origin-center">
+            <img src="assets/guide-icon.png" class="w-full h-full object-contain drop-shadow-md relative z-10" alt="入场指引" onerror="this.style.display='none';">
+            <div id="tutorial-ring" class="absolute inset-[-10px] rounded-full border-2 border-white border-dashed animate-pulse hidden pointer-events-none z-0"></div>
+        </button>
+
+        <!-- ================= 🌟 悬浮画廊：活动指引长图 ================= -->
         <div id="guide-modal" class="absolute inset-0 z-[60] hidden flex items-center justify-center p-4 sm:p-8">
             <div class="absolute inset-0 bg-black/70 backdrop-blur-sm cursor-pointer" id="guide-overlay"></div>
-            <!-- 🌟 限制了最大宽度 w-[85vw]，为左右留出了可点击的空白灰色区域 -->
-            <div id="guide-scroll-container" class="relative z-10 w-[85vw] sm:w-[75vw] max-w-4xl h-[60vh] overflow-x-auto overflow-y-hidden custom-scrollbar rounded-2xl shadow-2xl pointer-events-auto bg-[#FDF2E2] border border-white/20 fade-in flex items-center p-2 sm:p-4" style="-webkit-overflow-scrolling: touch; touch-action: pan-x pan-y;">
-                <img src="assets/guide-bg.webp" class="h-full w-auto max-w-none block rounded-xl shadow-sm mx-auto" alt="活动引导" onerror="console.error('找不到活动引导图片')">
+            <div id="guide-scroll-container" class="relative z-10 w-auto max-w-[75%] h-[65%] overflow-x-auto overflow-y-hidden custom-scrollbar rounded-2xl shadow-2xl pointer-events-auto bg-[#FDF2E2] border border-white/20 fade-in flex items-center p-2" style="-webkit-overflow-scrolling: touch; touch-action: pan-x pan-y;">
+                <img src="assets/guide-bg.webp" class="h-full w-auto max-w-none block rounded-xl shadow-sm" alt="活动引导" onerror="console.error('找不到活动引导图片')">
             </div>
         </div>
 
         <!-- ================= 通用弹窗组件 ================= -->
         <div id="info-modal" class="absolute inset-0 z-50 hidden flex items-center justify-center p-4">
             <div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity cursor-pointer" id="modal-overlay"></div>
-            <div id="modal-card" class="w-full max-w-lg max-h-[85vh] rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 flex flex-col modal-enter relative border border-white/60" style="background-color: rgba(255, 255, 255, 0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
+            <div id="modal-card" class="w-full max-w-lg max-h-[85%] rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 flex flex-col modal-enter relative border border-white/60" style="background-color: rgba(255, 255, 255, 0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
                 <div id="modal-glow" class="absolute top-0 right-0 w-full h-48 opacity-40 pointer-events-none transition-colors duration-500" style="background: radial-gradient(circle at 80% 0%, var(--theme-color), transparent 70%);"></div>
                 <div id="modal-dynamic-content" class="w-full flex-1 flex flex-col overflow-hidden relative z-10"></div>
             </div>
@@ -298,13 +292,11 @@
         let hasSeenGuide = false;
         let isForcedLandscape = false; 
 
-        // 防呆设计：如果是 iOS 设备，隐藏强制横屏按钮
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
         if (isIOS) {
             document.getElementById('btn-force-landscape').style.display = 'none';
         }
 
-        // 核心：屏幕状态判断与引导触发
         function checkOrientation() {
             if (!hasStarted) return; 
             
@@ -331,21 +323,10 @@
                 fixedTimeDisplay.style.display = 'flex';
                 btnReopenGuide.style.display = 'block';
                 
-                // 🌟 初次进入横屏，展示纯黑遮罩局部高亮引导
                 if (!hasSeenGuide) {
                     document.getElementById('tutorial-mask').classList.remove('hidden');
-                    // 提升指南针层级
                     btnReopenGuide.classList.replace('z-40', 'z-[80]');
-                    
-                    setTimeout(() => {
-                        const rect = btnReopenGuide.getBoundingClientRect();
-                        const hole = document.getElementById('tutorial-hole');
-                        const padding = 10;
-                        hole.style.width = (rect.width + padding * 2) + 'px';
-                        hole.style.height = (rect.height + padding * 2) + 'px';
-                        hole.style.left = (rect.left - padding) + 'px';
-                        hole.style.top = (rect.top - padding) + 'px';
-                    }, 50);
+                    document.getElementById('tutorial-ring').classList.remove('hidden');
                 }
             } else {
                 viewIntro.style.display = 'none';
@@ -359,7 +340,6 @@
             }
         }
 
-        // 安卓强行进入横屏模式
         document.getElementById('btn-force-landscape').addEventListener('click', () => {
             isForcedLandscape = true;
             const appRoot = document.getElementById('app-root');
@@ -374,51 +354,68 @@
             checkOrientation();
         });
 
-        // 解决安卓强制横屏下原生横轴不可滑动的问题
-        function enableForcedLandscapeScroll(containerId) {
-            const container = document.getElementById(containerId);
-            if (!container) return;
-            let isDragging = false;
-            let startY = 0;
-            let startScroll = 0;
+        // 全局处理强制横屏下的滑动支持（覆盖 map、滚动课表、规则条文等所有 overflow: auto 区域）
+        let dragStartY = 0;
+        let dragStartX = 0;
+        let activeScrollTarget = null;
 
-            container.addEventListener('touchstart', (e) => {
-                if (!isForcedLandscape) return;
-                isDragging = true;
-                startY = e.touches[0].clientY;
-                startScroll = container.scrollLeft;
-            }, { passive: true });
+        document.addEventListener('touchstart', (e) => {
+            if (!isForcedLandscape) return;
+            dragStartX = e.touches[0].clientX;
+            dragStartY = e.touches[0].clientY;
+            
+            let target = e.target;
+            while (target && target !== document) {
+                if (target.scrollHeight > target.clientHeight || target.scrollWidth > target.clientWidth) {
+                    const style = window.getComputedStyle(target);
+                    if (style.overflowY === 'auto' || style.overflowY === 'scroll' || 
+                        style.overflowX === 'auto' || style.overflowX === 'scroll' ||
+                        target.classList.contains('scroll-container') ||
+                        target.classList.contains('custom-scrollbar') ||
+                        target.classList.contains('overflow-auto')) {
+                        activeScrollTarget = target;
+                        break;
+                    }
+                }
+                target = target.parentNode;
+            }
+        }, { passive: true });
 
-            container.addEventListener('touchmove', (e) => {
-                if (!isForcedLandscape || !isDragging) return;
+        document.addEventListener('touchmove', (e) => {
+            if (!isForcedLandscape || !activeScrollTarget) return;
+            const currentX = e.touches[0].clientX;
+            const currentY = e.touches[0].clientY;
+            
+            const deltaX = currentX - dragStartX;
+            const deltaY = currentY - dragStartY;
+
+            if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
                 e.preventDefault(); 
-                const currentY = e.touches[0].clientY;
-                const deltaY = currentY - startY; 
-                container.scrollLeft = startScroll - deltaY;
-            }, { passive: false });
+                activeScrollTarget.scrollLeft -= deltaY;
+                activeScrollTarget.scrollTop += deltaX;
+                dragStartX = currentX;
+                dragStartY = currentY;
+            }
+        }, { passive: false });
 
-            container.addEventListener('touchend', () => { isDragging = false; });
-            container.addEventListener('touchcancel', () => { isDragging = false; });
-        }
-        enableForcedLandscapeScroll('map-scroll-container');
-        enableForcedLandscapeScroll('guide-scroll-container');
+        document.addEventListener('touchend', () => { activeScrollTarget = null; });
+        document.addEventListener('touchcancel', () => { activeScrollTarget = null; });
 
-        // 🌟 点击高亮指南针，关闭遮罩，弹回原来的层级，打开画廊
+
         btnReopenGuide.addEventListener('click', (e) => {
             if (!hasSeenGuide) {
                 document.getElementById('tutorial-mask').classList.add('hidden');
                 btnReopenGuide.classList.replace('z-[80]', 'z-40');
+                document.getElementById('tutorial-ring').classList.add('hidden');
                 hasSeenGuide = true;
             }
             document.getElementById('guide-modal').classList.remove('hidden');
         });
 
-        // 🌟 点击画廊外侧的灰色背景关闭画廊
         document.getElementById('guide-overlay').addEventListener('click', () => {
             document.getElementById('guide-modal').classList.add('hidden');
         });
 
-        // 安卓防白屏：安全的视频播放和全局触摸唤醒
         const safePlayVideo = (vid) => {
             if (!vid) return;
             const playPromise = vid.play();
@@ -454,7 +451,6 @@
         window.addEventListener('orientationchange', () => { setTimeout(checkOrientation, 200); });
         viewIntro.style.display = 'flex';
 
-        // 原生双指缩放控制
         const viewportMeta = document.getElementById('viewport-meta');
         function toggleViewportZoom(allow) {
             if(allow) {
@@ -465,7 +461,7 @@
         }
 
         // ==========================================
-        // 🌟 1. 热区数据与 HTML 配置区
+        // 热区数据与 HTML 配置区
         // ==========================================
         const commonFooterHtml = `
             <div>
@@ -491,69 +487,67 @@
         const skateRulesHtml = `<div class="bg-orange-100/80 p-3 rounded-xl text-orange-900 border border-orange-200/60"><strong>【重要提示】</strong> 为确保活动安全有序进行，保障每一位参与者的人身安全与良好体验，请您在入场前仔细阅读本须知。入场即视为您已充分理解并自愿接受以下全部条款。</div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-2">1. 开放时间</h4><div class="overflow-hidden rounded-xl border border-orange-200 mb-2"><table class="w-full text-center text-[10px] sm:text-xs"><thead class="bg-orange-200/50 text-orange-800"><tr><th class="py-2 px-1 border-r border-orange-200">滑板区</th><th class="py-2 px-1 border-r border-orange-200">工作日</th><th class="py-2 px-1">周末及节假日</th></tr></thead><tbody class="text-gray-600 bg-white"><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第一场</td><td class="py-1.5 border-r border-orange-100">17:00 - 17:40</td><td class="py-1.5">15:00 - 15:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第二场</td><td class="py-1.5 border-r border-orange-100">18:00 - 18:40</td><td class="py-1.5">16:00 - 16:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第三场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">17:00 - 17:40</td></tr><tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第四场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">18:00 - 18:40</td></tr></tbody></table></div></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">2. 入场条件与限制</h4><ol class="list-decimal pl-4 space-y-1 text-gray-700"><li><strong>装备要求（强制）：</strong>参与者须自备符合安全标准的滑板，现场不提供滑板租赁服务。滑板须满足以下条件：(1) 板面完好，无断裂、分层或严重磨损 (2) 轮轴稳固，支架无松动，轮子转动正常 (3) 砂纸防滑面无大面积脱落 (4) 整体无破损、无改装安全隐患。入场前须经工作人员检查装备合格后方可进入。不合格装备禁止入场。</li><li><strong>技术基础要求（强制）：</strong>参与者须具备一定的滑板基础与滑行经验，能够独立完成以下基本动作：(1) 平稳上板与直线滑行 (2) 有效控制速度与方向 (3) 安全制动与紧急停板 (4) 摔倒时的自我保护动作。本区域不设任何教学指导服务，零基础者谢绝入场。</li><li><strong>年龄与监护要求：</strong>(1) 建议12周岁及以上人员参与 (2) 未满18周岁者须由法定监护人全程陪同入场，监护人须全程保持有效看护，不得擅自离开 (3) 监护人须代为签署免责协议，并承担被监护人的全部监护责任。</li><li><strong>健康状况：</strong>参与者须身体健康，无心脏病、高血压、癫痫、骨骼关节损伤、眩晕症等不适宜剧烈运动的疾病史或身体状况。特别提醒：隐瞒健康状况、技术能力不足或装备不合格执意入场者，一切后果自负。</li><li>场地内设有人数上限，每个场次最多可同时容纳10人，达到承载量后将暂停入场，满员后请听从现场工作人员的安排。</li></ol></div><div><h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">3. 安全规范与行为准则</h4><ol class="list-decimal pl-4 space-y-1 text-gray-700"><li><strong>强制签署协议：</strong>入场前须现场签署《滑板区免责协议》，未签署者一律不得进入。未成年人须由监护人代为签署。</li><li><strong>防护装备建议：</strong>强烈建议佩戴以下专业防护装备：(1) 头盔（必备） (2) 护膝、护肘、护腕（建议全套佩戴）。未佩戴防护装备者，视为自愿承担由此增加的受伤风险。</li><li><strong>场地使用规则：</strong>(1) 严格遵守场地标识及工作人员指引，在规定区域内滑行，严禁进入非滑行区域 (2) 滑行前须观察周围环境，确保安全后方可起步 (3) 严禁在滑行过程中佩戴耳机，手持手机或其他分散注意力的物品 (4) 严禁在场地内追逐打闹、进行危险动作（包括但不限于腾空跳跃、高速俯冲、逆向滑行）或妨碍他人滑行 (5) 摔倒后须迅速撤离滑行区域，避免二次碰撞。</li><li><strong>个人物品保管：</strong>请妥善保管个人物品，贵重物品建议寄存或随身看管。场地不承担任何物品保管责任，遗失或损坏概不负责。</li></ol></div>${commonFooterHtml}`;
         const skateAgreementHtml = `<div class="text-left space-y-4 text-gray-700 text-xs sm:text-sm"><p class="font-bold text-orange-600 bg-orange-100 p-2 rounded-lg">本人（及监护人）确认 ：参与“潮玩街”滑板区活动前，已阅读、理解并自愿接受本协议全部内容。</p><div><h4 class="font-black text-orange-800 mb-1">一、健康状况与装备</h4><ul class="list-disc pl-5 space-y-1"><li>本人确认身体健康，无不适宜滑板运动的疾病或生理状态。</li><li>本人承诺使用符合安全标准的滑板及护具（头盔、护膝、护肘等），并全程佩戴。</li><li>本人知晓本区域不设教练，所有技术及风险由本人自行判断与承担。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">二、风险告知与责任</h4><p><strong class="text-orange-600">风险告知 ：</strong>本人充分了解滑板运动存在高风险，可能导致擦伤、扭伤、骨折、脑震荡、残疾甚至死亡等后果。</p><p><strong class="text-orange-600">责任划分 ：</strong></p><ul class="list-disc pl-5 space-y-1"><li>因本人未遵守规定、未佩戴护具、操作不当等自身原因造成损害的，由本人依法承担主要责任。</li><li>因主办方存在故意或重大过失造成损害的，主办方依法承担相应责任。</li><li>因第三方行为造成损害的，由行为人依法承担相应责任。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">三、未成年人监护</h4><p>监护人承诺全程监督未成年人遵守本协议及现场规定，<strong class="text-red-500">监护人不得在活动期间离开滑板区</strong>。因未成年人未遵守规定造成的损害，由监护人及未成年人依法承担责任。</p></div><div><h4 class="font-black text-orange-800 mb-1">四、其他</h4><ul class="list-disc pl-5 space-y-1"><li>本人确认：参与本次活动纯属自愿，并非受任何压力或诱导。</li><li>本协议适用中华人民共和国法律。争议协商不成的，向主办方所在地人民法院起诉。</li><li>本协议自签字之日起生效。</li></ul></div></div>`;
 
-        // 🌟 统一无边框主题设置 (全员橙红底淡黄字，无 emoji)
         const zonesData = {
             'departure': { 
                 type: 'pure-intro', badge: 'A区', title: '热爱启程', themeColor: '#DF4A27', textColor: '#FDE5A9',
                 line1: '软萌IP痛车亮相', line2: '从这里开启你的热爱之旅', 
-                en1: 'Cute anime cars debut—start your passion', en2: 'Journey here.' 
+                en1: 'IP Deco Cars Debut:', en2: 'Begin your passion journey here.' 
             },
             'zone_c': {
                 type: 'pure-intro', badge: 'C区', title: '热爱起跑线', themeColor: '#DF4A27', textColor: '#FDE5A9',
                 line1: '小朋友天生就知道，不是要跑得很快，', line2: '而是要跑得很快乐',
-                en1: 'A child just knows—it\'s not how fast you run,', en2: 'but how much joy you feel when you do.'
+                en1: 'Kids know — it\'s not about running fast,', en2: 'it\'s about running happy.'
             },
             'zone_d': {
                 type: 'pure-intro', badge: 'D区', title: '撒野营', themeColor: '#DF4A27', textColor: '#FDE5A9',
                 line1: '是一块江边的露营地', line2: '也是大小朋友诗意的栖息地',
-                en1: 'A riverside campsite, and a poetic haven', en2: 'for the young and the young at heart.'
+                en1: 'It’s not just a riverside campsite,', en2: 'but a poetic haven for kids and grown-ups.'
             },
             'zone_e': {
                 type: 'pure-intro', badge: 'E区', title: 'IP聚会场', themeColor: '#DF4A27', textColor: '#FDE5A9',
                 line1: '巴拉巴拉好朋友派对正式开场', line2: '超多IP伙伴齐聚现场，等你来赴约',
-                en1: 'Balabala Friends Party—Now On!', en2: 'Meet your favorite IP characters. Join the fun!'
+                en1: 'balabala Friends Party — Now on!', en2: 'Meet your favorite characters. Join the fun!'
             },
             'zone_e2': {
                 type: 'pure-intro', badge: 'E区', title: 'IP聚会场', themeColor: '#DF4A27', textColor: '#FDE5A9',
                 line1: '巴拉巴拉好朋友派对正式开场', line2: '超多IP伙伴齐聚现场，等你来赴约',
-                en1: 'Balabala Friends Party—Now On!', en2: 'Meet your favorite IP characters. Join the fun!'
+                en1: 'balabala Friends Party — Now on!', en2: 'Meet your favorite characters. Join the fun!'
             },
             'zone_g': {
                 type: 'pure-intro', badge: 'G区', title: '限时痛店', themeColor: '#DF4A27', textColor: '#FDE5A9',
                 line1: '汇聚鞋服潮玩与暖心美食等多物好物，', line2: '总有一款，戳中你的热爱！',
-                en1: 'From trendy apparel and designer toys to comfort food and more—', en2: 'There\'s always something that speaks to your passion.'
+                en1: 'Fashion, toys, food —', en2: 'There\'s something for everyone.'
             },
             'zone_h': {
                 type: 'pure-intro', badge: 'H区', title: '金币补给站', themeColor: '#DF4A27', textColor: '#FDE5A9',
                 line1: '收集专属金币，解锁限定礼遇', line2: '让每一份期待，都能收获惊喜回响',
-                en1: 'Gather unique coins to unlock exclusive perks—', en2: 'So every anticipation finds its happy return.'
+                en1: 'Collect coins to unlock', en2: 'exclusive perks.'
             },
             'zone_k': {
                 type: 'pure-intro', badge: 'K区', title: '萌宠乐园', themeColor: '#DF4A27', textColor: '#FDE5A9',
                 line1: '萌宠互动治愈空间', line2: '解锁温馨出片的专属时光',
-                en1: 'Cuddle Corner at Cute Pet Wonderland', en2: 'Unlock Your Picture-Perfect.'
+                en1: 'Pet Cuddle Corner —', en2: 'Unlock your picture-perfect moment.'
             },
             'climbing': { 
                 type: 'flow', badge: 'B区', title: '攀岩墙', themeColor: '#DF4A27', textColor: '#FDE5A9', 
                 line1: '喜欢攀岩的孩子不会下坠，', line2: '只会在下坠时开始飞翔', 
-                en1: 'A child who loves climbing never falls—', en2: 'They just start flying.', 
+                en1: 'Kids who love climbing never fall —', en2: 'they fly.', 
                 rulesTitle: '[B区攀岩墙] · 入场安全须知', rulesHtml: climbingRulesHtml, agreementTitle: '攀岩墙活动参与协议', agreementHtml: climbingAgreementHtml 
             },
             'bubble': { 
                 type: 'flow', badge: 'I区', title: '泡泡乐园', themeColor: '#DF4A27', textColor: '#FDE5A9', 
                 line1: '每一种热爱都是柔软的触点', line2: '愿你在海洋球的回弹中快乐徜徉', 
-                en1: 'Every passion starts with a gentle touch—', en2: 'Let joy bounce back at you.', 
+                en1: 'Every passion starts with a gentle touch —', en2: 'Let joy bounce back.', 
                 rulesTitle: '[I区泡泡乐园] · 入场安全须知', rulesHtml: bubbleRulesHtml, agreementTitle: '泡泡乐园活动参与协议', agreementHtml: bubbleAgreementHtml 
             },
             'powerblock': { 
                 id: 'powerblock', badge: 'J区', type: 'multi-flow', title: '动力街区', themeColor: '#DF4A27', textColor: '#FDE5A9', 
                 line1: '心怀热爱，自可翻越万千阻碍', line2: '怀揣勇气，便能让热爱乘风而行', 
-                en1: 'With passion, all barriers fall. With courage,', en2: 'your passion sails beyond them all.', 
+                en1: 'Passion conquers all.', en2: 'Courage lets it soar.', 
                 options: [{ btnText: 'RC遥控车区入场须知', rulesTitle: '[J区动力街区-RC遥控车区] · 入场安全须知', rulesHtml: rcRulesHtml, agreementTitle: null, agreementHtml: null }, { btnText: '滑板区入场须知', rulesTitle: '[J区动力街区-滑板区] · 入场安全须知', rulesHtml: skateRulesHtml, agreementTitle: '滑板区活动参与协议', agreementHtml: skateAgreementHtml }] 
             }
         };
 
-        // 🌟 课表子项数据及时间嵌入
         const calendarEventsData = {
             'rc': { type: 'rules', location: 'J区动力街区', title: '[J区动力街区-RC遥控车区] · 入场安全须知', html: rcRulesHtml, agreementTitle: null, agreementHtml: null },
             'skate': { type: 'rules', location: 'J区动力街区', title: '[J区动力街区-滑板区] · 入场安全须知', html: skateRulesHtml, agreementTitle: '滑板区活动参与协议', agreementHtml: skateAgreementHtml },
@@ -599,73 +593,182 @@
             'calendar': {
                 themeColor: '#F97316', 
                 content: `
-                    <div class="flex flex-col w-full h-full bg-[#ED6129]">
-                        <div class="flex-1 w-full overflow-y-auto custom-scrollbar relative fade-in">
+                    <div class="w-full h-full overflow-y-auto custom-scrollbar bg-[#ED6129]">
+                        <div class="relative w-full block m-0 p-0 fade-in pb-8">
                             <img src="assets/timetable.png" class="w-full h-auto block pointer-events-none" alt="活动课表">
                             <div class="absolute inset-0" style="top: 24.5%; bottom: 1.5%; left: 0.5%; right: 0.5%;">
                                 <div class="grid grid-cols-7 grid-rows-4 w-full h-full">
                                     <div class="col-start-6 row-start-1 flex flex-col justify-start items-center p-0.5 pt-3 sm:pt-6 lg:pt-8 gap-0.5 sm:gap-1">
-                                        <div onclick="openCalendarEvent('rc')" class="bg-cyan-100 text-cyan-800 border border-cyan-200 rounded sm:rounded-md w-[95%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition"><span class="font-black text-[5px] sm:text-[8px] leading-tight whitespace-nowrap">RC遥控车竞速</span><span class="text-[4px] sm:text-[6px] opacity-70 leading-none mt-0.5 whitespace-nowrap scale-90 hidden sm:block">四驱车拼装...</span></div>
-                                        <div onclick="openCalendarEvent('pony')" class="bg-pink-500 text-white rounded-full w-[95%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition mt-0.5"><span class="font-black text-[5px] sm:text-[8px] leading-tight whitespace-nowrap">小马宝莉见面会</span></div>
+                                        <div onclick="openCalendarEvent('rc')" class="bg-cyan-100 text-cyan-800 border border-cyan-200 rounded sm:rounded-md w-[95%] py-1 sm:py-2 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition overflow-hidden">
+                                            <div class="w-[160%] scale-[0.62] sm:w-full sm:scale-100 origin-center flex flex-col items-center text-center">
+                                                <span class="font-black text-[11px] sm:text-[13px] lg:text-[15px] leading-tight">RC遥控车竞速</span>
+                                            </div>
+                                        </div>
+                                        <div onclick="openCalendarEvent('pony')" class="bg-pink-500 text-white rounded-full w-[95%] py-1 sm:py-2 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition overflow-hidden mt-0.5 sm:mt-1">
+                                            <div class="w-[160%] scale-[0.62] sm:w-full sm:scale-100 origin-center flex flex-col items-center text-center">
+                                                <span class="font-black text-[11px] sm:text-[13px] lg:text-[15px] leading-tight">小马宝莉见面会</span>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-start-7 row-start-1 flex flex-col justify-start items-center p-0.5 pt-3 sm:pt-6 lg:pt-8 gap-0.5 sm:gap-1">
-                                        <div onclick="openCalendarEvent('run')" class="bg-lime-100 text-lime-800 border border-lime-200 rounded w-[95%] sm:rounded-md py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition"><span class="font-black text-[5px] sm:text-[8px] leading-tight whitespace-nowrap">热爱自由追风跑</span></div>
-                                        <div onclick="openCalendarEvent('market')" class="bg-[#78523A] text-white rounded-full w-[95%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition mt-0.5"><span class="font-black text-[5px] sm:text-[8px] leading-tight whitespace-nowrap">亲子公益集市</span></div>
+                                        <div onclick="openCalendarEvent('run')" class="bg-lime-100 text-lime-800 border border-lime-200 rounded sm:rounded-md w-[95%] py-1 sm:py-2 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition overflow-hidden">
+                                            <div class="w-[160%] scale-[0.62] sm:w-full sm:scale-100 origin-center flex flex-col items-center text-center">
+                                                <span class="font-black text-[11px] sm:text-[13px] lg:text-[15px] leading-tight">热爱自由追风跑</span>
+                                            </div>
+                                        </div>
+                                        <div onclick="openCalendarEvent('market')" class="bg-[#78523A] text-white rounded-full w-[95%] py-1 sm:py-2 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition overflow-hidden mt-0.5 sm:mt-1">
+                                            <div class="w-[160%] scale-[0.62] sm:w-full sm:scale-100 origin-center flex flex-col items-center text-center">
+                                                <span class="font-black text-[11px] sm:text-[13px] lg:text-[15px] leading-tight">亲子公益集市</span>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-start-2 row-start-2 flex flex-col justify-start items-center p-0.5 pt-3 sm:pt-6 lg:pt-8 gap-0.5 sm:gap-1">
-                                        <div onclick="openCalendarEvent('lottery')" class="bg-white/90 text-gray-700 border border-gray-300 rounded w-[95%] sm:rounded-md py-1 sm:py-2 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition"><span class="font-black text-[5px] sm:text-[8px] leading-tight whitespace-nowrap text-center">神秘IP限定产品<br>抽奖日</span></div>
+                                        <div onclick="openCalendarEvent('lottery')" class="bg-white/90 text-gray-700 border border-gray-300 rounded sm:rounded-md w-[95%] py-1.5 sm:py-3 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition overflow-hidden">
+                                            <div class="w-[160%] scale-[0.62] sm:w-full sm:scale-100 origin-center flex flex-col items-center text-center">
+                                                <span class="font-black text-[11px] sm:text-[13px] lg:text-[15px] leading-tight">神秘IP限定产品<br>抽奖日</span>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-start-4 row-start-2 flex flex-col justify-start items-center p-0.5 pt-3 sm:pt-6 lg:pt-8 gap-0.5 sm:gap-1">
-                                        <div onclick="openCalendarEvent('lottery')" class="bg-white/90 text-gray-700 border border-gray-300 rounded w-[95%] sm:rounded-md py-1 sm:py-2 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition"><span class="font-black text-[5px] sm:text-[8px] leading-tight whitespace-nowrap text-center">神秘IP限定产品<br>抽奖日</span></div>
+                                        <div onclick="openCalendarEvent('lottery')" class="bg-white/90 text-gray-700 border border-gray-300 rounded sm:rounded-md w-[95%] py-1.5 sm:py-3 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition overflow-hidden">
+                                            <div class="w-[160%] scale-[0.62] sm:w-full sm:scale-100 origin-center flex flex-col items-center text-center">
+                                                <span class="font-black text-[11px] sm:text-[13px] lg:text-[15px] leading-tight">神秘IP限定产品<br>抽奖日</span>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-start-5 row-start-2 flex flex-col justify-start items-center p-0.5 pt-3 sm:pt-6 lg:pt-8 gap-0.5 sm:gap-1">
-                                        <div onclick="openCalendarEvent('robot')" class="bg-slate-600 text-white rounded w-[95%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition"><span class="font-black text-[5px] sm:text-[8px] leading-tight whitespace-nowrap">银河机器人互动</span></div>
-                                        <div onclick="openCalendarEvent('skate')" class="bg-blue-500 text-white rounded-full w-[95%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition mt-0.5"><span class="font-black text-[5px] sm:text-[8px] leading-tight whitespace-nowrap">热爱板仔初体验</span></div>
+                                        <div onclick="openCalendarEvent('robot')" class="bg-slate-600 text-white rounded sm:rounded-md w-[95%] py-1 sm:py-2 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition overflow-hidden">
+                                            <div class="w-[160%] scale-[0.62] sm:w-full sm:scale-100 origin-center flex flex-col items-center text-center">
+                                                <span class="font-black text-[11px] sm:text-[13px] lg:text-[15px] leading-tight">银河机器人互动</span>
+                                            </div>
+                                        </div>
+                                        <div onclick="openCalendarEvent('skate')" class="bg-blue-500 text-white rounded-full w-[95%] py-1 sm:py-2 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition overflow-hidden mt-0.5 sm:mt-1">
+                                            <div class="w-[160%] scale-[0.62] sm:w-full sm:scale-100 origin-center flex flex-col items-center text-center">
+                                                <span class="font-black text-[11px] sm:text-[13px] lg:text-[15px] leading-tight">热爱板仔初体验</span>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-start-6 row-start-2 flex flex-col justify-start items-center p-0.5 pt-3 sm:pt-6 lg:pt-8 gap-0.5 sm:gap-1">
-                                        <div onclick="openCalendarEvent('pet')" class="bg-orange-500 text-white rounded w-[95%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition"><span class="font-black text-[5px] sm:text-[8px] leading-tight whitespace-nowrap">宠衣焕新秀</span></div>
-                                        <div onclick="openCalendarEvent('paw')" class="bg-purple-500 text-white rounded-full w-[95%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition mt-0.5"><span class="font-black text-[5px] sm:text-[8px] leading-tight whitespace-nowrap">汪汪队见面会</span></div>
-                                        <div onclick="openCalendarEvent('hotwheels')" class="bg-gray-200 text-gray-700 rounded-full w-[95%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition mt-0.5"><span class="font-black text-[5px] sm:text-[8px] leading-tight whitespace-nowrap">风火轮开箱</span></div>
+                                        <div onclick="openCalendarEvent('pet')" class="bg-orange-500 text-white rounded sm:rounded-md w-[95%] py-1 sm:py-2 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition overflow-hidden">
+                                            <div class="w-[160%] scale-[0.62] sm:w-full sm:scale-100 origin-center flex flex-col items-center text-center">
+                                                <span class="font-black text-[11px] sm:text-[13px] lg:text-[15px] leading-tight">宠衣焕新秀</span>
+                                            </div>
+                                        </div>
+                                        <div onclick="openCalendarEvent('paw')" class="bg-purple-500 text-white rounded-full w-[95%] py-1 sm:py-2 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition overflow-hidden mt-0.5 sm:mt-1">
+                                            <div class="w-[160%] scale-[0.62] sm:w-full sm:scale-100 origin-center flex flex-col items-center text-center">
+                                                <span class="font-black text-[11px] sm:text-[13px] lg:text-[15px] leading-tight">汪汪队见面会</span>
+                                            </div>
+                                        </div>
+                                        <div onclick="openCalendarEvent('hotwheels')" class="bg-gray-200 text-gray-700 rounded-full w-[95%] py-1 sm:py-2 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition overflow-hidden mt-0.5 sm:mt-1">
+                                            <div class="w-[160%] scale-[0.62] sm:w-full sm:scale-100 origin-center flex flex-col items-center text-center">
+                                                <span class="font-black text-[11px] sm:text-[13px] lg:text-[15px] leading-tight">风火轮开箱</span>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-start-7 row-start-2 flex flex-col justify-start items-center p-0.5 pt-3 sm:pt-6 lg:pt-8 gap-0.5 sm:gap-1">
-                                        <div onclick="openCalendarEvent('craft')" class="bg-emerald-500 text-white rounded w-[95%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition"><span class="font-black text-[5px] sm:text-[8px] leading-tight whitespace-nowrap">创意手工坊</span></div>
-                                        <div onclick="openCalendarEvent('paw')" class="bg-purple-500 text-white rounded-full w-[95%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition mt-0.5"><span class="font-black text-[5px] sm:text-[8px] leading-tight whitespace-nowrap">汪汪队见面会</span></div>
+                                        <div onclick="openCalendarEvent('craft')" class="bg-emerald-500 text-white rounded sm:rounded-md w-[95%] py-1 sm:py-2 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition overflow-hidden">
+                                            <div class="w-[160%] scale-[0.62] sm:w-full sm:scale-100 origin-center flex flex-col items-center text-center">
+                                                <span class="font-black text-[11px] sm:text-[13px] lg:text-[15px] leading-tight">创意手工坊</span>
+                                            </div>
+                                        </div>
+                                        <div onclick="openCalendarEvent('paw')" class="bg-purple-500 text-white rounded-full w-[95%] py-1 sm:py-2 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition overflow-hidden mt-0.5 sm:mt-1">
+                                            <div class="w-[160%] scale-[0.62] sm:w-full sm:scale-100 origin-center flex flex-col items-center text-center">
+                                                <span class="font-black text-[11px] sm:text-[13px] lg:text-[15px] leading-tight">汪汪队见面会</span>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-start-1 row-start-3 flex flex-col justify-start items-center p-0.5 pt-3 sm:pt-6 lg:pt-8 gap-0.5 sm:gap-1">
-                                        <div onclick="openCalendarEvent('bake')" class="bg-rose-100 text-rose-800 border border-rose-200 rounded w-[95%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition"><span class="font-black text-[5px] sm:text-[8px] leading-tight whitespace-nowrap">手作烘焙时光</span></div>
-                                        <div onclick="openCalendarEvent('pony')" class="bg-pink-500 text-white rounded-full w-[95%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition mt-0.5"><span class="font-black text-[5px] sm:text-[8px] leading-tight whitespace-nowrap">小马宝莉见面会</span></div>
+                                        <div onclick="openCalendarEvent('bake')" class="bg-rose-100 text-rose-800 border border-rose-200 rounded sm:rounded-md w-[95%] py-1 sm:py-2 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition overflow-hidden">
+                                            <div class="w-[160%] scale-[0.62] sm:w-full sm:scale-100 origin-center flex flex-col items-center text-center">
+                                                <span class="font-black text-[11px] sm:text-[13px] lg:text-[15px] leading-tight">手作烘焙时光</span>
+                                            </div>
+                                        </div>
+                                        <div onclick="openCalendarEvent('pony')" class="bg-pink-500 text-white rounded-full w-[95%] py-1 sm:py-2 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition overflow-hidden mt-0.5 sm:mt-1">
+                                            <div class="w-[160%] scale-[0.62] sm:w-full sm:scale-100 origin-center flex flex-col items-center text-center">
+                                                <span class="font-black text-[11px] sm:text-[13px] lg:text-[15px] leading-tight">小马宝莉见面会</span>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-start-2 row-start-3 flex flex-col justify-start items-center p-0.5 pt-3 sm:pt-6 lg:pt-8 gap-0.5 sm:gap-1">
-                                        <div onclick="openCalendarEvent('market')" class="bg-[#78523A] text-white rounded-full w-[95%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition"><span class="font-black text-[5px] sm:text-[8px] leading-tight whitespace-nowrap">亲子公益集市</span></div>
-                                        <div onclick="openCalendarEvent('pony')" class="bg-pink-500 text-white rounded-full w-[95%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition mt-0.5"><span class="font-black text-[5px] sm:text-[8px] leading-tight whitespace-nowrap">小马宝莉见面会</span></div>
-                                        <div onclick="openCalendarEvent('lottery')" class="bg-white/90 text-gray-700 border border-gray-300 rounded w-[95%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition mt-0.5"><span class="font-black text-[4px] sm:text-[6px] leading-tight whitespace-nowrap">抽奖日</span></div>
+                                        <div onclick="openCalendarEvent('market')" class="bg-[#78523A] text-white rounded-full w-[95%] py-1 sm:py-2 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition overflow-hidden">
+                                            <div class="w-[160%] scale-[0.62] sm:w-full sm:scale-100 origin-center flex flex-col items-center text-center">
+                                                <span class="font-black text-[11px] sm:text-[13px] lg:text-[15px] leading-tight">亲子公益集市</span>
+                                            </div>
+                                        </div>
+                                        <div onclick="openCalendarEvent('pony')" class="bg-pink-500 text-white rounded-full w-[95%] py-1 sm:py-2 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition overflow-hidden mt-0.5 sm:mt-1">
+                                            <div class="w-[160%] scale-[0.62] sm:w-full sm:scale-100 origin-center flex flex-col items-center text-center">
+                                                <span class="font-black text-[11px] sm:text-[13px] lg:text-[15px] leading-tight">小马宝莉见面会</span>
+                                            </div>
+                                        </div>
+                                        <div onclick="openCalendarEvent('lottery')" class="bg-white/90 text-gray-700 border border-gray-300 rounded sm:rounded-md w-[95%] py-1 sm:py-2 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition overflow-hidden mt-0.5 sm:mt-1">
+                                            <div class="w-[160%] scale-[0.62] sm:w-full sm:scale-100 origin-center flex flex-col items-center text-center">
+                                                <span class="font-black text-[10px] sm:text-[12px] lg:text-[14px] leading-tight">抽奖日</span>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-start-4 row-start-3 flex flex-col justify-start items-center p-0.5 pt-3 sm:pt-6 lg:pt-8 gap-0.5 sm:gap-1">
-                                        <div onclick="openCalendarEvent('lottery')" class="bg-white/90 text-gray-700 border border-gray-300 rounded w-[95%] sm:rounded-md py-1 sm:py-2 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition"><span class="font-black text-[5px] sm:text-[8px] leading-tight whitespace-nowrap text-center">神秘IP限定产品<br>抽奖日</span></div>
+                                        <div onclick="openCalendarEvent('lottery')" class="bg-white/90 text-gray-700 border border-gray-300 rounded sm:rounded-md w-[95%] py-1.5 sm:py-3 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition overflow-hidden">
+                                            <div class="w-[160%] scale-[0.62] sm:w-full sm:scale-100 origin-center flex flex-col items-center text-center">
+                                                <span class="font-black text-[11px] sm:text-[13px] lg:text-[15px] leading-tight">神秘IP限定产品<br>抽奖日</span>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-start-7 row-start-3 flex flex-col justify-start items-center p-0.5 pt-3 sm:pt-6 lg:pt-8 gap-0.5 sm:gap-1">
-                                        <div onclick="openCalendarEvent('dance')" class="bg-red-500 text-white rounded-full w-[95%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition"><span class="font-black text-[5px] sm:text-[8px] leading-tight whitespace-nowrap">潮酷唱跳街舞秀</span></div>
-                                        <div onclick="openCalendarEvent('pony')" class="bg-pink-500 text-white rounded-full w-[95%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition mt-0.5"><span class="font-black text-[5px] sm:text-[8px] leading-tight whitespace-nowrap">小马宝莉见面会</span></div>
+                                        <div onclick="openCalendarEvent('dance')" class="bg-red-500 text-white rounded-full w-[95%] py-1 sm:py-2 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition overflow-hidden">
+                                            <div class="w-[160%] scale-[0.62] sm:w-full sm:scale-100 origin-center flex flex-col items-center text-center">
+                                                <span class="font-black text-[11px] sm:text-[13px] lg:text-[15px] leading-tight">潮酷唱跳街舞秀</span>
+                                            </div>
+                                        </div>
+                                        <div onclick="openCalendarEvent('pony')" class="bg-pink-500 text-white rounded-full w-[95%] py-1 sm:py-2 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition overflow-hidden mt-0.5 sm:mt-1">
+                                            <div class="w-[160%] scale-[0.62] sm:w-full sm:scale-100 origin-center flex flex-col items-center text-center">
+                                                <span class="font-black text-[11px] sm:text-[13px] lg:text-[15px] leading-tight">小马宝莉见面会</span>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-start-2 row-start-4 flex flex-col justify-start items-center p-0.5 pt-3 sm:pt-6 lg:pt-8 gap-0.5 sm:gap-1">
-                                        <div onclick="openCalendarEvent('lottery')" class="bg-white/90 text-gray-700 border border-gray-300 rounded w-[95%] sm:rounded-md py-1 sm:py-2 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition"><span class="font-black text-[5px] sm:text-[8px] leading-tight whitespace-nowrap text-center">神秘IP限定产品<br>抽奖日</span></div>
+                                        <div onclick="openCalendarEvent('lottery')" class="bg-white/90 text-gray-700 border border-gray-300 rounded sm:rounded-md w-[95%] py-1.5 sm:py-3 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition overflow-hidden">
+                                            <div class="w-[160%] scale-[0.62] sm:w-full sm:scale-100 origin-center flex flex-col items-center text-center">
+                                                <span class="font-black text-[11px] sm:text-[13px] lg:text-[15px] leading-tight">神秘IP限定产品<br>抽奖日</span>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-start-4 row-start-4 flex flex-col justify-start items-center p-0.5 pt-3 sm:pt-6 lg:pt-8 gap-0.5 sm:gap-1">
-                                        <div onclick="openCalendarEvent('lottery')" class="bg-white/90 text-gray-700 border border-gray-300 rounded w-[95%] sm:rounded-md py-1 sm:py-2 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition"><span class="font-black text-[5px] sm:text-[8px] leading-tight whitespace-nowrap text-center">神秘IP限定产品<br>抽奖日</span></div>
+                                        <div onclick="openCalendarEvent('lottery')" class="bg-white/90 text-gray-700 border border-gray-300 rounded sm:rounded-md w-[95%] py-1.5 sm:py-3 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition overflow-hidden">
+                                            <div class="w-[160%] scale-[0.62] sm:w-full sm:scale-100 origin-center flex flex-col items-center text-center">
+                                                <span class="font-black text-[11px] sm:text-[13px] lg:text-[15px] leading-tight">神秘IP限定产品<br>抽奖日</span>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-start-6 row-start-4 flex flex-col justify-start items-center p-0.5 pt-3 sm:pt-6 lg:pt-8 gap-0.5 sm:gap-1">
-                                        <div onclick="openCalendarEvent('market')" class="bg-[#78523A] text-white rounded-full w-[95%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition"><span class="font-black text-[5px] sm:text-[8px] leading-tight whitespace-nowrap">亲子公益集市</span></div>
-                                        <div onclick="openCalendarEvent('hotwheels')" class="bg-gray-200 text-gray-700 rounded-full w-[95%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition mt-0.5"><span class="font-black text-[5px] sm:text-[8px] leading-tight whitespace-nowrap">风火轮开箱</span></div>
+                                        <div onclick="openCalendarEvent('market')" class="bg-[#78523A] text-white rounded-full w-[95%] py-1 sm:py-2 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition overflow-hidden">
+                                            <div class="w-[160%] scale-[0.62] sm:w-full sm:scale-100 origin-center flex flex-col items-center text-center">
+                                                <span class="font-black text-[11px] sm:text-[13px] lg:text-[15px] leading-tight">亲子公益集市</span>
+                                            </div>
+                                        </div>
+                                        <div onclick="openCalendarEvent('hotwheels')" class="bg-gray-200 text-gray-700 rounded-full w-[95%] py-1 sm:py-2 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition overflow-hidden mt-0.5 sm:mt-1">
+                                            <div class="w-[160%] scale-[0.62] sm:w-full sm:scale-100 origin-center flex flex-col items-center text-center">
+                                                <span class="font-black text-[11px] sm:text-[13px] lg:text-[15px] leading-tight">风火轮开箱</span>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-start-7 row-start-4 flex flex-col justify-start items-center p-0.5 pt-3 sm:pt-6 lg:pt-8 gap-0.5 sm:gap-1">
-                                        <div onclick="openCalendarEvent('nature')" class="bg-violet-500 text-white rounded-full w-[95%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition"><span class="font-black text-[5px] sm:text-[8px] leading-tight whitespace-nowrap">自然美育学堂</span></div>
-                                        <div onclick="openCalendarEvent('pony')" class="bg-pink-500 text-white rounded-full w-[95%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition mt-0.5"><span class="font-black text-[5px] sm:text-[8px] leading-tight whitespace-nowrap">小马宝莉见面会</span></div>
+                                        <div onclick="openCalendarEvent('nature')" class="bg-violet-500 text-white rounded-full w-[95%] py-1 sm:py-2 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition overflow-hidden">
+                                            <div class="w-[160%] scale-[0.62] sm:w-full sm:scale-100 origin-center flex flex-col items-center text-center">
+                                                <span class="font-black text-[11px] sm:text-[13px] lg:text-[15px] leading-tight">自然美育学堂</span>
+                                            </div>
+                                        </div>
+                                        <div onclick="openCalendarEvent('pony')" class="bg-pink-500 text-white rounded-full w-[95%] py-1 sm:py-2 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-90 transition overflow-hidden mt-0.5 sm:mt-1">
+                                            <div class="w-[160%] scale-[0.62] sm:w-full sm:scale-100 origin-center flex flex-col items-center text-center">
+                                                <span class="font-black text-[11px] sm:text-[13px] lg:text-[15px] leading-tight">小马宝莉见面会</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="shrink-0 w-full text-center text-[10px] sm:text-xs text-white/90 bg-black/20 backdrop-blur-sm py-3 px-4 font-medium leading-relaxed z-10 shadow-[0_-4px_10px_rgba(0,0,0,0.1)]">
-                            因天气等不可抗因素影响，以上活动安排或将延期举办或取消，最终事宜将由工作人员另行通知，敬请留意。
+                        <div class="text-center text-[10px] sm:text-xs text-white/90 mt-4 pb-6 px-4 font-medium leading-relaxed">
+                            <p class="mb-1 font-bold text-white tracking-widest animate-pulse">👆 支持两指缩放高清查看细节</p>
+                            <p>因天气等不可抗因素影响，以上活动安排或将延期举办或取消，最终事宜将由工作人员另行通知，敬请留意。</p>
                         </div>
                     </div>
                 `
@@ -673,7 +776,7 @@
             'register': {
                 themeColor: '#EA580C',
                 content: `
-                    <div class="w-full flex flex-col h-[80vh] sm:h-[85vh] fade-in bg-[#FDF2E2]">
+                    <div class="w-full flex flex-col h-[700px] max-h-full fade-in bg-[#FDF2E2]">
                         <div class="pt-6 pb-4 px-4 text-center border-b border-orange-200/50 flex-shrink-0 relative flex justify-center items-center bg-orange-50 shadow-sm z-20">
                             <h3 class="text-lg sm:text-xl font-black text-orange-800 leading-snug">活动官方报名</h3>
                         </div>
@@ -693,7 +796,6 @@
         const modal = document.getElementById('info-modal');
         const modalOverlay = document.getElementById('modal-overlay');
 
-        // 打开右下角悬浮菜单
         window.openFloat = (floatKey) => {
             const data = floatData[floatKey];
             if (data) {
@@ -725,7 +827,6 @@
             });
         }
 
-        // 课表里的胶囊点击事件：嵌入精美时间排版
         window.openCalendarEvent = (eventId) => {
             const eventData = calendarEventsData[eventId];
             if (!eventData) return;
@@ -739,7 +840,7 @@
                     : '';
 
                 modalDynamicContent.innerHTML = `
-                    <div class="flex flex-col h-full fade-in max-h-[85vh]">
+                    <div class="flex flex-col h-full fade-in max-h-full">
                         <div class="pt-6 pb-3 px-4 text-center border-b border-orange-200/50 flex-shrink-0 relative flex justify-center items-center">
                             <button onclick="window.openFloat('calendar')" class="absolute left-4 top-6 text-orange-600 font-bold text-sm flex items-center z-20 active:scale-95 transition">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>返回
@@ -763,15 +864,16 @@
         };
 
         // ==========================================
-        // 🌟 3. 主地图 IP 热区弹窗及电子签署核心逻辑
+        // 主地图 IP 热区弹窗及电子签署核心逻辑
         // ==========================================
+
         function renderPureIntroModal(data) {
             document.getElementById('modal-glow').style.display = 'none'; 
             modalCard.style.backgroundColor = data.themeColor;
             modalCard.classList.remove('border', 'border-white/60');
             
             modalDynamicContent.innerHTML = `
-                <div class="flex flex-col items-center justify-center h-full min-h-[40vh] fade-in p-6">
+                <div class="flex flex-col items-center justify-center h-full py-10 sm:py-16 fade-in p-6">
                     <div class="flex items-center mb-6 drop-shadow-sm">
                         <div class="w-12 h-12 rounded-full flex items-center justify-center font-black text-lg sm:text-xl mr-3 shadow-inner" style="background-color: ${data.textColor}; color: ${data.themeColor};">
                             ${data.badge}
@@ -796,7 +898,7 @@
             modalCard.classList.remove('border', 'border-white/60');
 
             modalDynamicContent.innerHTML = `
-                <div class="flex flex-col items-center justify-center h-full min-h-[40vh] fade-in p-6 custom-scrollbar overflow-y-auto">
+                <div class="flex flex-col items-center justify-center h-full py-10 sm:py-16 fade-in p-6 custom-scrollbar overflow-y-auto">
                     <div class="flex items-center mb-6 drop-shadow-sm shrink-0">
                         <div class="w-12 h-12 rounded-full flex items-center justify-center font-black text-lg sm:text-xl mr-3 shadow-inner" style="background-color: ${data.textColor}; color: ${data.themeColor};">
                             ${data.badge}
@@ -836,7 +938,7 @@
             `).join('');
 
             modalDynamicContent.innerHTML = `
-                <div class="flex flex-col items-center justify-center h-full min-h-[40vh] fade-in p-6 custom-scrollbar overflow-y-auto">
+                <div class="flex flex-col items-center justify-center h-full py-10 sm:py-16 fade-in p-6 custom-scrollbar overflow-y-auto">
                     <div class="flex items-center mb-6 drop-shadow-sm shrink-0">
                         <div class="w-12 h-12 rounded-full flex items-center justify-center font-black text-lg sm:text-xl mr-3 shadow-inner" style="background-color: ${data.textColor}; color: ${data.themeColor};">
                             ${data.badge}
@@ -876,7 +978,7 @@
             const btnText = agreementHtml ? '已阅须知，下一步：签署安全协议' : '我已阅读并接受此须知，为自己安全负责';
 
             modalDynamicContent.innerHTML = `
-                <div class="flex flex-col h-full fade-in max-h-[85vh]">
+                <div class="flex flex-col h-full fade-in max-h-full">
                     <div class="pt-6 pb-3 px-4 text-center border-b border-orange-200/50 flex-shrink-0 relative flex justify-center items-center">
                         ${backBtnHtml}
                         <h3 class="text-lg sm:text-xl font-black text-orange-800 leading-snug px-10">${rulesTitle}</h3>
@@ -907,7 +1009,7 @@
             };
 
             modalDynamicContent.innerHTML = `
-                <div class="flex flex-col h-full fade-in max-h-[85vh]">
+                <div class="flex flex-col h-full fade-in max-h-full">
                     <div class="pt-6 pb-3 px-4 text-center border-b border-orange-200/50 flex-shrink-0 relative flex justify-center items-center bg-orange-50">
                         <button onclick="window.goBackToRules()" class="absolute left-4 top-6 text-orange-600 font-bold text-sm flex items-center z-20 active:scale-95 transition">
                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>返回
@@ -974,7 +1076,7 @@
             }
 
             modalDynamicContent.innerHTML = `
-                <div class="p-8 flex flex-col items-center justify-center min-h-[45vh] fade-in">
+                <div class="p-8 flex flex-col items-center justify-center py-12 sm:py-16 fade-in">
                     <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 flex items-center justify-center mb-5 animate-scan bg-green-50">
                         <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                     </div>
