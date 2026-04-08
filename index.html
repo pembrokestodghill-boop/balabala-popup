@@ -136,8 +136,10 @@
     <div id="app-root" class="relative w-full h-full overflow-hidden bg-[#F8D36A] origin-center transition-transform duration-300">
 
         <!-- ================= 视图 1：竖屏开启页 ================= -->
-        <div id="view-intro" class="view-layer relative overflow-hidden cursor-pointer">
+        <div id="view-intro" class="view-layer relative overflow-hidden">
             <img src="assets/intro-bg.jpg" class="absolute inset-0 w-full h-full object-cover z-0" alt="活动海报">
+            
+            <!-- 移除会导致安卓黑屏劫持的 x5 相关属性，并添加 pointer-events-none 防止拦截点击 -->
             <video 
                 id="intro-video"
                 src="assets/intro-bg.mp4" 
@@ -146,10 +148,19 @@
                 muted 
                 playsinline 
                 webkit-playsinline
-                x5-video-player-type="h5"
-                x5-video-player-fullscreen="true"
-                class="absolute inset-0 w-full h-full object-cover z-10"
+                class="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none"
             ></video>
+
+            <!-- 🌟 安卓专属防卡死浪漫入口，最高层级保障可点，默认隐藏，由 JS 根据系统环境唤出 -->
+            <div id="android-enter-wrapper" class="absolute bottom-[12%] left-0 w-full flex justify-center z-50 hidden">
+                <button id="btn-android-enter" class="px-8 py-3.5 bg-black/40 backdrop-blur-md border border-white/50 rounded-full text-white active:scale-95 transition shadow-[0_8px_30px_rgba(0,0,0,0.4)] flex flex-col items-center relative overflow-hidden cursor-pointer">
+                    <div class="absolute inset-0 bg-gradient-to-r from-orange-500/40 to-rose-500/40 animate-pulse pointer-events-none"></div>
+                    <span class="relative z-10 tracking-widest font-black text-lg drop-shadow-md flex items-center">
+                        ✨ 触碰星光，跃入热爱
+                    </span>
+                    <span class="relative z-10 text-[10px] font-normal opacity-90 mt-1 tracking-widest">点此进入社区</span>
+                </button>
+            </div>
         </div>
 
         <!-- ================= 视图 2：旋转手机提示页 ================= -->
@@ -270,13 +281,11 @@
             </div>
         </div>
 
-        <!-- ================= 🌟 核心弹窗组件（已彻底解决事件穿透Bug） ================= -->
-        <div id="info-modal" class="absolute inset-0 z-50 hidden flex items-center justify-center p-4">
-            <!-- 背景遮罩：专门负责接收点击并关闭弹窗 -->
-            <div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity cursor-pointer" id="modal-overlay"></div>
+        <!-- ================= 通用弹窗组件 ================= -->
+        <div id="info-modal" class="absolute inset-0 z-50 hidden flex items-center justify-center p-4 pointer-events-none">
+            <div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity cursor-pointer pointer-events-auto" id="modal-overlay"></div>
             
-            <!-- 核心弹窗体：与遮罩平级，点击这里绝对不会触发上面的关闭事件 -->
-            <div id="modal-card" class="w-full max-w-lg rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter" style="background-color: rgba(255, 255, 255, 0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
+            <div id="modal-card" class="w-full max-w-lg rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter pointer-events-auto" style="background-color: rgba(255, 255, 255, 0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
                 <div id="modal-glow" class="absolute top-0 right-0 w-full h-48 opacity-40 pointer-events-none transition-colors duration-500" style="background: radial-gradient(circle at 80% 0%, var(--theme-color), transparent 70%);"></div>
                 <div id="modal-dynamic-content" class="w-full relative z-10"></div>
             </div>
@@ -296,11 +305,17 @@
         let hasSeenGuide = false;
         let isForcedLandscape = false; 
 
-        // 🌟 防呆设计：识别 iOS (包括较新的 iPadOS) 并自动隐藏强制横屏按钮
+        // 🌟 严格判断：系统环境分流
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
         if (isIOS) {
             const forceBtn = document.getElementById('btn-force-landscape');
             if (forceBtn) forceBtn.style.display = 'none';
+            // 苹果：全屏仍保留指针点击状态
+            viewIntro.classList.add('cursor-pointer');
+        } else {
+            // 安卓：展示专享的按钮，跳过劫持
+            const androidEnterBtn = document.getElementById('android-enter-wrapper');
+            if (androidEnterBtn) androidEnterBtn.classList.remove('hidden');
         }
 
         function checkOrientation() {
@@ -346,19 +361,36 @@
             }
         }
 
-        // 安卓强制横屏入口
-        document.getElementById('btn-force-landscape').addEventListener('click', () => {
-            isForcedLandscape = true;
-            const appRoot = document.getElementById('app-root');
-            const w = window.innerWidth;
-            const h = window.innerHeight;
-            appRoot.style.position = 'absolute';
-            appRoot.style.top = '50%';
-            appRoot.style.left = '50%';
-            appRoot.style.width = Math.max(w, h) + 'px';
-            appRoot.style.height = Math.min(w, h) + 'px';
-            appRoot.style.transform = 'translate(-50%, -50%) rotate(90deg)';
+        // 统一入场控制逻辑
+        function startApp() {
+            hasStarted = true;
+            // 🌟 终极优化：安卓如果是竖屏玩，不用再去旋转等待页，直接一键强制横屏进入游戏！
+            if (!isIOS && window.innerHeight > window.innerWidth) {
+                isForcedLandscape = true;
+                const appRoot = document.getElementById('app-root');
+                const w = window.innerWidth;
+                const h = window.innerHeight;
+                appRoot.style.position = 'absolute';
+                appRoot.style.top = '50%';
+                appRoot.style.left = '50%';
+                appRoot.style.width = Math.max(w, h) + 'px';
+                appRoot.style.height = Math.min(w, h) + 'px';
+                appRoot.style.transform = 'translate(-50%, -50%) rotate(90deg)';
+            }
             checkOrientation();
+        }
+
+        document.getElementById('btn-force-landscape').addEventListener('click', () => {
+            startApp();
+        });
+
+        // 🌟 分平台触发逻辑处理
+        viewIntro.addEventListener('click', (e) => {
+            if (!isIOS && e.target.closest('#btn-android-enter')) {
+                startApp();
+            } else if (isIOS) {
+                startApp();
+            }
         });
 
         btnReopenGuide.addEventListener('click', (e) => {
@@ -383,11 +415,6 @@
             }
         };
 
-        viewIntro.addEventListener('click', () => {
-            hasStarted = true;
-            checkOrientation(); 
-        });
-
         document.addEventListener('touchstart', function() {
             const video = document.getElementById('intro-video');
             if (video && video.paused && !hasStarted) {
@@ -398,8 +425,7 @@
         const introVideo = document.getElementById('intro-video');
         if (introVideo) {
             introVideo.addEventListener('ended', () => {
-                hasStarted = true;
-                checkOrientation();
+                startApp();
             });
             document.addEventListener("WeixinJSBridgeReady", function() {
                 safePlayVideo(introVideo);
@@ -692,40 +718,42 @@
             'nature': { type: 'simple', location: 'D区撒野营', title: '自然美育学堂', times: ['13:30 - 15:00'] }
         };
 
-        // 🌟 已通过 max-h-[] 动态适应容器高度，拒绝图片底下的留白大面积！
         const floatData = {
             'benefit': {
                 themeColor: '#EA580C',
                 content: `
-                    <div class="w-full max-h-[85vh] overflow-y-auto bg-[#FDF2E2] fade-in relative custom-scrollbar" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
-                        <img src="assets/dakafuli.png" class="w-full h-auto block" alt="打卡福利">
+                    <div class="w-full flex flex-col max-h-[85vh] bg-[#FDF2E2] fade-in relative rounded-[32px] overflow-hidden">
+                        <div class="w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
+                            <img src="assets/dakafuli.png" class="w-full h-auto block" alt="打卡福利">
+                        </div>
                     </div>
                 `
             },
             'coin': {
                 themeColor: '#EAB308',
                 content: `
-                    <div class="w-full max-h-[85vh] overflow-y-auto bg-[#FFF8E7] fade-in relative custom-scrollbar" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
-                        <img src="assets/jinbiwanfa.png" class="w-full h-auto block" alt="金币玩法">
+                    <div class="w-full flex flex-col max-h-[85vh] bg-[#FFF8E7] fade-in relative rounded-[32px] overflow-hidden">
+                        <div class="w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
+                            <img src="assets/jinbiwanfa.png" class="w-full h-auto block" alt="金币玩法">
+                        </div>
                     </div>
                 `
             },
             'shop': {
                 themeColor: '#DC2626',
                 content: `
-                    <div class="w-full max-h-[85vh] overflow-y-auto bg-[#FFF1F0] fade-in relative custom-scrollbar" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
-                        <img src="assets/xianshitongdian.png" class="w-full h-auto block" alt="限时痛店">
+                    <div class="w-full flex flex-col max-h-[85vh] bg-[#FFF1F0] fade-in relative rounded-[32px] overflow-hidden">
+                        <div class="w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
+                            <img src="assets/xianshitongdian.png" class="w-full h-auto block" alt="限时痛店">
+                        </div>
                     </div>
                 `
             },
             'calendar': {
                 themeColor: '#F97316', 
                 content: `
-                    <div class="w-full max-h-[85vh] flex flex-col relative bg-[#FDF2E2] fade-in">
-                        
-                        <!-- 这里的 min-h-0 和 flex-1 确保完美接收上下手势滑动 -->
+                    <div class="w-full max-h-[85vh] flex flex-col relative bg-[#FDF2E2] fade-in overflow-hidden rounded-[32px]">
                         <div class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
-                            
                             <div class="relative w-full h-auto block m-0 p-0 pb-4">
                                 <img src="assets/timetable.png" class="w-full h-auto block" style="-webkit-user-drag: none; user-select: none;" alt="活动课表">
                                 <div class="absolute inset-0" style="top: 24.5%; bottom: 1%; left: 0%; right: 0%;">
@@ -886,7 +914,7 @@
             'register': {
                 themeColor: '#EA580C',
                 content: `
-                    <div class="w-full flex flex-col max-h-[85vh] bg-[#FDF2E2] fade-in relative">
+                    <div class="w-full flex flex-col max-h-[85vh] bg-[#FDF2E2] fade-in relative rounded-[32px] overflow-hidden">
                         <div class="shrink-0 h-[60px] flex justify-center items-center bg-orange-50 border-b border-orange-200/50 shadow-sm z-20">
                             <h3 class="text-lg sm:text-xl font-black text-orange-800">活动官方报名</h3>
                         </div>
@@ -907,7 +935,6 @@
         const modal = document.getElementById('info-modal');
         const modalOverlay = document.getElementById('modal-overlay');
 
-        // 🌟 已彻底去除 className 会清空 pointer-events 等状态的隐患代码
         window.openFloat = (floatKey) => {
             const data = floatData[floatKey];
             if (data) {
@@ -921,7 +948,7 @@
                     modalCard.style.backgroundColor = 'transparent'; 
                 } else if (['benefit', 'coin', 'shop'].includes(floatKey)) {
                     modalCard.classList.add('max-w-lg', 'w-[90vw]');
-                    modalCard.style.backgroundColor = 'rgba(255, 255, 255, 1)'; 
+                    modalCard.style.backgroundColor = 'transparent'; // 背景由内部接管
                 } else {
                     modalCard.classList.add('max-w-lg', 'w-[90vw]', 'border', 'border-white/60');
                     modalCard.style.backgroundColor = 'rgba(255, 255, 255, 0.65)';
@@ -956,7 +983,7 @@
                     : '';
 
                 modalDynamicContent.innerHTML = `
-                    <div class="w-full flex flex-col max-h-[85vh] bg-[#FDF2E2] fade-in relative">
+                    <div class="w-full flex flex-col max-h-[85vh] bg-[#FDF2E2] fade-in relative rounded-[32px] overflow-hidden">
                         <div class="shrink-0 h-[60px] flex justify-center items-center bg-[#FDF2E2] border-b border-orange-200/50 z-20">
                             <button onclick="window.openFloat('calendar')" class="absolute left-4 text-orange-600 font-bold text-sm flex items-center active:scale-95 transition">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>返回
@@ -982,6 +1009,7 @@
         function renderPureIntroModal(data) {
             document.getElementById('modal-glow').style.display = 'none'; 
             modalCard.style.backgroundColor = data.themeColor;
+            modalCard.classList.remove('border', 'border-white/60');
             
             modalDynamicContent.innerHTML = `
                 <div class="flex flex-col items-center justify-center w-full min-h-[40vh] max-h-[85vh] overflow-y-auto fade-in p-6 custom-scrollbar" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
@@ -1006,6 +1034,7 @@
         function renderFlowStep1(data) {
             document.getElementById('modal-glow').style.display = 'none'; 
             modalCard.style.backgroundColor = data.themeColor;
+            modalCard.classList.remove('border', 'border-white/60');
 
             modalDynamicContent.innerHTML = `
                 <div class="flex flex-col w-full max-h-[85vh] fade-in relative">
@@ -1041,6 +1070,7 @@
         function renderMultiFlowStep1(data) {
             document.getElementById('modal-glow').style.display = 'none'; 
             modalCard.style.backgroundColor = data.themeColor;
+            modalCard.classList.remove('border', 'border-white/60');
 
             const buttonsHtml = data.options.map((opt, index) => `
                 <button onclick="window.triggerMultiOption('${data.id}', ${index})" class="w-full shrink-0 font-bold py-3.5 px-6 rounded-2xl shadow-lg transform transition active:scale-95 text-sm sm:text-base mb-3.5" style="background-color: ${data.textColor}; color: ${data.themeColor};">
@@ -1206,7 +1236,8 @@
 
         const hotspots = document.querySelectorAll('.hotspot-ip');
         for (let i = 0; i < hotspots.length; i++) {
-            hotspots[i].addEventListener('click', function() {
+            hotspots[i].addEventListener('click', function(e) {
+                e.stopPropagation(); // 阻止点击冒泡
                 const zoneId = this.getAttribute('data-zone');
                 const data = zonesData[zoneId];
                 
@@ -1234,12 +1265,21 @@
             });
         }
 
-        // 🌟 解决误触弹窗关闭的终极方案：将点击监听精确限制在半透明遮罩上，杜绝穿透
+        // 🌟 解决误触弹窗关闭的终极方案：阻断所有弹窗内部对外部的事件穿透
         const closeModal = () => {
             modal.classList.add('hidden');
             toggleViewportZoom(false);
         }
         document.getElementById('modal-overlay').addEventListener('click', closeModal);
+        
+        // 关键防护：点击弹窗主体本身时，阻断点击事件传递给底层的遮罩，彻底杜绝误关
+        modalCard.addEventListener('click', (e) => {
+            e.stopPropagation(); 
+        });
+        // 防止触摸滑动也穿透
+        modalCard.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+        }, { passive: true });
     </script>
 </body>
 </html>
