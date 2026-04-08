@@ -282,9 +282,11 @@
         </div>
 
         <!-- ================= 通用弹窗组件 ================= -->
-        <div id="info-modal" class="absolute inset-0 z-50 hidden flex items-center justify-center p-4 pointer-events-none">
+        <!-- 外层不再添加 pointer-events-none 避免混淆，通过 overlay 独立接管点击 -->
+        <div id="info-modal" class="absolute inset-0 z-50 hidden flex items-center justify-center p-4">
             <div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity cursor-pointer pointer-events-auto" id="modal-overlay"></div>
             
+            <!-- 🌟 修复 Bug: 添加 pointer-events-auto 确立物理实体 -->
             <div id="modal-card" class="w-full max-w-lg rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter pointer-events-auto" style="background-color: rgba(255, 255, 255, 0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
                 <div id="modal-glow" class="absolute top-0 right-0 w-full h-48 opacity-40 pointer-events-none transition-colors duration-500" style="background: radial-gradient(circle at 80% 0%, var(--theme-color), transparent 70%);"></div>
                 <div id="modal-dynamic-content" class="w-full relative z-10"></div>
@@ -305,15 +307,12 @@
         let hasSeenGuide = false;
         let isForcedLandscape = false; 
 
-        // 🌟 严格判断：系统环境分流
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
         if (isIOS) {
             const forceBtn = document.getElementById('btn-force-landscape');
             if (forceBtn) forceBtn.style.display = 'none';
-            // 苹果：全屏仍保留指针点击状态
             viewIntro.classList.add('cursor-pointer');
         } else {
-            // 安卓：展示专享的按钮，跳过劫持
             const androidEnterBtn = document.getElementById('android-enter-wrapper');
             if (androidEnterBtn) androidEnterBtn.classList.remove('hidden');
         }
@@ -361,10 +360,8 @@
             }
         }
 
-        // 统一入场控制逻辑
         function startApp() {
             hasStarted = true;
-            // 🌟 终极优化：安卓如果是竖屏玩，不用再去旋转等待页，直接一键强制横屏进入游戏！
             if (!isIOS && window.innerHeight > window.innerWidth) {
                 isForcedLandscape = true;
                 const appRoot = document.getElementById('app-root');
@@ -384,7 +381,6 @@
             startApp();
         });
 
-        // 🌟 分平台触发逻辑处理
         viewIntro.addEventListener('click', (e) => {
             if (!isIOS && e.target.closest('#btn-android-enter')) {
                 startApp();
@@ -403,8 +399,12 @@
             document.getElementById('guide-modal').classList.remove('hidden');
         });
 
-        document.getElementById('guide-overlay').addEventListener('click', () => {
-            document.getElementById('guide-modal').classList.add('hidden');
+        const guideModal = document.getElementById('guide-modal');
+        const guideOverlay = document.getElementById('guide-overlay');
+        guideModal.addEventListener('click', (e) => {
+            if (e.target === guideModal || e.target === guideOverlay) {
+                guideModal.classList.add('hidden');
+            }
         });
 
         const safePlayVideo = (vid) => {
@@ -718,12 +718,13 @@
             'nature': { type: 'simple', location: 'D区撒野营', title: '自然美育学堂', times: ['13:30 - 15:00'] }
         };
 
+        // 🌟 统一绝对定位防溢出滚动架构，增加了 flex-1 min-h-0 以完美支持上下滑动
         const floatData = {
             'benefit': {
                 themeColor: '#EA580C',
                 content: `
                     <div class="w-full flex flex-col max-h-[85vh] bg-[#FDF2E2] fade-in relative rounded-[32px] overflow-hidden">
-                        <div class="w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
+                        <div class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
                             <img src="assets/dakafuli.png" class="w-full h-auto block" alt="打卡福利">
                         </div>
                     </div>
@@ -733,7 +734,7 @@
                 themeColor: '#EAB308',
                 content: `
                     <div class="w-full flex flex-col max-h-[85vh] bg-[#FFF8E7] fade-in relative rounded-[32px] overflow-hidden">
-                        <div class="w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
+                        <div class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
                             <img src="assets/jinbiwanfa.png" class="w-full h-auto block" alt="金币玩法">
                         </div>
                     </div>
@@ -743,7 +744,7 @@
                 themeColor: '#DC2626',
                 content: `
                     <div class="w-full flex flex-col max-h-[85vh] bg-[#FFF1F0] fade-in relative rounded-[32px] overflow-hidden">
-                        <div class="w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
+                        <div class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
                             <img src="assets/xianshitongdian.png" class="w-full h-auto block" alt="限时痛店">
                         </div>
                     </div>
@@ -919,7 +920,6 @@
                             <h3 class="text-lg sm:text-xl font-black text-orange-800">活动官方报名</h3>
                         </div>
                         <div class="flex-1 min-h-0 w-full overflow-y-auto bg-gray-50" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
-                            <!-- 由于表单是外链，给定一个绝对的高度让其在容器内自由滚动 -->
                             <iframe src="https://w.wjx.top/vm/wPiJGsr.aspx" class="w-full h-[70vh] border-0 block" frameborder="0"></iframe>
                         </div>
                         <div class="shrink-0 h-[40px] bg-orange-100 flex items-center justify-center border-t border-orange-200 z-20">
@@ -935,20 +935,20 @@
         const modal = document.getElementById('info-modal');
         const modalOverlay = document.getElementById('modal-overlay');
 
+        // 🌟 修复 Bug: 强制保留 pointer-events-auto 阻止点击穿透
         window.openFloat = (floatKey) => {
             const data = floatData[floatKey];
             if (data) {
                 document.getElementById('modal-glow').style.setProperty('--theme-color', data.themeColor);
                 
-                // 每次重置类名，只保留排版相关的，不触碰事件控制
-                modalCard.className = 'w-full rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter';
+                modalCard.className = 'w-full rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter pointer-events-auto';
                 
                 if (floatKey === 'calendar') {
                     modalCard.classList.add('max-w-4xl', 'w-[92vw]', 'sm:w-[85vw]');
                     modalCard.style.backgroundColor = 'transparent'; 
                 } else if (['benefit', 'coin', 'shop'].includes(floatKey)) {
                     modalCard.classList.add('max-w-lg', 'w-[90vw]');
-                    modalCard.style.backgroundColor = 'transparent'; // 背景由内部接管
+                    modalCard.style.backgroundColor = 'transparent'; 
                 } else {
                     modalCard.classList.add('max-w-lg', 'w-[90vw]', 'border', 'border-white/60');
                     modalCard.style.backgroundColor = 'rgba(255, 255, 255, 0.65)';
@@ -1244,8 +1244,8 @@
                 if (data) {
                     document.getElementById('modal-glow').style.display = 'block';
                     
-                    // 每次点开 IP 时重置基础样式
-                    modalCard.className = 'w-full rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter max-w-lg w-[90vw] border border-white/60';
+                    // 🌟 修复 Bug: 强制保留 pointer-events-auto 防止点击穿透
+                    modalCard.className = 'w-full rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter max-w-lg w-[90vw] border border-white/60 pointer-events-auto';
                     modalCard.style.backgroundColor = 'rgba(255, 255, 255, 0.65)';
                     toggleViewportZoom(false);
 
@@ -1265,7 +1265,7 @@
             });
         }
 
-        // 🌟 解决误触弹窗关闭的终极方案：阻断所有弹窗内部对外部的事件穿透
+        // 阻断外部点击遮罩关闭事件
         const closeModal = () => {
             modal.classList.add('hidden');
             toggleViewportZoom(false);
