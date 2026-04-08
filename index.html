@@ -161,8 +161,9 @@
                 <h2 class="text-2xl font-bold mb-2 text-white">为了更好的体验</h2>
                 <p class="text-gray-300 mb-8 text-sm sm:text-base">请解锁方向锁定，并将手机横过来观看</p>
                 
-                <button id="btn-force-landscape" class="px-6 py-3 bg-orange-500 border border-white/30 rounded-full text-white font-bold text-sm active:scale-95 transition shadow-lg drop-shadow-md">
-                    安卓机无法旋转？点此强制进入地图
+                <button id="btn-force-landscape" class="px-8 py-4 bg-gradient-to-r from-orange-400 to-rose-500 border border-white/40 rounded-full text-white active:scale-95 transition shadow-[0_10px_25px_rgba(244,63,94,0.4)] flex flex-col items-center">
+                    <span class="tracking-widest font-black text-base mb-0.5">✨ 拨动时针，跃入热爱之境</span>
+                    <span class="text-[10px] font-normal opacity-80 tracking-normal font-sans">（屏幕无法自动旋转？点此强制进入）</span>
                 </button>
             </div>
         </div>
@@ -264,20 +265,19 @@
         <!-- ================= 🌟 悬浮画廊：活动指引长图 ================= -->
         <div id="guide-modal" class="absolute inset-0 z-[60] hidden flex items-center justify-center p-4 sm:p-8">
             <div class="absolute inset-0 bg-black/70 backdrop-blur-sm cursor-pointer" id="guide-overlay"></div>
-            <div id="guide-scroll-container" class="relative z-10 w-full max-w-4xl h-auto max-h-[85vh] overflow-x-auto overflow-y-auto custom-scrollbar rounded-2xl shadow-2xl pointer-events-auto bg-[#FDF2E2] border border-white/20 fade-in flex items-center p-2 sm:p-4" style="-webkit-overflow-scrolling: touch; touch-action: pan-x pan-y;">
+            <div id="guide-scroll-container" class="relative z-10 w-full max-w-4xl h-auto max-h-[85vh] overflow-x-auto overflow-y-auto custom-scrollbar rounded-2xl shadow-2xl bg-[#FDF2E2] border border-white/20 fade-in flex items-center p-2 sm:p-4" style="-webkit-overflow-scrolling: touch; touch-action: pan-x pan-y;">
                 <img src="assets/guide-bg.webp" class="h-[50vh] sm:h-[65vh] w-auto max-w-none block rounded-xl shadow-sm" alt="活动引导" onerror="console.error('找不到活动引导图片')">
             </div>
         </div>
 
-        <!-- ================= 通用弹窗组件 ================= -->
-        <div id="info-modal" class="absolute inset-0 z-50 hidden flex items-center justify-center p-4 pointer-events-none">
-            <!-- 遮罩恢复点击拦截 -->
-            <div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity cursor-pointer pointer-events-auto" id="modal-overlay"></div>
+        <!-- ================= 🌟 核心弹窗组件（已彻底解决事件穿透Bug） ================= -->
+        <div id="info-modal" class="absolute inset-0 z-50 hidden flex items-center justify-center p-4">
+            <!-- 背景遮罩：专门负责接收点击并关闭弹窗 -->
+            <div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity cursor-pointer" id="modal-overlay"></div>
             
-            <!-- 移除强制宽高死限，纯粹包裹，依靠内部的内容来撑起高度 -->
-            <div id="modal-card" class="w-full max-w-lg rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter pointer-events-auto" style="background-color: rgba(255, 255, 255, 0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
+            <!-- 核心弹窗体：与遮罩平级，点击这里绝对不会触发上面的关闭事件 -->
+            <div id="modal-card" class="w-full max-w-lg rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter" style="background-color: rgba(255, 255, 255, 0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
                 <div id="modal-glow" class="absolute top-0 right-0 w-full h-48 opacity-40 pointer-events-none transition-colors duration-500" style="background: radial-gradient(circle at 80% 0%, var(--theme-color), transparent 70%);"></div>
-                <!-- 内部动态内容容器 -->
                 <div id="modal-dynamic-content" class="w-full relative z-10"></div>
             </div>
         </div>
@@ -296,6 +296,7 @@
         let hasSeenGuide = false;
         let isForcedLandscape = false; 
 
+        // 🌟 防呆设计：识别 iOS (包括较新的 iPadOS) 并自动隐藏强制横屏按钮
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
         if (isIOS) {
             const forceBtn = document.getElementById('btn-force-landscape');
@@ -345,6 +346,7 @@
             }
         }
 
+        // 安卓强制横屏入口
         document.getElementById('btn-force-landscape').addEventListener('click', () => {
             isForcedLandscape = true;
             const appRoot = document.getElementById('app-root');
@@ -418,7 +420,7 @@
         }
 
         // ==========================================
-        // 🌟 热区数据与 HTML 文案配置区（100%匹配Word版本）
+        // 热区数据与 HTML 配置区
         // ==========================================
         
         const climbingRulesHtml = `
@@ -569,7 +571,6 @@
                 <div class="overflow-hidden rounded-xl border border-orange-200 mb-2">
                     <table class="w-full text-center text-[10px] sm:text-xs">
                         <thead class="bg-orange-200/50 text-orange-800">
-                            <!-- 保留Word文档中的原文表头呈现 -->
                             <tr><th class="py-2 px-1 border-r border-orange-200">泡泡乐园开放时间</th><th class="py-2 px-1 border-r border-orange-200">工作日（周一至周四）</th><th class="py-2 px-1">周五至周日及节假日（包含4月30日）</th></tr>
                         </thead>
                         <tbody class="text-gray-600 bg-white">
@@ -691,50 +692,40 @@
             'nature': { type: 'simple', location: 'D区撒野营', title: '自然美育学堂', times: ['13:30 - 15:00'] }
         };
 
-        // ==========================================================
-        // 🌟 核心修复：纯原生弹性滚动布局 (Flexbox + min-h-0)
-        // 杜绝任何因为 Flex 被撑开而导致横屏手机下无法滚动的问题
-        // ==========================================================
+        // 🌟 已通过 max-h-[] 动态适应容器高度，拒绝图片底下的留白大面积！
         const floatData = {
             'benefit': {
                 themeColor: '#EA580C',
                 content: `
-                    <div class="w-full flex flex-col h-[85dvh] bg-[#FDF2E2] fade-in relative">
-                        <div class="flex-1 min-h-0 w-full overflow-y-auto" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
-                            <img src="assets/dakafuli.png" class="w-full h-auto block" alt="打卡福利">
-                        </div>
+                    <div class="w-full max-h-[85vh] overflow-y-auto bg-[#FDF2E2] fade-in relative custom-scrollbar" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
+                        <img src="assets/dakafuli.png" class="w-full h-auto block" alt="打卡福利">
                     </div>
                 `
             },
             'coin': {
                 themeColor: '#EAB308',
                 content: `
-                    <div class="w-full flex flex-col h-[85dvh] bg-[#FFF8E7] fade-in relative">
-                        <div class="flex-1 min-h-0 w-full overflow-y-auto" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
-                            <img src="assets/jinbiwanfa.png" class="w-full h-auto block" alt="金币玩法">
-                        </div>
+                    <div class="w-full max-h-[85vh] overflow-y-auto bg-[#FFF8E7] fade-in relative custom-scrollbar" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
+                        <img src="assets/jinbiwanfa.png" class="w-full h-auto block" alt="金币玩法">
                     </div>
                 `
             },
             'shop': {
                 themeColor: '#DC2626',
                 content: `
-                    <div class="w-full flex flex-col h-[85dvh] bg-[#FFF1F0] fade-in relative">
-                        <div class="flex-1 min-h-0 w-full overflow-y-auto" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
-                            <img src="assets/xianshitongdian.png" class="w-full h-auto block" alt="限时痛店">
-                        </div>
+                    <div class="w-full max-h-[85vh] overflow-y-auto bg-[#FFF1F0] fade-in relative custom-scrollbar" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
+                        <img src="assets/xianshitongdian.png" class="w-full h-auto block" alt="限时痛店">
                     </div>
                 `
             },
             'calendar': {
                 themeColor: '#F97316', 
                 content: `
-                    <div class="w-full h-[85dvh] flex flex-col relative bg-[#FDF2E2] fade-in overflow-hidden">
+                    <div class="w-full max-h-[85vh] flex flex-col relative bg-[#FDF2E2] fade-in">
                         
-                        <!-- 🌟 滚动主容器 -->
+                        <!-- 这里的 min-h-0 和 flex-1 确保完美接收上下手势滑动 -->
                         <div class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
                             
-                            <!-- 确保高度可由内容撑开 -->
                             <div class="relative w-full h-auto block m-0 p-0 pb-4">
                                 <img src="assets/timetable.png" class="w-full h-auto block" style="-webkit-user-drag: none; user-select: none;" alt="活动课表">
                                 <div class="absolute inset-0" style="top: 24.5%; bottom: 1%; left: 0%; right: 0%;">
@@ -886,7 +877,6 @@
                             </div>
                         </div>
                         
-                        <!-- 固定底部栏 -->
                         <div class="shrink-0 h-[40px] flex items-center justify-center border-t border-[#EEDDB8] text-[10px] sm:text-xs text-[#8A7B6B] px-4 font-medium z-10 text-center">
                             因天气等不可抗因素影响，以上活动安排或将延期举办或取消，敬请留意。
                         </div>
@@ -896,12 +886,13 @@
             'register': {
                 themeColor: '#EA580C',
                 content: `
-                    <div class="w-full flex flex-col h-[85dvh] bg-[#FDF2E2] fade-in relative">
+                    <div class="w-full flex flex-col max-h-[85vh] bg-[#FDF2E2] fade-in relative">
                         <div class="shrink-0 h-[60px] flex justify-center items-center bg-orange-50 border-b border-orange-200/50 shadow-sm z-20">
                             <h3 class="text-lg sm:text-xl font-black text-orange-800">活动官方报名</h3>
                         </div>
                         <div class="flex-1 min-h-0 w-full overflow-y-auto bg-gray-50" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
-                            <iframe src="https://w.wjx.top/vm/wPiJGsr.aspx" class="w-full h-full border-0 block" frameborder="0"></iframe>
+                            <!-- 由于表单是外链，给定一个绝对的高度让其在容器内自由滚动 -->
+                            <iframe src="https://w.wjx.top/vm/wPiJGsr.aspx" class="w-full h-[70vh] border-0 block" frameborder="0"></iframe>
                         </div>
                         <div class="shrink-0 h-[40px] bg-orange-100 flex items-center justify-center border-t border-orange-200 z-20">
                             <a href="https://w.wjx.top/vm/wPiJGsr.aspx" target="_blank" class="text-orange-600 font-bold text-xs underline">画面显示异常？点此在新窗口打开报名页</a>
@@ -916,11 +907,13 @@
         const modal = document.getElementById('info-modal');
         const modalOverlay = document.getElementById('modal-overlay');
 
+        // 🌟 已彻底去除 className 会清空 pointer-events 等状态的隐患代码
         window.openFloat = (floatKey) => {
             const data = floatData[floatKey];
             if (data) {
                 document.getElementById('modal-glow').style.setProperty('--theme-color', data.themeColor);
                 
+                // 每次重置类名，只保留排版相关的，不触碰事件控制
                 modalCard.className = 'w-full rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter';
                 
                 if (floatKey === 'calendar') {
@@ -963,7 +956,7 @@
                     : '';
 
                 modalDynamicContent.innerHTML = `
-                    <div class="w-full flex flex-col h-[85dvh] bg-[#FDF2E2] fade-in relative">
+                    <div class="w-full flex flex-col max-h-[85vh] bg-[#FDF2E2] fade-in relative">
                         <div class="shrink-0 h-[60px] flex justify-center items-center bg-[#FDF2E2] border-b border-orange-200/50 z-20">
                             <button onclick="window.openFloat('calendar')" class="absolute left-4 text-orange-600 font-bold text-sm flex items-center active:scale-95 transition">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>返回
@@ -986,28 +979,23 @@
             }
         };
 
-        // ==========================================
-        // 主地图 IP 热区弹窗及电子签署核心逻辑
-        // ==========================================
-
         function renderPureIntroModal(data) {
             document.getElementById('modal-glow').style.display = 'none'; 
             modalCard.style.backgroundColor = data.themeColor;
-            modalCard.classList.remove('border', 'border-white/60');
             
             modalDynamicContent.innerHTML = `
-                <div class="flex flex-col items-center justify-center w-full min-h-[40vh] fade-in p-6">
-                    <div class="flex items-center mb-6 drop-shadow-sm">
-                        <div class="w-12 h-12 rounded-full flex items-center justify-center font-black text-lg sm:text-xl mr-3 shadow-inner" style="background-color: ${data.textColor}; color: ${data.themeColor};">
+                <div class="flex flex-col items-center justify-center w-full min-h-[40vh] max-h-[85vh] overflow-y-auto fade-in p-6 custom-scrollbar" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
+                    <div class="flex items-center mb-6 drop-shadow-sm mt-auto">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center font-black text-lg sm:text-xl mr-3 shadow-inner shrink-0" style="background-color: ${data.textColor}; color: ${data.themeColor};">
                             ${data.badge}
                         </div>
-                        <h2 class="text-3xl sm:text-4xl font-black tracking-widest" style="color: ${data.textColor};">${data.title}</h2>
+                        <h2 class="text-3xl sm:text-4xl font-black tracking-widest shrink-0" style="color: ${data.textColor};">${data.title}</h2>
                     </div>
-                    <div class="text-center font-bold text-lg sm:text-xl leading-relaxed mb-4" style="color: ${data.textColor};">
+                    <div class="text-center font-bold text-lg sm:text-xl leading-relaxed mb-4 shrink-0" style="color: ${data.textColor};">
                         <p>${data.line1}</p>
                         <p>${data.line2}</p>
                     </div>
-                    <div class="text-center font-bold text-[10px] sm:text-xs leading-relaxed opacity-80" style="color: ${data.textColor};">
+                    <div class="text-center font-bold text-[10px] sm:text-xs leading-relaxed opacity-80 mb-auto shrink-0" style="color: ${data.textColor};">
                         <p>${data.en1}</p>
                         <p>${data.en2}</p>
                     </div>
@@ -1018,10 +1006,9 @@
         function renderFlowStep1(data) {
             document.getElementById('modal-glow').style.display = 'none'; 
             modalCard.style.backgroundColor = data.themeColor;
-            modalCard.classList.remove('border', 'border-white/60');
 
             modalDynamicContent.innerHTML = `
-                <div class="flex flex-col w-full h-[85dvh] fade-in relative">
+                <div class="flex flex-col w-full max-h-[85vh] fade-in relative">
                     <div class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar p-6 flex flex-col items-center justify-center" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
                         <div class="flex items-center mb-6 drop-shadow-sm shrink-0 mt-auto">
                             <div class="w-12 h-12 rounded-full flex items-center justify-center font-black text-lg sm:text-xl mr-3 shadow-inner" style="background-color: ${data.textColor}; color: ${data.themeColor};">
@@ -1054,7 +1041,6 @@
         function renderMultiFlowStep1(data) {
             document.getElementById('modal-glow').style.display = 'none'; 
             modalCard.style.backgroundColor = data.themeColor;
-            modalCard.classList.remove('border', 'border-white/60');
 
             const buttonsHtml = data.options.map((opt, index) => `
                 <button onclick="window.triggerMultiOption('${data.id}', ${index})" class="w-full shrink-0 font-bold py-3.5 px-6 rounded-2xl shadow-lg transform transition active:scale-95 text-sm sm:text-base mb-3.5" style="background-color: ${data.textColor}; color: ${data.themeColor};">
@@ -1063,7 +1049,7 @@
             `).join('');
 
             modalDynamicContent.innerHTML = `
-                <div class="flex flex-col w-full h-[85dvh] fade-in relative">
+                <div class="flex flex-col w-full max-h-[85vh] fade-in relative">
                     <div class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar p-6 flex flex-col items-center justify-center" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
                         <div class="flex items-center mb-6 drop-shadow-sm shrink-0 mt-auto">
                             <div class="w-12 h-12 rounded-full flex items-center justify-center font-black text-lg sm:text-xl mr-3 shadow-inner" style="background-color: ${data.textColor}; color: ${data.themeColor};">
@@ -1105,7 +1091,7 @@
             const btnText = agreementHtml ? '已阅须知，下一步：签署安全协议' : '我已阅读并接受此须知，为自己安全负责';
 
             modalDynamicContent.innerHTML = `
-                <div class="w-full flex flex-col h-[85dvh] fade-in relative">
+                <div class="w-full flex flex-col max-h-[85vh] fade-in relative">
                     <div class="shrink-0 h-[60px] flex justify-center items-center border-b border-white/40 z-20">
                         ${backBtnHtml}
                         <h3 class="text-lg sm:text-xl font-black text-orange-800 px-10 truncate w-full text-center">${rulesTitle}</h3>
@@ -1136,7 +1122,7 @@
             };
 
             modalDynamicContent.innerHTML = `
-                <div class="w-full flex flex-col h-[85dvh] fade-in relative">
+                <div class="w-full flex flex-col max-h-[85vh] fade-in relative">
                     <div class="shrink-0 h-[60px] flex justify-center items-center border-b border-white/40 z-20">
                         <button onclick="window.goBackToRules()" class="absolute left-4 text-orange-600 font-bold text-sm flex items-center active:scale-95 transition">
                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>返回
@@ -1226,8 +1212,10 @@
                 
                 if (data) {
                     document.getElementById('modal-glow').style.display = 'block';
+                    
+                    // 每次点开 IP 时重置基础样式
+                    modalCard.className = 'w-full rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter max-w-lg w-[90vw] border border-white/60';
                     modalCard.style.backgroundColor = 'rgba(255, 255, 255, 0.65)';
-                    modalCard.classList.add('border', 'border-white/60');
                     toggleViewportZoom(false);
 
                     if (data.type === 'pure-intro') {
@@ -1246,11 +1234,12 @@
             });
         }
 
+        // 🌟 解决误触弹窗关闭的终极方案：将点击监听精确限制在半透明遮罩上，杜绝穿透
         const closeModal = () => {
             modal.classList.add('hidden');
             toggleViewportZoom(false);
         }
-        modalOverlay.addEventListener('click', closeModal);
+        document.getElementById('modal-overlay').addEventListener('click', closeModal);
     </script>
 </body>
 </html>
