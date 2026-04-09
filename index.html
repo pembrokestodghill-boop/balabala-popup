@@ -139,7 +139,6 @@
         <div id="view-intro" class="view-layer relative overflow-hidden">
             <img src="assets/intro-bg.jpg" class="absolute inset-0 w-full h-full object-cover z-0" alt="活动海报">
             
-            <!-- 移除会导致安卓黑屏劫持的 x5 相关属性，并添加 pointer-events-none 防止拦截点击 -->
             <video 
                 id="intro-video"
                 src="assets/intro-bg.mp4" 
@@ -244,7 +243,7 @@
                 </div>
             </div>
 
-            <!-- ================= 右下角悬浮菜单 ================= -->
+            <!-- ================= 右下角悬浮菜单 (已去掉活动报名，整体自然右移) ================= -->
             <div id="floating-menu" class="absolute right-3 bottom-4 sm:right-6 sm:bottom-6 z-40 flex flex-row items-end gap-2 sm:gap-3 transition-opacity duration-300" style="display: none;">
                 <button class="float-btn relative w-12 h-16 sm:w-16 sm:h-20 shrink-0 transform transition active:scale-90 cursor-pointer" data-float="benefit">
                     <img src="assets/small icon 1.png" class="w-full h-full object-contain filter drop-shadow-[0_4px_6px_rgba(0,0,0,0.3)]" alt="打卡福利">
@@ -257,9 +256,6 @@
                 </button>
                 <button class="float-btn relative w-12 h-16 sm:w-16 sm:h-20 shrink-0 transform transition active:scale-90 cursor-pointer" data-float="calendar">
                     <img src="assets/small icon 4.png" class="w-full h-full object-contain filter drop-shadow-[0_4px_6px_rgba(0,0,0,0.3)]" alt="活动课表">
-                </button>
-                <button class="float-btn relative w-12 h-16 sm:w-16 sm:h-20 shrink-0 transform transition active:scale-90 cursor-pointer" data-float="register">
-                    <img src="assets/small icon 5.png" class="w-full h-full object-contain filter drop-shadow-[0_4px_6px_rgba(0,0,0,0.3)]" alt="活动报名">
                 </button>
             </div>
         </div>
@@ -276,17 +272,16 @@
         <!-- ================= 🌟 悬浮画廊：活动指引长图 ================= -->
         <div id="guide-modal" class="absolute inset-0 z-[60] hidden flex items-center justify-center p-4 sm:p-8">
             <div class="absolute inset-0 bg-black/70 backdrop-blur-sm cursor-pointer" id="guide-overlay"></div>
+            <!-- JS 将会自动调整此处的长宽属性以适配安卓 -->
             <div id="guide-scroll-container" class="relative z-10 w-full max-w-4xl h-auto max-h-[85vh] overflow-x-auto overflow-y-auto custom-scrollbar rounded-2xl shadow-2xl bg-[#FDF2E2] border border-white/20 fade-in flex items-center p-2 sm:p-4" style="-webkit-overflow-scrolling: touch; touch-action: pan-x pan-y;">
                 <img src="assets/guide-bg.webp" class="h-[50vh] sm:h-[65vh] w-auto max-w-none block rounded-xl shadow-sm" alt="活动引导" onerror="console.error('找不到活动引导图片')">
             </div>
         </div>
 
         <!-- ================= 通用弹窗组件 ================= -->
-        <!-- 外层不再添加 pointer-events-none 避免混淆，通过 overlay 独立接管点击 -->
-        <div id="info-modal" class="absolute inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div id="info-modal" class="absolute inset-0 z-50 hidden flex items-center justify-center p-4 pointer-events-none">
             <div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity cursor-pointer pointer-events-auto" id="modal-overlay"></div>
             
-            <!-- 🌟 修复 Bug: 添加 pointer-events-auto 确立物理实体 -->
             <div id="modal-card" class="w-full max-w-lg rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter pointer-events-auto" style="background-color: rgba(255, 255, 255, 0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
                 <div id="modal-glow" class="absolute top-0 right-0 w-full h-48 opacity-40 pointer-events-none transition-colors duration-500" style="background: radial-gradient(circle at 80% 0%, var(--theme-color), transparent 70%);"></div>
                 <div id="modal-dynamic-content" class="w-full relative z-10"></div>
@@ -307,6 +302,7 @@
         let hasSeenGuide = false;
         let isForcedLandscape = false; 
 
+        // 🌟 识别系统环境，应用防呆或兼容优化
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
         if (isIOS) {
             const forceBtn = document.getElementById('btn-force-landscape');
@@ -315,6 +311,18 @@
         } else {
             const androidEnterBtn = document.getElementById('android-enter-wrapper');
             if (androidEnterBtn) androidEnterBtn.classList.remove('hidden');
+            
+            // 🌟 安卓专属优化：将入场指引画廊缩小，留出四周空白点击区
+            const guideContainer = document.getElementById('guide-scroll-container');
+            if (guideContainer) {
+                guideContainer.classList.remove('w-full', 'max-w-4xl', 'max-h-[85vh]');
+                guideContainer.classList.add('w-[80%]', 'max-w-3xl', 'max-h-[70vh]'); 
+                const guideImg = guideContainer.querySelector('img');
+                if (guideImg) {
+                    guideImg.classList.remove('h-[50vh]', 'sm:h-[65vh]');
+                    guideImg.classList.add('h-[45vh]', 'sm:h-[55vh]');
+                }
+            }
         }
 
         function checkOrientation() {
@@ -718,7 +726,7 @@
             'nature': { type: 'simple', location: 'D区撒野营', title: '自然美育学堂', times: ['13:30 - 15:00'] }
         };
 
-        // 🌟 统一绝对定位防溢出滚动架构，增加了 flex-1 min-h-0 以完美支持上下滑动
+        // 🌟 核心：为滚动图增加 flex-1 min-h-0 以确保完美上下滑动支持
         const floatData = {
             'benefit': {
                 themeColor: '#EA580C',
@@ -908,22 +916,6 @@
                         
                         <div class="shrink-0 h-[40px] flex items-center justify-center border-t border-[#EEDDB8] text-[10px] sm:text-xs text-[#8A7B6B] px-4 font-medium z-10 text-center">
                             因天气等不可抗因素影响，以上活动安排或将延期举办或取消，敬请留意。
-                        </div>
-                    </div>
-                `
-            },
-            'register': {
-                themeColor: '#EA580C',
-                content: `
-                    <div class="w-full flex flex-col max-h-[85vh] bg-[#FDF2E2] fade-in relative rounded-[32px] overflow-hidden">
-                        <div class="shrink-0 h-[60px] flex justify-center items-center bg-orange-50 border-b border-orange-200/50 shadow-sm z-20">
-                            <h3 class="text-lg sm:text-xl font-black text-orange-800">活动官方报名</h3>
-                        </div>
-                        <div class="flex-1 min-h-0 w-full overflow-y-auto bg-gray-50" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
-                            <iframe src="https://w.wjx.top/vm/wPiJGsr.aspx" class="w-full h-[70vh] border-0 block" frameborder="0"></iframe>
-                        </div>
-                        <div class="shrink-0 h-[40px] bg-orange-100 flex items-center justify-center border-t border-orange-200 z-20">
-                            <a href="https://w.wjx.top/vm/wPiJGsr.aspx" target="_blank" class="text-orange-600 font-bold text-xs underline">画面显示异常？点此在新窗口打开报名页</a>
                         </div>
                     </div>
                 `
