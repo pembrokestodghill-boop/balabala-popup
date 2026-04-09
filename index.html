@@ -457,6 +457,11 @@
 
         document.addEventListener('touchstart', (e) => {
             if (!isForcedLandscape) return;
+            // 🌟 增加：如果多指操作（比如双指缩放），交还给系统处理原生动作
+            if (e.touches.length > 1) {
+                activeScrollTarget = null;
+                return;
+            }
             dragStartX = e.touches[0].clientX;
             dragStartY = e.touches[0].clientY;
             
@@ -491,6 +496,8 @@
 
         document.addEventListener('touchmove', (e) => {
             if (!isForcedLandscape || !activeScrollTarget) return;
+            // 🌟 增加：防止由于强行 preventDefault 拦截导致无法触发原生的放大缩小
+            if (e.touches.length > 1) return;
             
             const currentX = e.touches[0].clientX;
             const currentY = e.touches[0].clientY;
@@ -810,7 +817,6 @@
         const floatData = {
             'benefit': {
                 themeColor: '#EA580C',
-                // 修改：去除 flex 限制，只用单个容器包裹实现图片自撑开，超高才滚动
                 content: `
                     <div id="benefit-scroll-container" class="w-full max-h-[85vh] bg-[#FDF2E2] fade-in relative rounded-[32px] overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
                         <img src="assets/dakafuli.png" class="w-full h-auto block" alt="打卡福利">
@@ -819,7 +825,6 @@
             },
             'coin': {
                 themeColor: '#EAB308',
-                // 修改：去除 flex 限制，只用单个容器包裹实现图片自撑开，超高才滚动
                 content: `
                     <div id="coin-scroll-container" class="w-full max-h-[85vh] bg-[#FFF8E7] fade-in relative rounded-[32px] overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
                         <img src="assets/jinbiwanfa.png" class="w-full h-auto block" alt="金币玩法">
@@ -828,7 +833,6 @@
             },
             'shop': {
                 themeColor: '#DC2626',
-                // 修改：去除 flex 限制，只用单个容器包裹实现图片自撑开，超高才滚动
                 content: `
                     <div id="shop-scroll-container" class="w-full max-h-[85vh] bg-[#FFF1F0] fade-in relative rounded-[32px] overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
                         <img src="assets/xianshitongdian.png" class="w-full h-auto block" alt="限时痛店">
@@ -842,13 +846,11 @@
                         <div id="calendar-scroll-container" class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
                             <div class="relative w-full h-auto block m-0 p-0 pb-4">
                                 <img src="assets/timetable.png" class="w-full h-auto block" style="-webkit-user-drag: none; user-select: none;" alt="活动课表">
-                                <!-- 🌟 已将 bottom 从 8.5% 调整到 5.2%，修复第2、3、4行悬空问题，使其底边距与4.25完全一致 -->
                                 <div class="absolute inset-0" style="top: 24.5%; bottom: 5.2%; left: 0%; right: 0%;">
                                     
                                     <div class="grid grid-cols-7 grid-rows-4 w-full h-full text-[6px] sm:text-[9px] md:text-[11px] font-bold text-[#4A3B2B] leading-tight">
                                         
                                         <!-- Row 1 -->
-                                        <!-- 🌟 统一规范：所有的元素都使用相同的 pb-1 sm:pb-2 内边距，保证底边一碗水端平 -->
                                         <div class="col-start-6 row-start-1 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-0.5 sm:gap-1.5 h-full w-full">
                                             <div onclick="openCalendarEvent('rc')" class="bg-[#3AB6D8] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
                                                 <span class="whitespace-nowrap">·RC遥控车竞速</span>
@@ -870,7 +872,6 @@
                                         </div>
 
                                         <!-- Row 2 -->
-                                        <!-- 🌟 补齐所有的抽奖日文案 -->
                                         <div class="col-start-2 row-start-2 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-0.5 h-full w-full cursor-pointer active:scale-95 transition" onclick="openCalendarEvent('lottery')">
                                             <span class="text-[#4A3B2B] font-black whitespace-nowrap">·神秘IP限定产品</span>
                                             <span class="text-[#4A3B2B] font-black whitespace-nowrap">抽奖日</span>
@@ -893,7 +894,6 @@
                                             </div>
                                         </div>
 
-                                        <!-- 🌟 更换 5.2 宠衣焕新秀 为 风火轮开箱 -->
                                         <div class="col-start-6 row-start-2 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-0.5 sm:gap-1.5 h-full w-full">
                                             <div onclick="openCalendarEvent('hotwheels')" class="bg-[#E57620] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
                                                 <span class="whitespace-nowrap">·风火轮开箱</span>
@@ -965,7 +965,6 @@
                                             <span class="text-[#888] font-normal text-[0.83em] transform scale-90 mt-1 hidden sm:block whitespace-nowrap">当日店内任意消费即可参与抽奖</span>
                                         </div>
 
-                                        <!-- 🌟 移除了底部多余的无背景风火轮开箱字样 -->
                                         <div class="col-start-6 row-start-4 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-0.5 sm:gap-1.5 h-full w-full">
                                             <div onclick="openCalendarEvent('market')" class="bg-[#6B4B38] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
                                                 <span class="whitespace-nowrap">·亲子公益集市</span>
@@ -1002,7 +1001,7 @@
         window.openFloat = (floatKey) => {
             const data = floatData[floatKey];
             if (data) {
-                // 修改：只给指定的三个看图片的悬浮弹窗开启双指缩放的能力
+                // 🌟 修改：只给指定的三个看图片的悬浮弹窗开启双指缩放的能力
                 if (['benefit', 'coin', 'shop'].includes(floatKey)) {
                     toggleViewportZoom(true);
                 } else {
@@ -1013,41 +1012,22 @@
                 
                 modalCard.className = 'w-full rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter pointer-events-auto';
                 
+                // 🌟 修改：将所有弹窗的横屏限定单位从 vw 转换为 %，利用相对尺寸适配安卓长宽对调的问题，实现完美宽屏
                 if (floatKey === 'calendar') {
-                    modalCard.classList.add('max-w-4xl', 'w-[92vw]', 'sm:w-[85vw]');
+                    modalCard.classList.add('max-w-4xl', 'w-[92%]', 'sm:w-[85%]');
                     modalCard.style.backgroundColor = 'transparent'; 
                 } else if (['benefit', 'coin', 'shop'].includes(floatKey)) {
-                    modalCard.classList.add('max-w-lg', 'w-[90vw]');
+                    modalCard.classList.add('max-w-[800px]', 'w-[90%]');
                     modalCard.style.backgroundColor = 'transparent'; 
                 } else {
-                    modalCard.classList.add('max-w-lg', 'w-[90vw]', 'border', 'border-white/60');
+                    modalCard.classList.add('max-w-lg', 'w-[90%]', 'border', 'border-white/60');
                     modalCard.style.backgroundColor = 'rgba(255, 255, 255, 0.65)';
                 }
 
                 modalDynamicContent.innerHTML = data.content;
                 
-                if (floatKey === 'calendar' && !isIOS) {
-                    const grid = modalDynamicContent.querySelector('.grid');
-                    if (grid) {
-                        const wrapper = document.createElement('div');
-                        wrapper.style.width = '100%';
-                        wrapper.style.height = '100%';
-                        wrapper.style.position = 'absolute';
-                        wrapper.style.inset = '0';
-                        wrapper.style.overflow = 'hidden';
-                        
-                        grid.parentNode.insertBefore(wrapper, grid);
-                        wrapper.appendChild(grid);
-
-                        grid.style.width = '200%';
-                        grid.style.height = '200%';
-                        grid.style.transform = 'scale(0.5)';
-                        grid.style.transformOrigin = 'top left';
-                        
-                        grid.classList.remove('text-[6px]', 'sm:text-[9px]', 'md:text-[11px]');
-                        grid.classList.add('text-[12px]', 'sm:text-[18px]', 'md:text-[22px]');
-                    }
-                }
+                // 🌟 修改：直接删除掉由于担心安卓不支持而额外写的 scale 缩小为整个图的 hack。
+                // 这样一来，安卓展现就会和苹果表现保持一模一样（不被缩放的高清宽屏图，允许上下滚动）
 
                 modalCard.classList.remove('modal-enter');
                 void modalCard.offsetWidth; 
@@ -1345,7 +1325,8 @@
                 if (data) {
                     document.getElementById('modal-glow').style.display = 'block';
                     
-                    modalCard.className = 'w-full rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter max-w-lg w-[90vw] border border-white/60 pointer-events-auto';
+                    // 🌟 修改：所有使用 vw 的弹窗基础类替换为使用 %，保障安卓宽屏效果
+                    modalCard.className = 'w-full rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter max-w-[512px] w-[90%] border border-white/60 pointer-events-auto';
                     modalCard.style.backgroundColor = 'rgba(255, 255, 255, 0.65)';
                     toggleViewportZoom(false); // 互动弹窗默认重置禁止缩放
 
