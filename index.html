@@ -270,8 +270,9 @@
         <!-- ================= 🌟 悬浮画廊：活动指引长图 ================= -->
         <div id="guide-modal" class="absolute inset-0 z-[60] hidden flex items-center justify-center p-4 sm:p-8">
             <div class="absolute inset-0 bg-black/70 backdrop-blur-sm cursor-pointer" id="guide-overlay"></div>
-            <div class="relative z-10 w-full max-w-4xl h-[70vh] sm:h-[85vh] rounded-2xl shadow-2xl bg-[#FDF2E2] border border-white/20 fade-in flex items-center p-2 sm:p-4" id="guide-container" style="width: 80%; max-width: 800px;">
-                <div id="guide-scroll-container" class="w-full h-full overflow-x-auto overflow-y-auto custom-scrollbar flex items-center" style="-webkit-overflow-scrolling: touch;">
+            <!-- 修改：强制全平台使用统一的相对宽高配置，保障四周完美留白与宽屏展现 -->
+            <div class="relative z-10 w-[90%] h-[85%] max-w-4xl rounded-2xl shadow-2xl bg-[#FDF2E2] border border-white/20 fade-in flex items-center p-2 sm:p-4" id="guide-container">
+                <div id="guide-scroll-container" class="w-full h-full overflow-x-auto overflow-y-auto custom-scrollbar flex items-center justify-center" style="-webkit-overflow-scrolling: touch;">
                     <img src="assets/guide-bg.webp" class="h-[95%] w-auto max-w-none block rounded-xl shadow-sm mx-auto" alt="活动引导" onerror="console.error('找不到活动引导图片')">
                 </div>
             </div>
@@ -301,19 +302,11 @@
         let hasSeenGuide = false;
         let isForcedLandscape = false; 
 
-        // 🌟 识别系统环境，应用防呆或兼容优化
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
         if (isIOS) {
             const forceBtn = document.getElementById('btn-force-landscape');
             if (forceBtn) forceBtn.style.display = 'none';
             viewIntro.classList.add('cursor-pointer');
-            
-            const gc = document.getElementById('guide-container');
-            if (gc) {
-                // 修改：给iOS留白，由100%缩小为85%
-                gc.style.width = '85%';
-                gc.style.maxWidth = '800px';
-            }
         } else {
             const androidEnterBtn = document.getElementById('android-enter-wrapper');
             if (androidEnterBtn) androidEnterBtn.classList.remove('hidden');
@@ -457,7 +450,6 @@
 
         document.addEventListener('touchstart', (e) => {
             if (!isForcedLandscape) return;
-            // 🌟 增加：如果多指操作（比如双指缩放），交还给系统处理原生动作
             if (e.touches.length > 1) {
                 activeScrollTarget = null;
                 return;
@@ -476,12 +468,6 @@
                     break;
                 }
                 
-                // 将指定的几个需要滚动的容器加入白名单优先接管
-                if (['guide-scroll-container', 'calendar-scroll-container', 'benefit-scroll-container', 'coin-scroll-container', 'shop-scroll-container'].includes(target.id)) {
-                    activeScrollTarget = target;
-                    break;
-                }
-                
                 const style = window.getComputedStyle(target);
                 const isScrollableY = target.scrollHeight > target.clientHeight && (style.overflowY === 'auto' || style.overflowY === 'scroll' || target.classList.contains('custom-scrollbar') || target.classList.contains('overflow-y-auto'));
                 const isScrollableX = target.scrollWidth > target.clientWidth && (style.overflowX === 'auto' || style.overflowX === 'scroll' || target.classList.contains('overflow-x-auto'));
@@ -496,7 +482,6 @@
 
         document.addEventListener('touchmove', (e) => {
             if (!isForcedLandscape || !activeScrollTarget) return;
-            // 🌟 增加：防止由于强行 preventDefault 拦截导致无法触发原生的放大缩小
             if (e.touches.length > 1) return;
             
             const currentX = e.touches[0].clientX;
@@ -511,24 +496,10 @@
                 activeScrollTarget.scrollLeft -= deltaY;
                 scrolled = true;
             } else {
-                if (activeScrollTarget.id === 'guide-scroll-container') {
-                    // 入场指引长图横向滚动
-                    activeScrollTarget.scrollLeft -= deltaY;
+                const isScrollableY = activeScrollTarget.scrollHeight > activeScrollTarget.clientHeight;
+                if (isScrollableY || activeScrollTarget.id === 'guide-scroll-container') {
+                    activeScrollTarget.scrollTop += deltaX; 
                     scrolled = true;
-                } else if (['calendar-scroll-container', 'benefit-scroll-container', 'coin-scroll-container', 'shop-scroll-container'].includes(activeScrollTarget.id)) {
-                    // 日历和其他悬浮图垂直滚动
-                    activeScrollTarget.scrollTop += deltaX;
-                    scrolled = true;
-                } else {
-                    const isScrollableY = activeScrollTarget.scrollHeight > activeScrollTarget.clientHeight;
-                    const isScrollableX = activeScrollTarget.scrollWidth > activeScrollTarget.clientWidth;
-                    if (isScrollableY) {
-                        activeScrollTarget.scrollTop += deltaX; 
-                        scrolled = true;
-                    } else if (isScrollableX) {
-                        activeScrollTarget.scrollLeft -= deltaY;
-                        scrolled = true;
-                    }
                 }
             }
 
@@ -818,31 +789,37 @@
             'benefit': {
                 themeColor: '#EA580C',
                 content: `
-                    <div id="benefit-scroll-container" class="w-full max-h-[85vh] bg-[#FDF2E2] fade-in relative rounded-[32px] overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
-                        <img src="assets/dakafuli.png" class="w-full h-auto block" alt="打卡福利">
+                    <div class="w-full flex flex-col max-h-[85vh] bg-[#FDF2E2] fade-in relative rounded-[32px] overflow-hidden">
+                        <div class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
+                            <img src="assets/dakafuli.png" class="w-full h-auto block" alt="打卡福利">
+                        </div>
                     </div>
                 `
             },
             'coin': {
                 themeColor: '#EAB308',
                 content: `
-                    <div id="coin-scroll-container" class="w-full max-h-[85vh] bg-[#FFF8E7] fade-in relative rounded-[32px] overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
-                        <img src="assets/jinbiwanfa.png" class="w-full h-auto block" alt="金币玩法">
+                    <div class="w-full h-full flex flex-col bg-[#FFF8E7] fade-in relative rounded-[32px] overflow-hidden">
+                        <div id="coin-scroll-container" class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
+                            <img src="assets/jinbiwanfa.png" class="w-full h-auto block" alt="金币玩法">
+                        </div>
                     </div>
                 `
             },
             'shop': {
                 themeColor: '#DC2626',
                 content: `
-                    <div id="shop-scroll-container" class="w-full max-h-[85vh] bg-[#FFF1F0] fade-in relative rounded-[32px] overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
-                        <img src="assets/xianshitongdian.png" class="w-full h-auto block" alt="限时痛店">
+                    <div class="w-full flex flex-col max-h-[85vh] bg-[#FFF1F0] fade-in relative rounded-[32px] overflow-hidden">
+                        <div class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
+                            <img src="assets/xianshitongdian.png" class="w-full h-auto block" alt="限时痛店">
+                        </div>
                     </div>
                 `
             },
             'calendar': {
                 themeColor: '#F97316', 
                 content: `
-                    <div class="w-full max-h-[85vh] flex flex-col relative bg-[#FDF2E2] fade-in overflow-hidden rounded-[32px]">
+                    <div class="w-full h-full flex flex-col relative bg-[#FDF2E2] fade-in overflow-hidden rounded-[32px]">
                         <div id="calendar-scroll-container" class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
                             <div class="relative w-full h-auto block m-0 p-0 pb-4">
                                 <img src="assets/timetable.png" class="w-full h-auto block" style="-webkit-user-drag: none; user-select: none;" alt="活动课表">
@@ -1001,7 +978,6 @@
         window.openFloat = (floatKey) => {
             const data = floatData[floatKey];
             if (data) {
-                // 🌟 修改：只给指定的三个看图片的悬浮弹窗开启双指缩放的能力
                 if (['benefit', 'coin', 'shop'].includes(floatKey)) {
                     toggleViewportZoom(true);
                 } else {
@@ -1012,23 +988,24 @@
                 
                 modalCard.className = 'w-full rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter pointer-events-auto';
                 
-                // 🌟 修改：将所有弹窗的横屏限定单位从 vw 转换为 %，利用相对尺寸适配安卓长宽对调的问题，实现完美宽屏
+                // 统一运用百分比约束代替vw/vh，确保安卓下达到完美宽屏及上下留白
                 if (floatKey === 'calendar') {
-                    modalCard.classList.add('max-w-4xl', 'w-[92%]', 'sm:w-[85%]');
+                    modalCard.classList.add('max-w-4xl', 'w-[90%]', 'h-[85%]');
                     modalCard.style.backgroundColor = 'transparent'; 
-                } else if (['benefit', 'coin', 'shop'].includes(floatKey)) {
-                    modalCard.classList.add('max-w-[800px]', 'w-[90%]');
+                } else if (floatKey === 'coin') {
+                    modalCard.classList.add('max-w-2xl', 'w-[90%]', 'h-[85%]');
+                    modalCard.style.backgroundColor = 'transparent'; 
+                } else if (['benefit', 'shop'].includes(floatKey)) {
+                    // 保留用户指定的两个免修改项（保持原样）
+                    modalCard.classList.add('max-w-lg', 'w-[90vw]'); 
                     modalCard.style.backgroundColor = 'transparent'; 
                 } else {
-                    modalCard.classList.add('max-w-lg', 'w-[90%]', 'border', 'border-white/60');
+                    modalCard.classList.add('max-w-lg', 'w-[90vw]', 'border', 'border-white/60');
                     modalCard.style.backgroundColor = 'rgba(255, 255, 255, 0.65)';
                 }
 
                 modalDynamicContent.innerHTML = data.content;
                 
-                // 🌟 修改：直接删除掉由于担心安卓不支持而额外写的 scale 缩小为整个图的 hack。
-                // 这样一来，安卓展现就会和苹果表现保持一模一样（不被缩放的高清宽屏图，允许上下滚动）
-
                 modalCard.classList.remove('modal-enter');
                 void modalCard.offsetWidth; 
                 modalCard.classList.add('modal-enter');
@@ -1049,18 +1026,19 @@
             if (!eventData) return;
 
             modalCard.style.backgroundColor = '#FDF2E2';
-            modalCard.classList.remove('border', 'border-white/60');
-
+            
             if (eventData.type === 'rules') {
                 renderFlowStep2(eventData.title, eventData.html, "window.openFloat('calendar')", eventData.agreementTitle, eventData.agreementHtml);
             } else {
+                modalCard.className = 'w-full rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter max-w-4xl w-[90%] h-[85%] pointer-events-auto';
+                
                 const subHtml = eventData.subtitle ? `<p class="text-sm font-bold text-orange-600/80 mt-1">${eventData.subtitle}</p>` : '';
                 const timesHtml = (eventData.times && eventData.times.length > 0) 
                     ? `<div class="flex flex-wrap justify-center mt-3">${eventData.times.map(t => `<div class="bg-orange-100 text-orange-800 px-3 py-1 rounded-md text-xs sm:text-sm font-bold shadow-sm inline-block m-1 border border-orange-200">${t}</div>`).join('')}</div>` 
                     : '';
 
                 modalDynamicContent.innerHTML = `
-                    <div class="w-full flex flex-col max-h-[85vh] bg-[#FDF2E2] fade-in relative rounded-[32px] overflow-hidden">
+                    <div class="w-full h-full flex flex-col bg-[#FDF2E2] fade-in relative rounded-[32px] overflow-hidden">
                         <div class="shrink-0 h-[60px] flex justify-center items-center bg-[#FDF2E2] border-b border-orange-200/50 z-20">
                             <button onclick="window.openFloat('calendar')" class="absolute left-4 text-orange-600 font-bold text-sm flex items-center active:scale-95 transition">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>返回
@@ -1141,7 +1119,6 @@
             document.getElementById('btn-read-safety').addEventListener('click', () => {
                 document.getElementById('modal-glow').style.display = 'block';
                 modalCard.style.backgroundColor = 'rgba(255, 255, 255, 0.65)';
-                modalCard.classList.add('border', 'border-white/60');
                 renderFlowStep2(data.rulesTitle, data.rulesHtml, null, data.agreementTitle, data.agreementHtml);
             });
         }
@@ -1186,11 +1163,14 @@
             const opt = zonesData[zoneId].options[optionIndex];
             document.getElementById('modal-glow').style.display = 'block';
             modalCard.style.backgroundColor = 'rgba(255, 255, 255, 0.65)';
-            modalCard.classList.add('border', 'border-white/60');
             renderFlowStep2(opt.rulesTitle, opt.rulesHtml, null, opt.agreementTitle, opt.agreementHtml);
         };
 
         window.renderFlowStep2 = function(rulesTitle, rulesHtml, backAction = null, agreementTitle = null, agreementHtml = null) {
+            // 在这一步应用全屏宽度的规范，给安全须知专门提供高清宽屏显示
+            modalCard.className = 'w-full rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter max-w-4xl w-[90%] h-[85%] pointer-events-auto border border-white/60';
+            modalCard.style.backgroundColor = 'rgba(255, 255, 255, 0.65)';
+
             const backBtnHtml = backAction ? `
                 <button onclick="${backAction}" class="absolute left-4 text-orange-600 font-bold text-sm flex items-center active:scale-95 transition">
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>返回
@@ -1200,7 +1180,7 @@
             const btnText = agreementHtml ? '已阅须知，下一步：签署安全协议' : '我已阅读并接受此须知，为自己安全负责';
 
             modalDynamicContent.innerHTML = `
-                <div class="w-full flex flex-col max-h-[85vh] fade-in relative bg-[#FDF2E2] rounded-[32px] overflow-hidden">
+                <div class="w-full h-full flex flex-col fade-in relative bg-[#FDF2E2] rounded-[32px] overflow-hidden">
                     <div class="shrink-0 h-[60px] flex justify-center items-center border-b border-orange-200/50 z-20 bg-[#FDF2E2]">
                         ${backBtnHtml}
                         <h3 class="text-lg sm:text-xl font-black text-orange-800 px-10 truncate w-full text-center">${rulesTitle}</h3>
@@ -1230,8 +1210,10 @@
                 renderFlowStep2(rulesTitle, rulesHtml, originalBackAction, title, html);
             };
 
+            modalCard.className = 'w-full rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter max-w-4xl w-[90%] h-[85%] pointer-events-auto border border-white/60';
+
             modalDynamicContent.innerHTML = `
-                <div class="w-full flex flex-col max-h-[85vh] fade-in relative bg-[#FDF2E2] rounded-[32px] overflow-hidden">
+                <div class="w-full h-full flex flex-col fade-in relative bg-[#FDF2E2] rounded-[32px] overflow-hidden">
                     <div class="shrink-0 h-[60px] flex justify-center items-center border-b border-orange-200/50 z-20 bg-[#FDF2E2]">
                         <button onclick="window.goBackToRules()" class="absolute left-4 text-orange-600 font-bold text-sm flex items-center active:scale-95 transition">
                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>返回
@@ -1281,6 +1263,8 @@
             const now = new Date();
             const timeString = `${now.getMonth()+1}月${now.getDate()}日 ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 
+            modalCard.className = 'w-full rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter max-w-4xl w-[90%] h-[85%] pointer-events-auto border border-white/60';
+
             let signerHtml = '';
             if (signerName) {
                 signerHtml = `
@@ -1297,7 +1281,7 @@
             }
 
             modalDynamicContent.innerHTML = `
-                <div class="w-full h-[85vh] relative bg-white rounded-[32px] overflow-hidden fade-in">
+                <div class="w-full h-full relative bg-white rounded-[32px] overflow-hidden fade-in">
                     <div class="absolute inset-0 overflow-y-auto p-8 flex flex-col items-center justify-center">
                         <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 flex items-center justify-center mb-5 animate-scan bg-green-50 shrink-0">
                             <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
@@ -1325,10 +1309,10 @@
                 if (data) {
                     document.getElementById('modal-glow').style.display = 'block';
                     
-                    // 🌟 修改：所有使用 vw 的弹窗基础类替换为使用 %，保障安卓宽屏效果
-                    modalCard.className = 'w-full rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter max-w-[512px] w-[90%] border border-white/60 pointer-events-auto';
+                    // 第一层默认保留 vw 逻辑，实现您所期望的“点击IP出来的第一层不要修改”的效果
+                    modalCard.className = 'w-full rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter max-w-lg w-[90vw] border border-white/60 pointer-events-auto';
                     modalCard.style.backgroundColor = 'rgba(255, 255, 255, 0.65)';
-                    toggleViewportZoom(false); // 互动弹窗默认重置禁止缩放
+                    toggleViewportZoom(false);
 
                     if (data.type === 'pure-intro') {
                         renderPureIntroModal(data); 
@@ -1348,7 +1332,7 @@
 
         const closeModal = () => {
             modal.classList.add('hidden');
-            toggleViewportZoom(false); // 关闭弹窗时无论之前在哪都重置缩放能力
+            toggleViewportZoom(false);
         }
         document.getElementById('modal-overlay').addEventListener('click', closeModal);
         
