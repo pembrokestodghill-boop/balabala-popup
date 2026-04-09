@@ -136,7 +136,7 @@
     <div id="app-root" class="relative w-full h-full overflow-hidden bg-[#F8D36A] origin-center transition-transform duration-300">
 
         <!-- ================= 视图 1：竖屏开启页 ================= -->
-        <div id="view-intro" class="view-layer relative overflow-hidden">
+        <div id="view-intro" class="view-layer relative overflow-hidden cursor-pointer">
             <img src="assets/intro-bg.jpg" class="absolute inset-0 w-full h-full object-cover z-0" alt="活动海报">
             
             <video 
@@ -150,7 +150,6 @@
                 class="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none"
             ></video>
 
-            <!-- 🌟 安卓专属防卡死浪漫入口，最高层级保障可点，默认隐藏，由 JS 根据系统环境唤出 -->
             <div id="android-enter-wrapper" class="absolute bottom-[12%] left-0 w-full flex justify-center z-50 hidden">
                 <button id="btn-android-enter" class="px-8 py-3.5 bg-black/40 backdrop-blur-md border border-white/50 rounded-full text-white active:scale-95 transition shadow-[0_8px_30px_rgba(0,0,0,0.4)] flex flex-col items-center relative overflow-hidden cursor-pointer">
                     <div class="absolute inset-0 bg-gradient-to-r from-orange-500/40 to-rose-500/40 animate-pulse pointer-events-none"></div>
@@ -243,7 +242,7 @@
                 </div>
             </div>
 
-            <!-- ================= 右下角悬浮菜单 (已去掉活动报名，整体自然右移) ================= -->
+            <!-- ================= 右下角悬浮菜单 ================= -->
             <div id="floating-menu" class="absolute right-3 bottom-4 sm:right-6 sm:bottom-6 z-40 flex flex-row items-end gap-2 sm:gap-3 transition-opacity duration-300" style="display: none;">
                 <button class="float-btn relative w-12 h-16 sm:w-16 sm:h-20 shrink-0 transform transition active:scale-90 cursor-pointer" data-float="benefit">
                     <img src="assets/small icon 1.png" class="w-full h-full object-contain filter drop-shadow-[0_4px_6px_rgba(0,0,0,0.3)]" alt="打卡福利">
@@ -272,7 +271,6 @@
         <!-- ================= 🌟 悬浮画廊：活动指引长图 ================= -->
         <div id="guide-modal" class="absolute inset-0 z-[60] hidden flex items-center justify-center p-4 sm:p-8">
             <div class="absolute inset-0 bg-black/70 backdrop-blur-sm cursor-pointer" id="guide-overlay"></div>
-            <!-- JS 将会自动调整此处的长宽属性以适配安卓 -->
             <div id="guide-scroll-container" class="relative z-10 w-full max-w-4xl h-auto max-h-[85vh] overflow-x-auto overflow-y-auto custom-scrollbar rounded-2xl shadow-2xl bg-[#FDF2E2] border border-white/20 fade-in flex items-center p-2 sm:p-4" style="-webkit-overflow-scrolling: touch; touch-action: pan-x pan-y;">
                 <img src="assets/guide-bg.webp" class="h-[50vh] sm:h-[65vh] w-auto max-w-none block rounded-xl shadow-sm" alt="活动引导" onerror="console.error('找不到活动引导图片')">
             </div>
@@ -302,7 +300,6 @@
         let hasSeenGuide = false;
         let isForcedLandscape = false; 
 
-        // 🌟 识别系统环境，应用防呆或兼容优化
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
         if (isIOS) {
             const forceBtn = document.getElementById('btn-force-landscape');
@@ -312,7 +309,6 @@
             const androidEnterBtn = document.getElementById('android-enter-wrapper');
             if (androidEnterBtn) androidEnterBtn.classList.remove('hidden');
             
-            // 🌟 安卓专属优化：将入场指引画廊缩小，留出四周空白点击区
             const guideContainer = document.getElementById('guide-scroll-container');
             if (guideContainer) {
                 guideContainer.classList.remove('w-full', 'max-w-4xl', 'max-h-[85vh]');
@@ -453,6 +449,75 @@
             }
         }
 
+        // =========================================================================
+        // 🌟 安卓强制横屏专属手势滚动引擎
+        // =========================================================================
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let activeScrollTarget = null;
+        let isMapTarget = false;
+
+        document.addEventListener('touchstart', (e) => {
+            if (!isForcedLandscape) return;
+            dragStartX = e.touches[0].clientX;
+            dragStartY = e.touches[0].clientY;
+            
+            let target = e.target;
+            activeScrollTarget = null;
+            isMapTarget = false;
+            
+            while (target && target !== document) {
+                if (target.id === 'map-scroll-container') {
+                    activeScrollTarget = target;
+                    isMapTarget = true;
+                    break;
+                }
+                
+                const style = window.getComputedStyle(target);
+                const isScrollableY = target.scrollHeight > target.clientHeight && (style.overflowY === 'auto' || style.overflowY === 'scroll' || target.classList.contains('custom-scrollbar') || target.classList.contains('overflow-y-auto'));
+                const isScrollableX = target.scrollWidth > target.clientWidth && (style.overflowX === 'auto' || style.overflowX === 'scroll' || target.classList.contains('overflow-x-auto'));
+                
+                if (isScrollableY || isScrollableX) {
+                    activeScrollTarget = target;
+                    break;
+                }
+                target = target.parentNode;
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!isForcedLandscape || !activeScrollTarget) return;
+            
+            const currentX = e.touches[0].clientX;
+            const currentY = e.touches[0].clientY;
+            
+            const deltaX = currentX - dragStartX;
+            const deltaY = currentY - dragStartY;
+
+            let scrolled = false;
+
+            if (isMapTarget) {
+                activeScrollTarget.scrollLeft -= deltaY;
+                scrolled = true;
+            } else {
+                const isScrollableY = activeScrollTarget.scrollHeight > activeScrollTarget.clientHeight;
+                if (isScrollableY) {
+                    activeScrollTarget.scrollTop += deltaX; 
+                    scrolled = true;
+                }
+            }
+
+            if (scrolled) {
+                if (e.cancelable) e.preventDefault();
+                dragStartX = currentX;
+                dragStartY = currentY;
+            }
+        }, { passive: false });
+
+        document.addEventListener('touchend', () => { activeScrollTarget = null; });
+        document.addEventListener('touchcancel', () => { activeScrollTarget = null; });
+
+
         // ==========================================
         // 热区数据与 HTML 配置区
         // ==========================================
@@ -568,7 +633,7 @@
             <div>
                 <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">2. 入场条件与限制</h4>
                 <ol class="list-decimal pl-4 space-y-1 text-gray-700">
-                    <li>仅限身高1米(含)以上的游客进入，每位儿童须由至少一名成人全程陪同。</li>
+                    <li>仅限身高1.2米(含)以上的游客进入，每位儿童须由至少一名成人全程陪同。</li>
                     <li>游客须具备参与本活动的良好身体状况，能够独立行动并遵守安全规则，未成年人须在监护人全程陪同和看管下入场。</li>
                     <li>有下列情况禁止入场：患有心脏病、高血压、癫痫、传染病、精神疾病等不适宜剧烈活动的疾病者；存在发烧、感冒、咳喘传染性皮肤病、呕吐、腹泻等不适合参与本活动的身体状况者；醉酒、情绪失控或不服从管理者。孕妇、老人及行动不便者。</li>
                     <li>为确保公共安全，工作人员有权根据游客及现场情况进行安全评估，并有权拒绝不符合入场条件者入内。</li>
@@ -645,7 +710,7 @@
             </div>`;
 
         const climbingAgreementHtml = `<div class="text-left space-y-4 text-gray-700 text-xs sm:text-sm"><p class="font-bold text-orange-600 bg-orange-100 p-2 rounded-lg">本人（及监护人）确认 ：参与“攀岩墙”活动前，已阅读、理解并自愿接受本协议全部内容。</p><div><h4 class="font-black text-orange-800 mb-1">一、健康状况与装备</h4><ul class="list-disc pl-5 space-y-1"><li>本人确认身体健康，无心脏病、高血压、癫痫、传染病、精神疾病、感冒、咳喘、传染性皮肤病等不适宜参与攀岩运动的疾病或身体状况。</li><li>本人确认不存在醉酒、情绪失控等影响自身或他人安全的情形。</li><li>本人知晓本活动对身高、年龄的限制（身高1.2米以上），并承诺符合入场条件。</li><li>本人承诺穿着适合运动的服装及鞋履（运动鞋或攀岩鞋），不穿着拖鞋、高跟鞋、裙装等不适合运动的装束。</li><li>未成年人须由监护人全程陪同，监护人承诺履行现场监护责任。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">二、行为规范</h4><ul class="list-disc pl-5 space-y-1"><li>本人承诺严格遵守教练及工作人员的安全指引，未经允许不得擅自攀爬或进行危险动作。</li><li>本人知晓现场教练仅提供基础技术指导与安全提示，不提供一对一全程保护服务，本人须在指导下自主完成攀爬，并全程对自身安全负责。</li><li>本人承诺发现身体不适或装备异常时立即停止活动并报告工作人员。</li><li>本人承诺不携带尖锐物品、食物、饮料及宠物入场。</li><li>本人承诺妥善保管个人物品，贵重物品丢失责任自负。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">三、主办方义务</h4><p>主办方承诺：提供具备资质的专业攀岩教练进行基础教学与安全提示，确保活动组织过程符合基本安全标准，配备必要的现场工作人员及急救用品，并在活动前进行安全提示。</p></div><div><h4 class="font-black text-orange-800 mb-1">四、风险告知与责任划分</h4><p><strong class="text-orange-600">风险告知 ：</strong>本人充分了解攀岩运动属于高风险体育运动，可能导致跌落、滑坠、骨折、扭伤、擦伤、碰撞、脑震荡等严重人身伤害，甚至死亡。</p><p><strong class="text-orange-600">设施性质说明 ：</strong>本人知晓攀岩墙为公共设施，品牌方仅在此组织体验活动，不参与设施的建设、维护与管理。本人自愿承担使用公共设施可能产生的风险。</p><p><strong class="text-orange-600">责任划分 ：</strong></p><ul class="list-disc pl-5 space-y-1"><li>因本人未遵守本协议、未听从教练或工作人员指引、隐瞒健康状况、未正确使用装备或自身原因造成损害的，由本人依法承担相应责任。</li><li>因主办方存在故意或重大过失造成损害的，主办方依法承担相应责任。</li><li>因第三方行为造成损害的，由行为人依法承担相应责任。</li><li>因公共设施本身存在的设计缺陷或维护问题造成损害的，由相关责任方依法承担相应责任。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">五、未成年人监护</h4><p>监护人承诺全程陪同并监督未成年人遵守本协议及现场规定，因未成年人未遵守规定造成的损害，由监护人及未成年人依法承担责任。</p></div><div><h4 class="font-black text-orange-800 mb-1">六、其他</h4><ul class="list-disc pl-5 space-y-1"><li>本人确认：参与本次活动纯属自愿，并非受任何压力或诱导。</li><li>本协议适用中华人民共和国法律。争议协商不成的，向主办方所在地人民法院起诉。</li><li>本协议自签字之日起生效。</li></ul></div></div>`;
-        const bubbleAgreementHtml = `<div class="text-left space-y-4 text-gray-700 text-xs sm:text-sm"><p class="font-bold text-orange-600 bg-orange-100 p-2 rounded-lg">本人（及监护人）确认 ：参与“泡泡乐园”活动前，已阅读、理解并自愿接受本协议全部内容。</p><div><h4 class="font-black text-orange-800 mb-1">一、健康状况与装备</h4><ul class="list-disc pl-5 space-y-1"><li>本人确认身体健康，无心脏病、高血压、癫痫、传染病、精神疾病、感冒、咳喘、传染性皮肤病等不适宜参与本活动的疾病或身体状况。</li><li>本人确认不存在醉酒、情绪失控等影响自身或他人安全的情形。</li><li>本人知晓本活动对身高、年龄的限制（身高1.2米以上，70周岁以下），并承诺符合入场条件。</li><li>未成年人须由监护人全程陪同，监护人承诺履行现场监护责任。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">二、行为规范</h4><ul class="list-disc pl-5 space-y-1"><li>本人承诺遵守现场安全提示及工作人员指引，不在场内奔跑、推搡、跳跃或进行任何危险动作。</li><li>本人承诺不携带尖锐物品、食物、饮料及宠物入场。</li><li>本人承诺妥善保管个人物品，贵重物品丢失责任自负。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">三、风险告知与责任划分</h4><p><strong class="text-orange-600">风险告知 ：</strong>本人充分了解泡泡乐园活动存在一定风险，可能导致擦伤、扭伤、碰撞等意外伤害。</p><p><strong class="text-orange-600">责任划分 ：</strong></p><ul class="list-disc pl-5 space-y-1"><li>因本人未遵守本协议、未听从工作人员指引或自身原因造成损害的，由本人依法承担相应责任。</li><li>因主办方存在故意或重大过失造成损害的，主办方依法承担相应责任。</li><li>因第三方行为造成损害的，由行为人依法承担相应责任。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">四、未成年人监护</h4><p>监护人承诺全程陪同并监督未成年人遵守本协议及现场规定，因未成年人未遵守规定造成的损害，由监护人及未成年人依法承担责任。</p></div><div><h4 class="font-black text-orange-800 mb-1">五、其他</h4><ul class="list-disc pl-5 space-y-1"><li>本人确认：参与本次活动纯属自愿，并非受任何压力或诱导。</li><li>本协议适用中华人民共和国法律。争议协商不成的，向主办方所在地人民法院起诉。</li><li>本协议自签字之日起生效。</li></ul></div></div>`;
+        const bubbleAgreementHtml = `<div class="text-left space-y-4 text-gray-700 text-xs sm:text-sm"><p class="font-bold text-orange-600 bg-orange-100 p-2 rounded-lg">本人（及监护人）确认 ：参与“泡泡乐园”活动前，已阅读、理解并自愿接受本协议全部内容。</p><div><h4 class="font-black text-orange-800 mb-1">一、健康状况与装备</h4><ul class="list-disc pl-5 space-y-1"><li>本人确认身体健康，无心脏病、高血压、癫痫、传染病、精神疾病、感冒、咳喘、传染性皮肤病等不适宜参与本活动的疾病或身体状况。</li><li>本人确认不存在醉酒、情绪失控等影响自身或他人安全的情形。</li><li>本人知晓本活动对身高、年龄的限制（身高1米以上，70周岁以下），并承诺符合入场条件。</li><li>未成年人须由监护人全程陪同，监护人承诺履行现场监护责任。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">二、行为规范</h4><ul class="list-disc pl-5 space-y-1"><li>本人承诺遵守现场安全提示及工作人员指引，不在场内奔跑、推搡、跳跃或进行任何危险动作。</li><li>本人承诺不携带尖锐物品、食物、饮料及宠物入场。</li><li>本人承诺妥善保管个人物品，贵重物品丢失责任自负。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">三、风险告知与责任划分</h4><p><strong class="text-orange-600">风险告知 ：</strong>本人充分了解泡泡乐园活动存在一定风险，可能导致擦伤、扭伤、碰撞等意外伤害。</p><p><strong class="text-orange-600">责任划分 ：</strong></p><ul class="list-disc pl-5 space-y-1"><li>因本人未遵守本协议、未听从工作人员指引或自身原因造成损害的，由本人依法承担相应责任。</li><li>因主办方存在故意或重大过失造成损害的，主办方依法承担相应责任。</li><li>因第三方行为造成损害的，由行为人依法承担相应责任。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">四、未成年人监护</h4><p>监护人承诺全程陪同并监督未成年人遵守本协议及现场规定，因未成年人未遵守规定造成的损害，由监护人及未成年人依法承担责任。</p></div><div><h4 class="font-black text-orange-800 mb-1">五、其他</h4><ul class="list-disc pl-5 space-y-1"><li>本人确认：参与本次活动纯属自愿，并非受任何压力或诱导。</li><li>本协议适用中华人民共和国法律。争议协商不成的，向主办方所在地人民法院起诉。</li><li>本协议自签字之日起生效。</li></ul></div></div>`;
         const skateAgreementHtml = `<div class="text-left space-y-4 text-gray-700 text-xs sm:text-sm"><p class="font-bold text-orange-600 bg-orange-100 p-2 rounded-lg">本人（及监护人）确认 ：参与“潮玩街”滑板区活动前，已阅读、理解并自愿接受本协议全部内容。</p><div><h4 class="font-black text-orange-800 mb-1">一、健康状况与装备</h4><ul class="list-disc pl-5 space-y-1"><li>本人确认身体健康，无不适宜滑板运动的疾病或生理状态。</li><li>本人承诺使用符合安全标准的滑板及护具（头盔、护膝、护肘等），并全程佩戴。</li><li>本人知晓本区域不设教练，所有技术及风险由本人自行判断与承担。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">二、风险告知与责任</h4><p><strong class="text-orange-600">风险告知 ：</strong>本人充分了解滑板运动存在高风险，可能导致擦伤、扭伤、骨折、脑震荡、残疾甚至死亡等后果。</p><p><strong class="text-orange-600">责任划分 ：</strong></p><ul class="list-disc pl-5 space-y-1"><li>因本人未遵守规定、未佩戴护具、操作不当等自身原因造成损害的，由本人依法承担主要责任。</li><li>因主办方存在故意或重大过失造成损害的，主办方依法承担相应责任。</li><li>因第三方行为造成损害的，由行为人依法承担相应责任。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">三、未成年人监护</h4><p>监护人承诺全程监督未成年人遵守本协议及现场规定，<strong class="text-red-500">监护人不得在活动期间离开滑板区</strong>。因未成年人未遵守规定造成的损害，由监护人及未成年人依法承担责任。</p></div><div><h4 class="font-black text-orange-800 mb-1">四、其他</h4><ul class="list-disc pl-5 space-y-1"><li>本人确认：参与本次活动纯属自愿，并非受任何压力或诱导。</li><li>本协议适用中华人民共和国法律。争议协商不成的，向主办方所在地人民法院起诉。</li><li>本协议自签字之日起生效。</li></ul></div></div>`;
 
         const zonesData = {
@@ -717,16 +782,14 @@
             'market': { type: 'simple', location: 'D区撒野营', title: '亲子公益集市', times: ['11:00 - 16:00'] },
             'lottery': { type: 'simple', location: '全场活动', title: '神秘IP限定产品抽奖日', subtitle: '当日店内任意消费即可参与抽奖', times: [] },
             'robot': { type: 'simple', location: 'F区热爱剧场', title: '银河通用机器人互动', times: ['13:30 - 15:00'] },
-            'pet': { type: 'simple', location: 'K区萌宠乐园', title: '宠衣焕新秀', times: ['13:00 - 16:00'] },
             'paw': { type: 'simple', location: 'F区热爱剧场', title: '汪汪队见面会', times: ['第1场 11:30 - 11:50', '第2场 15:00 - 15:20', '第3场 17:20 - 17:40'] },
-            'hotwheels': { type: 'simple', location: 'F区热爱剧场', title: '风火轮开箱', times: [] },
+            'hotwheels': { type: 'simple', location: 'G区限时痛店', title: '风火轮开箱', times: ['13:00 - 15:00'] },
             'craft': { type: 'simple', location: '📍龙美术馆咖啡店', title: '创意手工坊', times: ['第1场 10:00 - 11:30', '第2场 13:30 - 15:00', '第3场 15:30 - 17:00'] },
             'bake': { type: 'simple', location: '📍龙美术馆咖啡店', title: '手作烘焙时光', times: ['第1场 10:00 - 11:30', '第2场 13:30 - 15:00', '第3场 15:30 - 17:00'] },
             'dance': { type: 'simple', location: 'F区热爱剧场', title: '潮酷唱跳街舞秀', times: ['第1场 10:00 - 11:30', '第2场 13:30 - 15:00', '第3场 15:30 - 17:00'] },
             'nature': { type: 'simple', location: 'D区撒野营', title: '自然美育学堂', times: ['13:30 - 15:00'] }
         };
 
-        // 🌟 核心：为滚动图增加 flex-1 min-h-0 以确保完美上下滑动支持
         const floatData = {
             'benefit': {
                 themeColor: '#EA580C',
@@ -765,7 +828,7 @@
                         <div class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
                             <div class="relative w-full h-auto block m-0 p-0 pb-4">
                                 <img src="assets/timetable.png" class="w-full h-auto block" style="-webkit-user-drag: none; user-select: none;" alt="活动课表">
-                                <div class="absolute inset-0" style="top: 24.5%; bottom: 1%; left: 0%; right: 0%;">
+                                <div class="absolute inset-0" style="top: 24.5%; bottom: 6%; left: 0%; right: 0%;">
                                     
                                     <div class="grid grid-cols-7 grid-rows-4 w-full h-full text-[6px] sm:text-[9px] md:text-[11px] font-bold text-[#4A3B2B] leading-tight">
                                         
@@ -773,7 +836,7 @@
                                         <div class="col-start-6 row-start-1 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-0.5 sm:gap-1.5 h-full w-full">
                                             <div onclick="openCalendarEvent('rc')" class="bg-[#3AB6D8] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
                                                 <span class="whitespace-nowrap">·RC遥控车竞速</span>
-                                                <span class="text-[4px] sm:text-[6px] md:text-[8px] font-normal transform scale-90 opacity-90 hidden sm:block whitespace-nowrap mt-0.5">四驱车拼装&小比例竞速</span>
+                                                <span class="text-[0.66em] font-normal transform scale-90 opacity-90 hidden sm:block whitespace-nowrap mt-0.5">四驱车拼装&小比例竞速</span>
                                             </div>
                                             <div onclick="openCalendarEvent('pony')" class="bg-[#EE70B5] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
                                                 <span class="whitespace-nowrap">·小马宝莉见面会</span>
@@ -783,7 +846,7 @@
                                         <div class="col-start-7 row-start-1 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-0.5 sm:gap-1.5 h-full w-full">
                                             <div onclick="openCalendarEvent('run')" class="bg-[#D6E042] text-[#4A3B2B] rounded-full w-[94%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
                                                 <span class="whitespace-nowrap">·热爱自由追风跑</span>
-                                                <span class="text-[4px] sm:text-[6px] md:text-[8px] font-normal transform scale-90 opacity-90 hidden sm:block whitespace-nowrap mt-0.5">滨江亲子快乐跑</span>
+                                                <span class="text-[0.66em] font-normal transform scale-90 opacity-90 hidden sm:block whitespace-nowrap mt-0.5">滨江亲子快乐跑</span>
                                             </div>
                                             <div onclick="openCalendarEvent('market')" class="bg-[#6B4B38] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
                                                 <span class="whitespace-nowrap">·亲子公益集市</span>
@@ -794,21 +857,19 @@
                                         <div class="col-start-2 row-start-2 flex flex-col justify-end items-center pb-2 sm:pb-4 gap-0.5 h-full w-full cursor-pointer active:scale-95 transition" onclick="openCalendarEvent('lottery')">
                                             <span class="text-[#4A3B2B] font-black whitespace-nowrap">·神秘IP限定产品</span>
                                             <span class="text-[#4A3B2B] font-black whitespace-nowrap">抽奖日</span>
-                                            <span class="text-[#888] font-normal text-[5px] sm:text-[7px] md:text-[9px] transform scale-90 mt-1 hidden sm:block whitespace-nowrap">当日店内任意消费即可</span>
-                                            <span class="text-[#888] font-normal text-[5px] sm:text-[7px] md:text-[9px] transform scale-90 hidden sm:block whitespace-nowrap">参与抽奖</span>
+                                            <span class="text-[#888] font-normal text-[0.83em] transform scale-90 mt-1 hidden sm:block whitespace-nowrap">当日店内任意消费即可参与抽奖</span>
                                         </div>
 
                                         <div class="col-start-4 row-start-2 flex flex-col justify-end items-center pb-2 sm:pb-4 gap-0.5 h-full w-full cursor-pointer active:scale-95 transition" onclick="openCalendarEvent('lottery')">
                                             <span class="text-[#4A3B2B] font-black whitespace-nowrap">·神秘IP限定产品</span>
                                             <span class="text-[#4A3B2B] font-black whitespace-nowrap">抽奖日</span>
-                                            <span class="text-[#888] font-normal text-[5px] sm:text-[7px] md:text-[9px] transform scale-90 mt-1 hidden sm:block whitespace-nowrap">当日店内任意消费即可</span>
-                                            <span class="text-[#888] font-normal text-[5px] sm:text-[7px] md:text-[9px] transform scale-90 hidden sm:block whitespace-nowrap">参与抽奖</span>
+                                            <span class="text-[#888] font-normal text-[0.83em] transform scale-90 mt-1 hidden sm:block whitespace-nowrap">当日店内任意消费即可参与抽奖</span>
                                         </div>
 
                                         <div class="col-start-5 row-start-2 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-0.5 sm:gap-1.5 h-full w-full">
                                             <div onclick="openCalendarEvent('robot')" class="bg-[#586A7A] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
                                                 <span class="whitespace-nowrap">·银河通用机器人互动</span>
-                                                <span class="text-[4px] sm:text-[6px] md:text-[8px] font-normal transform scale-90 opacity-90 hidden sm:block whitespace-nowrap mt-0.5">春晚同款机器人亮相</span>
+                                                <span class="text-[0.66em] font-normal transform scale-90 opacity-90 hidden sm:block whitespace-nowrap mt-0.5">春晚同款机器人亮相</span>
                                             </div>
                                             <div onclick="openCalendarEvent('skate')" class="bg-[#3AB6D8] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
                                                 <span class="whitespace-nowrap">·热爱板仔初体验</span>
@@ -816,22 +877,18 @@
                                         </div>
 
                                         <div class="col-start-6 row-start-2 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-0.5 sm:gap-1 h-full w-full">
-                                            <div onclick="openCalendarEvent('pet')" class="bg-[#E57620] text-white rounded-full w-[94%] py-[1px] sm:py-[3px] flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
-                                                <span class="whitespace-nowrap">·宠衣焕新秀</span>
-                                                <span class="text-[4px] sm:text-[6px] md:text-[8px] font-normal transform scale-90 opacity-90 hidden sm:block whitespace-nowrap">旧衣改造&萌宠定装秀</span>
+                                            <div onclick="openCalendarEvent('hotwheels')" class="bg-[#E57620] text-white rounded-full w-[94%] py-[1px] sm:py-[3px] flex items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
+                                                <span class="whitespace-nowrap">·风火轮开箱</span>
                                             </div>
                                             <div onclick="openCalendarEvent('paw')" class="bg-[#A555E8] text-white rounded-full w-[94%] py-[1px] sm:py-[3px] flex items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
                                                 <span class="whitespace-nowrap">·汪汪队见面会</span>
-                                            </div>
-                                            <div onclick="openCalendarEvent('hotwheels')" class="text-[#4A3B2B] w-[94%] py-[1px] sm:py-[3px] flex items-center justify-center cursor-pointer active:scale-95 transition">
-                                                <span class="whitespace-nowrap font-black">·风火轮开箱</span>
                                             </div>
                                         </div>
 
                                         <div class="col-start-7 row-start-2 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-0.5 sm:gap-1.5 h-full w-full">
                                             <div onclick="openCalendarEvent('craft')" class="bg-[#48A578] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
                                                 <span class="whitespace-nowrap">·创意手工坊</span>
-                                                <span class="text-[4px] sm:text-[6px] md:text-[8px] font-normal transform scale-90 opacity-90 hidden sm:block whitespace-nowrap flex items-center mt-0.5"><svg class="w-[6px] h-[6px] sm:w-[10px] sm:h-[10px] mr-0.5 inline-block" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>龙美术馆咖啡店</span>
+                                                <span class="text-[0.66em] font-normal transform scale-90 opacity-90 hidden sm:block whitespace-nowrap flex items-center mt-0.5"><svg class="w-[1em] h-[1em] mr-0.5 inline-block" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>龙美术馆咖啡店</span>
                                             </div>
                                             <div onclick="openCalendarEvent('paw')" class="bg-[#A555E8] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
                                                 <span class="whitespace-nowrap">·汪汪队见面会</span>
@@ -842,7 +899,7 @@
                                         <div class="col-start-1 row-start-3 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-0.5 sm:gap-1.5 h-full w-full">
                                             <div onclick="openCalendarEvent('bake')" class="bg-[#E6E8E3] text-[#4A3B2B] rounded-full w-[94%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
                                                 <span class="whitespace-nowrap">·手作烘焙时光</span>
-                                                <span class="text-[4px] sm:text-[6px] md:text-[8px] font-normal transform scale-90 opacity-80 hidden sm:block whitespace-nowrap flex items-center mt-0.5"><svg class="w-[6px] h-[6px] sm:w-[10px] sm:h-[10px] mr-0.5 inline-block" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>龙美术馆咖啡店</span>
+                                                <span class="text-[0.66em] font-normal transform scale-90 opacity-80 hidden sm:block whitespace-nowrap flex items-center mt-0.5"><svg class="w-[1em] h-[1em] mr-0.5 inline-block" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>龙美术馆咖啡店</span>
                                             </div>
                                             <div onclick="openCalendarEvent('pony')" class="bg-[#EE70B5] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
                                                 <span class="whitespace-nowrap">·小马宝莉见面会</span>
@@ -857,14 +914,21 @@
                                                 <span class="whitespace-nowrap">·小马宝莉见面会</span>
                                             </div>
                                             <div onclick="openCalendarEvent('lottery')" class="text-[#4A3B2B] w-[94%] py-[2px] sm:py-[4px] flex flex-col items-center justify-center cursor-pointer active:scale-95 transition">
-                                                <span class="whitespace-nowrap font-black">·神秘IP产品抽奖日</span>
-                                                <span class="text-[4px] sm:text-[6px] md:text-[8px] font-normal transform scale-90 opacity-80 hidden sm:block whitespace-nowrap mt-0.5">当日店内任意消费即可参与</span>
+                                                <span class="whitespace-nowrap font-black">·神秘IP限定产品抽奖日</span>
+                                                <span class="text-[0.66em] font-normal transform scale-90 opacity-80 hidden sm:block whitespace-nowrap mt-0.5">当日店内任意消费即可参与抽奖</span>
                                             </div>
                                         </div>
 
                                         <div class="col-start-4 row-start-3 flex flex-col justify-end items-center pb-2 sm:pb-4 gap-0.5 h-full w-full cursor-pointer active:scale-95 transition" onclick="openCalendarEvent('lottery')">
                                             <span class="text-[#4A3B2B] font-black whitespace-nowrap">·神秘IP限定产品</span>
                                             <span class="text-[#4A3B2B] font-black whitespace-nowrap">抽奖日</span>
+                                            <span class="text-[#888] font-normal text-[0.83em] transform scale-90 mt-1 hidden sm:block whitespace-nowrap">当日店内任意消费即可参与抽奖</span>
+                                        </div>
+                                        
+                                        <div class="col-start-6 row-start-3 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-0.5 sm:gap-1.5 h-full w-full">
+                                            <div onclick="openCalendarEvent('market')" class="bg-[#6B4B38] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
+                                                <span class="whitespace-nowrap">·亲子公益集市</span>
+                                            </div>
                                         </div>
 
                                         <div class="col-start-7 row-start-3 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-0.5 sm:gap-1.5 h-full w-full">
@@ -880,23 +944,18 @@
                                         <div class="col-start-2 row-start-4 flex flex-col justify-end items-center pb-2 sm:pb-4 gap-0.5 h-full w-full cursor-pointer active:scale-95 transition" onclick="openCalendarEvent('lottery')">
                                             <span class="text-[#4A3B2B] font-black whitespace-nowrap">·神秘IP限定产品</span>
                                             <span class="text-[#4A3B2B] font-black whitespace-nowrap">抽奖日</span>
-                                            <span class="text-[#888] font-normal text-[5px] sm:text-[7px] md:text-[9px] transform scale-90 mt-1 hidden sm:block whitespace-nowrap">当日店内任意消费即可</span>
-                                            <span class="text-[#888] font-normal text-[5px] sm:text-[7px] md:text-[9px] transform scale-90 hidden sm:block whitespace-nowrap">参与抽奖</span>
+                                            <span class="text-[#888] font-normal text-[0.83em] transform scale-90 mt-1 hidden sm:block whitespace-nowrap">当日店内任意消费即可参与抽奖</span>
                                         </div>
 
                                         <div class="col-start-4 row-start-4 flex flex-col justify-end items-center pb-2 sm:pb-4 gap-0.5 h-full w-full cursor-pointer active:scale-95 transition" onclick="openCalendarEvent('lottery')">
                                             <span class="text-[#4A3B2B] font-black whitespace-nowrap">·神秘IP限定产品</span>
                                             <span class="text-[#4A3B2B] font-black whitespace-nowrap">抽奖日</span>
-                                            <span class="text-[#888] font-normal text-[5px] sm:text-[7px] md:text-[9px] transform scale-90 mt-1 hidden sm:block whitespace-nowrap">当日店内任意消费即可</span>
-                                            <span class="text-[#888] font-normal text-[5px] sm:text-[7px] md:text-[9px] transform scale-90 hidden sm:block whitespace-nowrap">参与抽奖</span>
+                                            <span class="text-[#888] font-normal text-[0.83em] transform scale-90 mt-1 hidden sm:block whitespace-nowrap">当日店内任意消费即可参与抽奖</span>
                                         </div>
 
                                         <div class="col-start-6 row-start-4 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-0.5 sm:gap-1.5 h-full w-full">
                                             <div onclick="openCalendarEvent('market')" class="bg-[#6B4B38] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
                                                 <span class="whitespace-nowrap">·亲子公益集市</span>
-                                            </div>
-                                            <div onclick="openCalendarEvent('hotwheels')" class="text-[#4A3B2B] w-[94%] py-0.5 sm:py-1 flex items-center justify-center cursor-pointer active:scale-95 transition">
-                                                <span class="whitespace-nowrap font-black">·风火轮开箱</span>
                                             </div>
                                         </div>
 
@@ -927,7 +986,6 @@
         const modal = document.getElementById('info-modal');
         const modalOverlay = document.getElementById('modal-overlay');
 
-        // 🌟 修复 Bug: 强制保留 pointer-events-auto 阻止点击穿透
         window.openFloat = (floatKey) => {
             const data = floatData[floatKey];
             if (data) {
@@ -947,6 +1005,30 @@
                 }
 
                 modalDynamicContent.innerHTML = data.content;
+                
+                if (floatKey === 'calendar' && !isIOS) {
+                    const grid = modalDynamicContent.querySelector('.grid');
+                    if (grid) {
+                        const wrapper = document.createElement('div');
+                        wrapper.style.width = '100%';
+                        wrapper.style.height = '100%';
+                        wrapper.style.position = 'absolute';
+                        wrapper.style.inset = '0';
+                        wrapper.style.overflow = 'hidden';
+                        
+                        grid.parentNode.insertBefore(wrapper, grid);
+                        wrapper.appendChild(grid);
+
+                        grid.style.width = '200%';
+                        grid.style.height = '200%';
+                        grid.style.transform = 'scale(0.5)';
+                        grid.style.transformOrigin = 'top left';
+                        
+                        grid.classList.remove('text-[6px]', 'sm:text-[9px]', 'md:text-[11px]');
+                        grid.classList.add('text-[12px]', 'sm:text-[18px]', 'md:text-[22px]');
+                    }
+                }
+
                 modalCard.classList.remove('modal-enter');
                 void modalCard.offsetWidth; 
                 modalCard.classList.add('modal-enter');
@@ -965,6 +1047,9 @@
         window.openCalendarEvent = (eventId) => {
             const eventData = calendarEventsData[eventId];
             if (!eventData) return;
+
+            modalCard.style.backgroundColor = '#FDF2E2';
+            modalCard.classList.remove('border', 'border-white/60');
 
             if (eventData.type === 'rules') {
                 renderFlowStep2(eventData.title, eventData.html, "window.openFloat('calendar')", eventData.agreementTitle, eventData.agreementHtml);
@@ -1236,7 +1321,6 @@
                 if (data) {
                     document.getElementById('modal-glow').style.display = 'block';
                     
-                    // 🌟 修复 Bug: 强制保留 pointer-events-auto 防止点击穿透
                     modalCard.className = 'w-full rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter max-w-lg w-[90vw] border border-white/60 pointer-events-auto';
                     modalCard.style.backgroundColor = 'rgba(255, 255, 255, 0.65)';
                     toggleViewportZoom(false);
