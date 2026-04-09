@@ -310,8 +310,9 @@
             
             const gc = document.getElementById('guide-container');
             if (gc) {
-                gc.style.width = '100%';
-                gc.style.maxWidth = '56rem';
+                // 修改：给iOS留白，由100%缩小为85%
+                gc.style.width = '85%';
+                gc.style.maxWidth = '800px';
             }
         } else {
             const androidEnterBtn = document.getElementById('android-enter-wrapper');
@@ -447,7 +448,7 @@
         }
 
         // =========================================================================
-        // 🌟 安卓强制横屏专属手势滚动引擎（保留，完美修复点击屏蔽导致无法滚动的Bug）
+        // 🌟 安卓强制横屏专属手势滚动引擎
         // =========================================================================
         let dragStartX = 0;
         let dragStartY = 0;
@@ -467,6 +468,12 @@
                 if (target.id === 'map-scroll-container') {
                     activeScrollTarget = target;
                     isMapTarget = true;
+                    break;
+                }
+                
+                // 将指定的几个需要滚动的容器加入白名单优先接管
+                if (['guide-scroll-container', 'calendar-scroll-container', 'benefit-scroll-container', 'coin-scroll-container', 'shop-scroll-container'].includes(target.id)) {
+                    activeScrollTarget = target;
                     break;
                 }
                 
@@ -497,11 +504,24 @@
                 activeScrollTarget.scrollLeft -= deltaY;
                 scrolled = true;
             } else {
-                // 确保正确接管所有的内部元素弹窗滚动
-                const isScrollableY = activeScrollTarget.scrollHeight > activeScrollTarget.clientHeight;
-                if (isScrollableY || activeScrollTarget.id === 'guide-scroll-container') {
-                    activeScrollTarget.scrollTop += deltaX; 
+                if (activeScrollTarget.id === 'guide-scroll-container') {
+                    // 入场指引长图横向滚动
+                    activeScrollTarget.scrollLeft -= deltaY;
                     scrolled = true;
+                } else if (['calendar-scroll-container', 'benefit-scroll-container', 'coin-scroll-container', 'shop-scroll-container'].includes(activeScrollTarget.id)) {
+                    // 日历和其他悬浮图垂直滚动
+                    activeScrollTarget.scrollTop += deltaX;
+                    scrolled = true;
+                } else {
+                    const isScrollableY = activeScrollTarget.scrollHeight > activeScrollTarget.clientHeight;
+                    const isScrollableX = activeScrollTarget.scrollWidth > activeScrollTarget.clientWidth;
+                    if (isScrollableY) {
+                        activeScrollTarget.scrollTop += deltaX; 
+                        scrolled = true;
+                    } else if (isScrollableX) {
+                        activeScrollTarget.scrollLeft -= deltaY;
+                        scrolled = true;
+                    }
                 }
             }
 
@@ -790,31 +810,28 @@
         const floatData = {
             'benefit': {
                 themeColor: '#EA580C',
+                // 修改：去除 flex 限制，只用单个容器包裹实现图片自撑开，超高才滚动
                 content: `
-                    <div class="w-full flex flex-col max-h-[85vh] bg-[#FDF2E2] fade-in relative rounded-[32px] overflow-hidden">
-                        <div class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
-                            <img src="assets/dakafuli.png" class="w-full h-auto block" alt="打卡福利">
-                        </div>
+                    <div id="benefit-scroll-container" class="w-full max-h-[85vh] bg-[#FDF2E2] fade-in relative rounded-[32px] overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
+                        <img src="assets/dakafuli.png" class="w-full h-auto block" alt="打卡福利">
                     </div>
                 `
             },
             'coin': {
                 themeColor: '#EAB308',
+                // 修改：去除 flex 限制，只用单个容器包裹实现图片自撑开，超高才滚动
                 content: `
-                    <div class="w-full flex flex-col max-h-[85vh] bg-[#FFF8E7] fade-in relative rounded-[32px] overflow-hidden">
-                        <div class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
-                            <img src="assets/jinbiwanfa.png" class="w-full h-auto block" alt="金币玩法">
-                        </div>
+                    <div id="coin-scroll-container" class="w-full max-h-[85vh] bg-[#FFF8E7] fade-in relative rounded-[32px] overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
+                        <img src="assets/jinbiwanfa.png" class="w-full h-auto block" alt="金币玩法">
                     </div>
                 `
             },
             'shop': {
                 themeColor: '#DC2626',
+                // 修改：去除 flex 限制，只用单个容器包裹实现图片自撑开，超高才滚动
                 content: `
-                    <div class="w-full flex flex-col max-h-[85vh] bg-[#FFF1F0] fade-in relative rounded-[32px] overflow-hidden">
-                        <div class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
-                            <img src="assets/xianshitongdian.png" class="w-full h-auto block" alt="限时痛店">
-                        </div>
+                    <div id="shop-scroll-container" class="w-full max-h-[85vh] bg-[#FFF1F0] fade-in relative rounded-[32px] overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
+                        <img src="assets/xianshitongdian.png" class="w-full h-auto block" alt="限时痛店">
                     </div>
                 `
             },
@@ -822,7 +839,7 @@
                 themeColor: '#F97316', 
                 content: `
                     <div class="w-full max-h-[85vh] flex flex-col relative bg-[#FDF2E2] fade-in overflow-hidden rounded-[32px]">
-                        <div class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
+                        <div id="calendar-scroll-container" class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
                             <div class="relative w-full h-auto block m-0 p-0 pb-4">
                                 <img src="assets/timetable.png" class="w-full h-auto block" style="-webkit-user-drag: none; user-select: none;" alt="活动课表">
                                 <!-- 🌟 已将 bottom 从 8.5% 调整到 5.2%，修复第2、3、4行悬空问题，使其底边距与4.25完全一致 -->
@@ -985,6 +1002,13 @@
         window.openFloat = (floatKey) => {
             const data = floatData[floatKey];
             if (data) {
+                // 修改：只给指定的三个看图片的悬浮弹窗开启双指缩放的能力
+                if (['benefit', 'coin', 'shop'].includes(floatKey)) {
+                    toggleViewportZoom(true);
+                } else {
+                    toggleViewportZoom(false);
+                }
+
                 document.getElementById('modal-glow').style.setProperty('--theme-color', data.themeColor);
                 
                 modalCard.className = 'w-full rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter pointer-events-auto';
@@ -1323,7 +1347,7 @@
                     
                     modalCard.className = 'w-full rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter max-w-lg w-[90vw] border border-white/60 pointer-events-auto';
                     modalCard.style.backgroundColor = 'rgba(255, 255, 255, 0.65)';
-                    toggleViewportZoom(false);
+                    toggleViewportZoom(false); // 互动弹窗默认重置禁止缩放
 
                     if (data.type === 'pure-intro') {
                         renderPureIntroModal(data); 
@@ -1343,7 +1367,7 @@
 
         const closeModal = () => {
             modal.classList.add('hidden');
-            toggleViewportZoom(false);
+            toggleViewportZoom(false); // 关闭弹窗时无论之前在哪都重置缩放能力
         }
         document.getElementById('modal-overlay').addEventListener('click', closeModal);
         
