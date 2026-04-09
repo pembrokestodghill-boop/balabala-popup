@@ -450,6 +450,1319 @@
         }
 
         // =========================================================================
+        // 🌟 安卓强制横屏专属手势滚动引擎（已加入 capture 防阻断）
+        // =========================================================================
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let activeScrollTarget = null;
+        let isMapTarget = false;
+
+        document.addEventListener('touchstart', (e) => {
+            if (!isForcedLandscape) return;
+            dragStartX = e.touches[0].clientX;
+            dragStartY = e.touches[0].clientY;
+            
+            let target = e.target;
+            activeScrollTarget = null;
+            isMapTarget = false;
+            
+            while (target && target !== document) {
+                if (target.id === 'map-scroll-container') {
+                    activeScrollTarget = target;
+                    isMapTarget = true;
+                    break;
+                }
+                
+                const style = window.getComputedStyle(target);
+                const isScrollableY = target.scrollHeight > target.clientHeight && (style.overflowY === 'auto' || style.overflowY === 'scroll' || target.classList.contains('custom-scrollbar') || target.classList.contains('overflow-y-auto'));
+                const isScrollableX = target.scrollWidth > target.clientWidth && (style.overflowX === 'auto' || style.overflowX === 'scroll' || target.classList.contains('overflow-x-auto'));
+                
+                if (isScrollableY || isScrollableX) {
+                    activeScrollTarget = target;
+                    break;
+                }
+                target = target.parentNode;
+            }
+        }, { passive: true, capture: true });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!isForcedLandscape || !activeScrollTarget) return;
+            
+            const currentX = e.touches[0].clientX;
+            const currentY = e.touches[0].clientY;
+            
+            const deltaX = currentX - dragStartX;
+            const deltaY = currentY - dragStartY;
+
+            let scrolled = false;
+
+            if (isMapTarget) {
+                activeScrollTarget.scrollLeft -= deltaY;
+                scrolled = true;
+            } else {
+                const isScrollableY = activeScrollTarget.scrollHeight > activeScrollTarget.clientHeight;
+                if (isScrollableY) {
+                    activeScrollTarget.scrollTop += deltaX; 
+                    scrolled = true;
+                }
+            }
+
+            if (scrolled) {
+                if (e.cancelable) e.preventDefault();
+                dragStartX = currentX;
+                dragStartY = currentY;
+            }
+        }, { passive: false, capture: true });
+
+        document.addEventListener('touchend', () => { activeScrollTarget = null; });
+        document.addEventListener('touchcancel', () => { activeScrollTarget = null; });
+
+
+        // ==========================================
+        // 热区数据与 HTML 配置区
+        // ==========================================
+        
+        const climbingRulesHtml = `
+            <div class="bg-orange-100/80 p-3 rounded-xl text-orange-900 border border-orange-200/60"><strong>【重要提示】</strong><br>为确保活动安全有序进行，保障每一位参与者的人身安全与良好体验，请您在入场前仔细阅读本须知。入场即视为您已充分理解并自愿接受以下全部条款。</div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">1. 开放时间</h4>
+                <p class="text-gray-600">周六周日及节假日：10:00 - 19:00</p>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">2. 参与流程</h4>
+                <ul class="list-disc pl-4 space-y-1 text-gray-700">
+                    <li>现场报名：有意参与的用户请在现场工作人员处登记报名，按报名顺序依次体验。</li>
+                    <li>教学安排：品牌方邀请专业攀岩教练在场提供基础教学与帮助，每次教学时长不超过15分钟。</li>
+                    <li>体验时长：每人每次体验（含教学）不超过15分钟，结束后如需再次参与，请重新报名排队。</li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">3. 入场条件与限制声明</h4>
+                <p class="font-bold text-red-600 mb-2">参与者须确认自身健康状况适宜攀岩运动，隐瞒病史执意参与者，一切后果自负。</p>
+                <ol class="list-decimal pl-4 space-y-1 text-gray-700">
+                    <li>仅限身高1.2米(含)以上的游客进入，每位儿童须由至少一名成人全程陪同。</li>
+                    <li>强制签署协议：入场前须现场签署《攀岩墙免责协议》，未签署者一律不得进入。未成年人须由监护人代为签署。</li>
+                    <li>游客须具备参与本活动的良好身体状况，能够独立行动并遵守安全规则，未成年人须在监护人全程陪同和看管下入场。</li>
+                    <li>有下列情况禁止入场：患有心脏病、高血压、癫痫、传染病、精神疾病等不适宜剧烈活动的疾病者；存在发烧、感冒、咳喘传染性皮肤病、呕吐、腹泻等不适合参与本活动的身体状况者；醉酒、情绪失控或不服从管理者。孕妇、老人及行动不便者。</li>
+                    <li>着装要求：（1）须穿着适合运动的服装及鞋履（建议攀岩鞋或运动鞋）（2）禁止穿着拖鞋、高跟鞋、裙装等不适合运动的装束。</li>
+                </ol>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">4. 风险告知与责任豁免</h4>
+                <ol class="list-decimal pl-4 space-y-2 text-gray-700">
+                    <li><strong>设施性质说明：</strong>攀岩墙为徐汇滨江公共设施，品牌方仅在此组织体验活动，不参与设施的建设、维护与管理。参与者须充分知悉并自愿承担使用公共设施可能产生的风险。</li>
+                    <li><strong>运动风险告知：</strong>攀岩运动属于【高风险体育运动】，可能存在以下危险：<br>（1）跌落、滑坠导致的骨折、扭伤、擦伤<br>（2）碰撞导致的软组织损伤或脑震荡<br>（3）绳索、装备使用不当导致的意外伤害<br>（4）因体力不支、技术失误导致的突发状况</li>
+                    <li><strong>教练服务范围：</strong><br>（1）现场教练仅提供【基础技术指导与安全提示】<br>（2）不提供一对一全程保护服务<br>（3）参与者须在指导下【自主完成攀爬】，并全程对自身安全负责</li>
+                    <li><strong>参与者义务：</strong><br>（1）严格遵守教练及工作人员的安全指引<br>（2）未经允许不得擅自攀爬、越线或进行危险动作<br>（3）发现身体不适或装备异常须立即停止活动并报告</li>
+                    <li><strong>责任豁免条款：</strong><br>凡因以下情形导致的任何人身伤害或财产损失，品牌方不承担任何法律责任：<br>（1）参与者隐瞒健康状况、年龄不符或监护人未陪同（未成年人）<br>（2）参与者未遵守安全指引、擅自行动或操作不当<br>（3）参与者未正确使用安全装备或拒绝接受教练指导<br>（4）公共设施本身存在的设计缺陷或维护问题<br>（5）不可抗力因素</li>
+                </ol>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">5. 天气与活动调整</h4>
+                <p class="text-gray-700">遇大风、降雨（含小雨）、雷电等恶劣天气，活动将暂停开放，请以现场公告及官方渠道通知为准。如遇不可抗力或活动临时调整，主办方将及时通过官方平台发布信息。</p>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">6. 其他说明</h4>
+                <p class="text-gray-700">活动期间请遵守现场秩序，听从工作人员管理。入场参加活动即视为您已仔细阅读、充分理解并同意遵守本活动的全部规则及免责条款。主办方在法律允许范围内保留对活动规则及须知的最终解释权。感谢您的理解与配合，祝您游玩愉快。</p>
+            </div>`;
+
+        const bubbleRulesHtml = `
+            <div class="bg-orange-100/80 p-3 rounded-xl text-orange-900 border border-orange-200/60"><strong>【重要提示】</strong><br>为确保活动安全有序进行，保障每一位参与者的人身安全与良好体验，请您在入场前仔细阅读本须知。入场即视为您已充分理解并自愿接受以下全部条款。</div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-2">1. 开放时间</h4>
+                <div class="overflow-hidden rounded-xl border border-orange-200 mb-2">
+                    <table class="w-full text-center text-[10px] sm:text-xs">
+                        <thead class="bg-orange-200/50 text-orange-800">
+                            <tr><th class="py-2 px-1 border-r border-orange-200">泡泡乐园开放时间</th><th class="py-2 px-1 border-r border-orange-200">工作日（周一至周四）</th><th class="py-2 px-1">周五至周日及节假日（包含4月30日）</th></tr>
+                        </thead>
+                        <tbody class="text-gray-600 bg-white">
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第一场</td><td class="py-1.5 border-r border-orange-100">14:00 - 14:40</td><td class="py-1.5">10:00 - 10:40</td></tr>
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第二场</td><td class="py-1.5 border-r border-orange-100">15:00 - 15:40</td><td class="py-1.5">11:00 - 11:40</td></tr>
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第三场</td><td class="py-1.5 border-r border-orange-100">16:00 - 16:40</td><td class="py-1.5">13:00 - 13:40</td></tr>
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第四场</td><td class="py-1.5 border-r border-orange-100">18:00 - 18:40</td><td class="py-1.5">14:00 - 14:40</td></tr>
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第五场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">15:00 - 15:40</td></tr>
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第六场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">16:00 - 16:40</td></tr>
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第七场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">18:00 - 18:40</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-gray-600 text-xs mt-2">体验时间：整点开始，限时40分钟。<br>清场与清洁：结束后进行20分钟清场，用于场地清洁、设施整理及秩序维护。<br>*清场期间暂停入场，请配合现场工作人员指引有序离场。</p>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">2. 入场条件与限制</h4>
+                <ol class="list-decimal pl-4 space-y-1 text-gray-700">
+                    <li>仅限身高1米(含)以上，70周岁以下的游客进入，每位儿童须由至少一名成人全程陪同。</li>
+                    <li>游客须具备参与本活动的良好身体状况，能够独立行动并遵守安全规则，未成年人须在监护人全程陪同和看管下入场。</li>
+                    <li>有下列情况禁止入场：患有心脏病、高血压、癫痫、传染病、精神疾病等不适宜剧烈活动的疾病者；存在发烧、感冒、咳喘传染性皮肤病、呕吐、腹泻等不适合参与本活动的身体状况者；醉酒、情绪失控或不服从管理者；孕妇、老人及行动不便者。</li>
+                    <li>为确保公共安全，工作人员有权根据游客及现场情况进行安全评估，并有权拒绝不符合入场条件者入内。</li>
+                    <li>场地内设有人数上限，每个场次最多可同时容纳60人，达到承载量后将暂停入场，满员后请听从现场工作人员的安排。</li>
+                </ol>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">3. 安全注意事项</h4>
+                <p class="text-gray-700">入场前请仔细阅读现场安全提示，遵守设施使用规则。请勿在池内奔跑、推搡、跳跃或进行任何危险动作。请妥善保管个人物品，贵重物品建议寄存或随身看管。请勿携带尖锐物品、食物、饮料及宠物入场。如遇身体不适或突发情况，请立即联系现场工作人员。</p>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">4. 天气与活动调整</h4>
+                <p class="text-gray-700">遇大风、降雨（含小雨）、雷电等恶劣天气，活动将暂停开放，请以现场公告及官方渠道通知为准。如遇不可抗力或活动临时调整，主办方将及时通过官方平台发布信息。</p>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">5. 其他说明</h4>
+                <p class="text-gray-700">活动期间请遵守现场秩序，听从工作人员管理。入场参加活动即视为您已仔细阅读、充分理解并同意遵守本活动的全部规则及免责条款。主办方在法律允许范围内保留对活动规则及须知的最终解释权。感谢您的理解与配合，祝您游玩愉快。</p>
+            </div>`;
+
+        const rcRulesHtml = `
+            <div class="bg-orange-100/80 p-3 rounded-xl text-orange-900 border border-orange-200/60"><strong>【重要提示】</strong><br>为确保活动安全有序进行，保障每一位参与者的人身安全与良好体验，请您在入场前仔细阅读本须知。入场即视为您已充分理解并自愿接受以下全部条款。</div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-2">1. 开放时间</h4>
+                <div class="overflow-hidden rounded-xl border border-orange-200 mb-2">
+                    <table class="w-full text-center text-[10px] sm:text-xs">
+                        <thead class="bg-orange-200/50 text-orange-800">
+                            <tr><th class="py-2 px-1 border-r border-orange-200">RC遥控车区开放时间</th><th class="py-2 px-1 border-r border-orange-200">工作日（周一至周四）</th><th class="py-2 px-1">周五至周日及节假日（包含4月30日）</th></tr>
+                        </thead>
+                        <tbody class="text-gray-600 bg-white">
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第一场</td><td class="py-1.5 border-r border-orange-100">14:00 - 14:40</td><td class="py-1.5">10:00 - 10:40</td></tr>
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第二场</td><td class="py-1.5 border-r border-orange-100">15:00 - 15:40</td><td class="py-1.5">11:00 - 11:40</td></tr>
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第三场</td><td class="py-1.5 border-r border-orange-100">16:00 - 16:40</td><td class="py-1.5">13:00 - 13:40</td></tr>
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第四场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">14:00 - 14:40</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-gray-600 text-xs mt-2">体验时间：整点开始，限时40分钟。<br>清场与清洁：结束后进行20分钟清场，用于场地清洁、设施整理及秩序维护。<br>*清场期间暂停入场，请配合现场工作人员指引有序离场。</p>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">2. 入场条件与限制</h4>
+                <ol class="list-decimal pl-4 space-y-1 text-gray-700">
+                    <li>仅限身高1.2米(含)以上的游客进入，每位儿童须由至少一名成人全程陪同。</li>
+                    <li>游客须具备参与本活动的良好身体状况，能够独立行动并遵守安全规则，未成年人须在监护人全程陪同和看管下入场。</li>
+                    <li>有下列情况禁止入场：患有心脏病、高血压、癫痫、传染病、精神疾病等不适宜剧烈活动的疾病者；存在发烧、感冒、咳喘传染性皮肤病、呕吐、腹泻等不适合参与本活动的身体状况者；醉酒、情绪失控或不服从管理者。孕妇、老人及行动不便者。</li>
+                    <li>为确保公共安全，工作人员有权根据游客及现场情况进行安全评估，并有权拒绝不符合入场条件者入内。</li>
+                    <li>场地内设有人数上限，每个场次最多可同时容纳10人，达到承载量后将暂停入场，满员后请听从现场工作人员的安排。</li>
+                </ol>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">3. 设备与游玩规则</h4>
+                <ol class="list-decimal pl-4 space-y-1 text-gray-700">
+                    <li><strong>设备提供：</strong>品牌方提供符合安全标准的限速遥控车供现场体验（数量5辆），参与者无须自备设备。</li>
+                    <li><strong>体验时长：</strong>每人每次体验时长为40分钟，请按时结束离场，以便后续参与者使用。如需再次体验，请重新排队报名。</li>
+                    <li><strong>操作区域：</strong>请在指定赛道或操作区域内操控遥控车，严禁将车辆驶出规定范围。</li>
+                    <li><strong>操作规范：</strong>请文明操控，避免故意撞击、追逐他人车辆或进行任何危险操作。</li>
+                    <li><strong>设备损坏赔偿：</strong>请爱护公共设备，若因人为不当操作或故意损坏导致设备故障，须照价赔偿。</li>
+                </ol>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">4. 安全须知</h4>
+                <p class="text-gray-700">入场前请仔细阅读本须知，严格遵守现场工作人员的安全指引。严禁在操控区内奔跑、推搡或擅自进入赛道捡拾车辆，如需帮助请联系工作人员。请妥善保管个人物品，贵重物品请随身携带或寄存，场地不承担物品保管责任。严禁携带食物饮料进入操作区域，以免污染或损坏设备。如遇设备故障、失控或其他异常情况，请立即停止使用并通知工作人员处理。严禁自行拆卸或维修设备。体验过程中请时刻注意周围环境及他人安全避免发生碰撞事故。</p>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">5. 天气与活动调整</h4>
+                <p class="text-gray-700">遇大风、降雨（含小雨）、雷电等恶劣天气，活动将暂停开放，请以现场公告及官方渠道通知为准。如遇不可抗力或活动调整，主办方将及时通过官方平台发布信息。</p>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">6. 其他说明</h4>
+                <p class="text-gray-700">活动期间请遵守现场秩序，听从工作人员管理。入场参加活动即视为您已仔细阅读、充分理解并同意遵守本活动的全部规则及免责条款。主办方在法律允许范围内保留对活动规则及须知的最终解释权。感谢您的理解与配合，祝您游玩愉快。</p>
+            </div>`;
+
+        const skateRulesHtml = `
+            <div class="bg-orange-100/80 p-3 rounded-xl text-orange-900 border border-orange-200/60"><strong>【重要提示】</strong><br>为确保活动安全有序进行，保障每一位参与者的人身安全与良好体验，请您在入场前仔细阅读本须知。入场即视为您已充分理解并自愿接受以下全部条款。</div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-2">1. 开放时间</h4>
+                <div class="overflow-hidden rounded-xl border border-orange-200 mb-2">
+                    <table class="w-full text-center text-[10px] sm:text-xs">
+                        <thead class="bg-orange-200/50 text-orange-800">
+                            <tr><th class="py-2 px-1 border-r border-orange-200">泡泡乐园开放时间</th><th class="py-2 px-1 border-r border-orange-200">工作日（周一至周四）</th><th class="py-2 px-1">周五至周日及节假日（包含4月30日）</th></tr>
+                        </thead>
+                        <tbody class="text-gray-600 bg-white">
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第一场</td><td class="py-1.5 border-r border-orange-100">17:00 - 17:40</td><td class="py-1.5">15:00 - 15:40</td></tr>
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第二场</td><td class="py-1.5 border-r border-orange-100">18:00 - 18:40</td><td class="py-1.5">16:00 - 16:40</td></tr>
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第三场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">17:00 - 17:40</td></tr>
+                            <tr class="border-t border-orange-100"><td class="py-1.5 border-r border-orange-100">第四场</td><td class="py-1.5 border-r border-orange-100">—</td><td class="py-1.5">18:00 - 18:40</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">2. 入场条件与限制</h4>
+                <ol class="list-decimal pl-4 space-y-1 text-gray-700">
+                    <li><strong>装备要求（强制）：</strong>参与者须自备符合安全标准的滑板，现场不提供滑板租借服务。滑板须满足以下条件：<br>（1）板面完好，无断裂、分层或严重磨损<br>（2）轮轴稳固，支架无松动，轮子转动正常<br>（3）砂纸防滑面无大面积脱落<br>（4）整体无破损、无改装安全隐患<br>入场前须经工作人员检查装备合格后方可进入。不合格装备禁止入场。</li>
+                    <li><strong>技术基础要求（强制）：</strong>参与者须具备一定的滑板基础与滑行经验，能够独立完成以下基本动作：<br>（1）平稳上板与直线滑行<br>（2）有效控制速度与方向<br>（3）安全制动与紧急停板<br>（4）摔倒时的自我保护动作<br>本区域不设任何教学指导服务，零基础者谢绝入场。</li>
+                    <li><strong>身高、年龄与监护要求：</strong><br>（1）仅限身高1.2米(含)以上的游客进入，每位儿童须由至少一名成人全程陪同。<br>（2）未满18周岁者须由法定监护人全程陪同入场，监护人须全程保持有效看护，不得擅自离开。<br>（3）监护人须代为签署免责协议，并承担被监护人的全部监护责任。</li>
+                    <li><strong>健康状况：</strong>参与者须身体健康，无心脏病、高血压、癫痫、骨骼关节损伤、眩晕症等不适宜剧烈运动的疾病史或身体状况。<br>特别提醒：隐瞒健康状况、技术能力不足或装备不合格执意入场者，一切后果自负。</li>
+                    <li>场地内设有人数上限，每个场次最多可同时容纳10人，达到承载量后将暂停入场，满员后请听从现场工作人员的安排。</li>
+                </ol>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">3. 安全规范与行为准则</h4>
+                <ol class="list-decimal pl-4 space-y-1 text-gray-700">
+                    <li><strong>强制签署协议：</strong>入场前须现场签署《滑板区免责协议》，未签署者一律不得进入。未成年人须由监护人代为签署。</li>
+                    <li><strong>防护装备建议：</strong>强烈建议佩戴以下专业防护装备：<br>（1）头盔（必备）<br>（2）护膝、护肘、护腕（建议全套佩戴）<br>未佩戴防护装备者，视为自愿承担由此增加的受伤风险。</li>
+                    <li><strong>场地使用规则：</strong><br>（1）严格遵守场地标识及工作人员指引，在规定区域内滑行，严禁进入非滑行区域。<br>（2）滑行前须观察周围环境，确保安全后方可起步。<br>（3）严禁在滑行过程中佩戴耳机，手持手机或其他分散注意力的物品。<br>（4）严禁在场地内追逐打闹、进行危险动作（包括但不限于腾空跳跃、高速俯冲、逆向滑行）或妨碍他人滑行。<br>（5）摔倒后须迅速撤离滑行区域，避免二次碰撞。</li>
+                    <li><strong>个人物品保管：</strong>请妥善保管个人物品，贵重物品请随身携带或寄存。场地不承担任何物品保管责任，遗失或损坏概不负责。</li>
+                </ol>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">4. 天气与活动调整</h4>
+                <p class="text-gray-700">遇大风、降雨（含小雨）、雷电等恶劣天气，活动将暂停开放，请以现场公告及官方渠道通知为准。如遇不可抗力或活动临时调整，主办方将及时通过官方平台发布信息。</p>
+            </div>
+            <div>
+                <h4 class="font-black text-orange-700 text-sm sm:text-base mb-1">5. 其他说明</h4>
+                <p class="text-gray-700">活动期间请遵守现场秩序，听从工作人员管理。入场参加活动即视为您已仔细阅读、充分理解并同意遵守本活动的全部规则及免责条款。主办方在法律允许范围内保留对活动规则及须知的最终解释权。感谢您的理解与配合，祝您游玩愉快。</p>
+            </div>`;
+
+        const climbingAgreementHtml = `<div class="text-left space-y-4 text-gray-700 text-xs sm:text-sm"><p class="font-bold text-orange-600 bg-orange-100 p-2 rounded-lg">本人（及监护人）确认 ：参与“攀岩墙”活动前，已阅读、理解并自愿接受本协议全部内容。</p><div><h4 class="font-black text-orange-800 mb-1">一、健康状况与装备</h4><ul class="list-disc pl-5 space-y-1"><li>本人确认身体健康，无心脏病、高血压、癫痫、传染病、精神疾病、感冒、咳喘、传染性皮肤病等不适宜参与攀岩运动的疾病或身体状况。</li><li>本人确认不存在醉酒、情绪失控等影响自身或他人安全的情形。</li><li>本人知晓本活动对身高、年龄的限制（身高1.2米以上），并承诺符合入场条件。</li><li>本人承诺穿着适合运动的服装及鞋履（运动鞋或攀岩鞋），不穿着拖鞋、高跟鞋、裙装等不适合运动的装束。</li><li>未成年人须由监护人全程陪同，监护人承诺履行现场监护责任。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">二、行为规范</h4><ul class="list-disc pl-5 space-y-1"><li>本人承诺严格遵守教练及工作人员的安全指引，未经允许不得擅自攀爬或进行危险动作。</li><li>本人知晓现场教练仅提供基础技术指导与安全提示，不提供一对一全程保护服务，本人须在指导下自主完成攀爬，并全程对自身安全负责。</li><li>本人承诺发现身体不适或装备异常时立即停止活动并报告工作人员。</li><li>本人承诺不携带尖锐物品、食物、饮料及宠物入场。</li><li>本人承诺妥善保管个人物品，贵重物品丢失责任自负。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">三、主办方义务</h4><p>主办方承诺：提供具备资质的专业攀岩教练进行基础教学与安全提示，确保活动组织过程符合基本安全标准，配备必要的现场工作人员及急救用品，并在活动前进行安全提示。</p></div><div><h4 class="font-black text-orange-800 mb-1">四、风险告知与责任划分</h4><p><strong class="text-orange-600">风险告知 ：</strong>本人充分了解攀岩运动属于高风险体育运动，可能导致跌落、滑坠、骨折、扭伤、擦伤、碰撞、脑震荡等严重人身伤害，甚至死亡。</p><p><strong class="text-orange-600">设施性质说明 ：</strong>本人知晓攀岩墙为公共设施，品牌方仅在此组织体验活动，不参与设施的建设、维护与管理。本人自愿承担使用公共设施可能产生的风险。</p><p><strong class="text-orange-600">责任划分 ：</strong></p><ul class="list-disc pl-5 space-y-1"><li>因本人未遵守本协议、未听从教练或工作人员指引、隐瞒健康状况、未正确使用装备或自身原因造成损害的，由本人依法承担相应责任。</li><li>因主办方存在故意或重大过失造成损害的，主办方依法承担相应责任。</li><li>因第三方行为造成损害的，由行为人依法承担相应责任。</li><li>因公共设施本身存在的设计缺陷或维护问题造成损害的，由相关责任方依法承担相应责任。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">五、未成年人监护</h4><p>监护人承诺全程陪同并监督未成年人遵守本协议及现场规定，因未成年人未遵守规定造成的损害，由监护人及未成年人依法承担责任。</p></div><div><h4 class="font-black text-orange-800 mb-1">六、其他</h4><ul class="list-disc pl-5 space-y-1"><li>本人确认：参与本次活动纯属自愿，并非受任何压力或诱导。</li><li>本协议适用中华人民共和国法律。争议协商不成的，向主办方所在地人民法院起诉。</li><li>本协议自签字之日起生效。</li></ul></div></div>`;
+        const bubbleAgreementHtml = `<div class="text-left space-y-4 text-gray-700 text-xs sm:text-sm"><p class="font-bold text-orange-600 bg-orange-100 p-2 rounded-lg">本人（及监护人）确认 ：参与“泡泡乐园”活动前，已阅读、理解并自愿接受本协议全部内容。</p><div><h4 class="font-black text-orange-800 mb-1">一、健康状况与装备</h4><ul class="list-disc pl-5 space-y-1"><li>本人确认身体健康，无心脏病、高血压、癫痫、传染病、精神疾病、感冒、咳喘、传染性皮肤病等不适宜参与本活动的疾病或身体状况。</li><li>本人确认不存在醉酒、情绪失控等影响自身或他人安全的情形。</li><li>本人知晓本活动对身高、年龄的限制（身高1米以上，70周岁以下），并承诺符合入场条件。</li><li>未成年人须由监护人全程陪同，监护人承诺履行现场监护责任。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">二、行为规范</h4><ul class="list-disc pl-5 space-y-1"><li>本人承诺遵守现场安全提示及工作人员指引，不在场内奔跑、推搡、跳跃或进行任何危险动作。</li><li>本人承诺不携带尖锐物品、食物、饮料及宠物入场。</li><li>本人承诺妥善保管个人物品，贵重物品丢失责任自负。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">三、风险告知与责任划分</h4><p><strong class="text-orange-600">风险告知 ：</strong>本人充分了解泡泡乐园活动存在一定风险，可能导致擦伤、扭伤、碰撞等意外伤害。</p><p><strong class="text-orange-600">责任划分 ：</strong></p><ul class="list-disc pl-5 space-y-1"><li>因本人未遵守本协议、未听从工作人员指引或自身原因造成损害的，由本人依法承担相应责任。</li><li>因主办方存在故意或重大过失造成损害的，主办方依法承担相应责任。</li><li>因第三方行为造成损害的，由行为人依法承担相应责任。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">四、未成年人监护</h4><p>监护人承诺全程陪同并监督未成年人遵守本协议及现场规定，因未成年人未遵守规定造成的损害，由监护人及未成年人依法承担责任。</p></div><div><h4 class="font-black text-orange-800 mb-1">五、其他</h4><ul class="list-disc pl-5 space-y-1"><li>本人确认：参与本次活动纯属自愿，并非受任何压力或诱导。</li><li>本协议适用中华人民共和国法律。争议协商不成的，向主办方所在地人民法院起诉。</li><li>本协议自签字之日起生效。</li></ul></div></div>`;
+        const skateAgreementHtml = `<div class="text-left space-y-4 text-gray-700 text-xs sm:text-sm"><p class="font-bold text-orange-600 bg-orange-100 p-2 rounded-lg">本人（及监护人）确认 ：参与“潮玩街”滑板区活动前，已阅读、理解并自愿接受本协议全部内容。</p><div><h4 class="font-black text-orange-800 mb-1">一、健康状况与装备</h4><ul class="list-disc pl-5 space-y-1"><li>本人确认身体健康，无不适宜滑板运动的疾病或生理状态。</li><li>本人承诺使用符合安全标准的滑板及护具（头盔、护膝、护肘等），并全程佩戴。</li><li>本人知晓本区域不设教练，所有技术及风险由本人自行判断与承担。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">二、风险告知与责任</h4><p><strong class="text-orange-600">风险告知 ：</strong>本人充分了解滑板运动存在高风险，可能导致擦伤、扭伤、骨折、脑震荡、残疾甚至死亡等后果。</p><p><strong class="text-orange-600">责任划分 ：</strong></p><ul class="list-disc pl-5 space-y-1"><li>因本人未遵守规定、未佩戴护具、操作不当等自身原因造成损害的，由本人依法承担主要责任。</li><li>因主办方存在故意或重大过失造成损害的，主办方依法承担相应责任。</li><li>因第三方行为造成损害的，由行为人依法承担相应责任。</li></ul></div><div><h4 class="font-black text-orange-800 mb-1">三、未成年人监护</h4><p>监护人承诺全程监督未成年人遵守本协议及现场规定，<strong class="text-red-500">监护人不得在活动期间离开滑板区</strong>。因未成年人未遵守规定造成的损害，由监护人及未成年人依法承担责任。</p></div><div><h4 class="font-black text-orange-800 mb-1">四、其他</h4><ul class="list-disc pl-5 space-y-1"><li>本人确认：参与本次活动纯属自愿，并非受任何压力或诱导。</li><li>本协议适用中华人民共和国法律。争议协商不成的，向主办方所在地人民法院起诉。</li><li>本协议自签字之日起生效。</li></ul></div></div>`;
+
+        const zonesData = {
+            'departure': { 
+                type: 'pure-intro', badge: 'A区', title: '热爱启程', themeColor: '#DF4A27', textColor: '#FDE5A9',
+                line1: '软萌IP痛车亮相', line2: '从这里开启你的热爱之旅', 
+                en1: 'IP Deco Cars Debut:', en2: 'Begin your passion journey here.' 
+            },
+            'zone_c': {
+                type: 'pure-intro', badge: 'C区', title: '热爱起跑线', themeColor: '#DF4A27', textColor: '#FDE5A9',
+                line1: '小朋友天生就知道，不是要跑得很快，', line2: '而是要跑得很快乐',
+                en1: 'Kids know — it\'s not about running fast,', en2: 'it\'s about running happy.'
+            },
+            'zone_d': {
+                type: 'pure-intro', badge: 'D区', title: '撒野营', themeColor: '#DF4A27', textColor: '#FDE5A9',
+                line1: '是一块江边的露营地', line2: '也是大小朋友诗意的栖息地',
+                en1: 'It’s not just a riverside campsite,', en2: 'but a poetic haven for kids and grown-ups.'
+            },
+            'zone_e': {
+                type: 'pure-intro', badge: 'E区', title: 'IP聚会场', themeColor: '#DF4A27', textColor: '#FDE5A9',
+                line1: '巴拉巴拉好朋友派对正式开场', line2: '超多IP伙伴齐聚现场，等你来赴约',
+                en1: 'balabala Friends Party — Now on!', en2: 'Meet your favorite characters. Join the fun!'
+            },
+            'zone_e2': {
+                type: 'pure-intro', badge: 'E区', title: 'IP聚会场', themeColor: '#DF4A27', textColor: '#FDE5A9',
+                line1: '巴拉巴拉好朋友派对正式开场', line2: '超多IP伙伴齐聚现场，等你来赴约',
+                en1: 'balabala Friends Party — Now on!', en2: 'Meet your favorite characters. Join the fun!'
+            },
+            'zone_g': {
+                type: 'pure-intro', badge: 'G区', title: '限时痛店', themeColor: '#DF4A27', textColor: '#FDE5A9',
+                line1: '汇聚鞋服潮玩与暖心美食等多元好物，', line2: '总有一款，戳中你的热爱！',
+                en1: 'Fashion, toys, food —', en2: 'There\'s something for everyone.'
+            },
+            'zone_h': {
+                type: 'pure-intro', badge: 'H区', title: '巴拉巴拉金币补给站', themeColor: '#DF4A27', textColor: '#FDE5A9',
+                line1: '收集专属金币解锁限定礼遇', line2: '让每一份期待，都能收获惊喜回响',
+                en1: 'Collect coins to unlock', en2: 'exclusive perks.'
+            },
+            'zone_k': {
+                type: 'pure-intro', badge: 'K区', title: '萌宠乐园', themeColor: '#DF4A27', textColor: '#FDE5A9',
+                line1: '萌宠互动治愈空间', line2: '解锁温馨出片的专属时光',
+                en1: 'Pet Cuddle Corner —', en2: 'Unlock your picture-perfect moment.'
+            },
+            'climbing': { 
+                type: 'flow', badge: 'B区', title: '攀岩墙', themeColor: '#DF4A27', textColor: '#FDE5A9', 
+                line1: '喜欢攀岩的孩子不会下坠，', line2: '只会在下坠时开始飞翔', 
+                en1: 'Kids who love climbing never fall —', en2: 'they fly.', 
+                rulesTitle: '[B区攀岩墙] · 入场安全须知', rulesHtml: climbingRulesHtml, agreementTitle: '攀岩墙活动参与协议', agreementHtml: climbingAgreementHtml 
+            },
+            'bubble': { 
+                type: 'flow', badge: 'I区', title: '泡泡乐园', themeColor: '#DF4A27', textColor: '#FDE5A9', 
+                line1: '每一种热爱都是柔软的触点', line2: '愿你在海洋球的回弹中快乐徜徉', 
+                en1: 'Every passion starts with a gentle touch —', en2: 'Let joy bounce back.', 
+                rulesTitle: '[I区泡泡乐园] · 入场安全须知', rulesHtml: bubbleRulesHtml, agreementTitle: '泡泡乐园活动参与协议', agreementHtml: bubbleAgreementHtml 
+            },
+            'powerblock': { 
+                id: 'powerblock', badge: 'J区', type: 'multi-flow', title: '动力街区', themeColor: '#DF4A27', textColor: '#FDE5A9', 
+                line1: '心怀热爱，自可翻越万千阻碍', line2: '怀揣勇气，便能让热爱乘风而行', 
+                en1: 'Passion conquers all.', en2: 'Courage lets it soar.', 
+                options: [{ btnText: 'RC遥控车区入场须知', rulesTitle: '[J区动力街区-RC遥控车区] · 入场安全须知', rulesHtml: rcRulesHtml, agreementTitle: null, agreementHtml: null }, { btnText: '滑板区入场须知', rulesTitle: '[J区动力街区-滑板区] · 入场安全须知', rulesHtml: skateRulesHtml, agreementTitle: '滑板区活动参与协议', agreementHtml: skateAgreementHtml }] 
+            }
+        };
+
+        const calendarEventsData = {
+            'rc': { type: 'rules', location: 'J区动力街区', title: '[J区动力街区-RC遥控车区] · 入场安全须知', html: rcRulesHtml, agreementTitle: null, agreementHtml: null },
+            'skate': { type: 'rules', location: 'J区动力街区', title: '[J区动力街区-滑板区] · 入场安全须知', html: skateRulesHtml, agreementTitle: '滑板区活动参与协议', agreementHtml: skateAgreementHtml },
+            'pony': { type: 'simple', location: 'E区IP聚会场 / F区热爱剧场', title: '小马宝莉见面会', times: ['第1场 11:30 - 11:50', '第2场 15:00 - 15:20', '第3场 17:20 - 17:40'] },
+            'run': { type: 'simple', location: 'C区热爱起跑线', title: '热爱自由追风跑', times: ['第1场 10:00 - 11:30', '第2场 15:30 - 17:00'] },
+            'market': { type: 'simple', location: 'D区撒野营', title: '亲子公益集市', times: ['11:00 - 16:00'] },
+            'lottery': { type: 'simple', location: '全场活动', title: '神秘IP限定产品抽奖日', subtitle: '当日店内任意消费即可参与抽奖', times: [] },
+            'robot': { type: 'simple', location: 'F区热爱剧场', title: '银河通用机器人互动', times: ['13:30 - 15:00'] },
+            'paw': { type: 'simple', location: 'F区热爱剧场', title: '汪汪队见面会', times: ['第1场 11:30 - 11:50', '第2场 15:00 - 15:20', '第3场 17:20 - 17:40'] },
+            'hotwheels': { type: 'simple', location: 'G区限时痛店', title: '风火轮开箱', times: ['13:00 - 15:00'] },
+            'craft': { type: 'simple', location: '📍龙美术馆咖啡店', title: '创意手工坊', times: ['第1场 10:00 - 11:30', '第2场 13:30 - 15:00', '第3场 15:30 - 17:00'] },
+            'bake': { type: 'simple', location: '📍龙美术馆咖啡店', title: '手作烘焙时光', times: ['第1场 10:00 - 11:30', '第2场 13:30 - 15:00', '第3场 15:30 - 17:00'] },
+            'dance': { type: 'simple', location: 'F区热爱剧场', title: '潮酷唱跳街舞秀', times: ['第1场 10:00 - 11:30', '第2场 13:30 - 15:00', '第3场 15:30 - 17:00'] },
+            'nature': { type: 'simple', location: 'D区撒野营', title: '自然美育学堂', times: ['13:30 - 15:00'] }
+        };
+
+        const floatData = {
+            'benefit': {
+                themeColor: '#EA580C',
+                content: `
+                    <div class="w-full flex flex-col max-h-[85vh] bg-[#FDF2E2] fade-in relative rounded-[32px] overflow-hidden">
+                        <div class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
+                            <img src="assets/dakafuli.png" class="w-full h-auto block" alt="打卡福利">
+                        </div>
+                    </div>
+                `
+            },
+            'coin': {
+                themeColor: '#EAB308',
+                content: `
+                    <div class="w-full flex flex-col max-h-[85vh] bg-[#FFF8E7] fade-in relative rounded-[32px] overflow-hidden">
+                        <div class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
+                            <img src="assets/jinbiwanfa.png" class="w-full h-auto block" alt="金币玩法">
+                        </div>
+                    </div>
+                `
+            },
+            'shop': {
+                themeColor: '#DC2626',
+                content: `
+                    <div class="w-full flex flex-col max-h-[85vh] bg-[#FFF1F0] fade-in relative rounded-[32px] overflow-hidden">
+                        <div class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
+                            <img src="assets/xianshitongdian.png" class="w-full h-auto block" alt="限时痛店">
+                        </div>
+                    </div>
+                `
+            },
+            'calendar': {
+                themeColor: '#F97316', 
+                content: `
+                    <div class="w-full max-h-[85vh] flex flex-col relative bg-[#FDF2E2] fade-in overflow-hidden rounded-[32px]">
+                        <div class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
+                            <div class="relative w-full h-auto block m-0 p-0 pb-4">
+                                <img src="assets/timetable.png" class="w-full h-auto block" style="-webkit-user-drag: none; user-select: none;" alt="活动课表">
+                                <div class="absolute inset-0" style="top: 24.5%; bottom: 8.5%; left: 0%; right: 0%;">
+                                    
+                                    <div class="grid grid-cols-7 grid-rows-4 w-full h-full text-[6px] sm:text-[9px] md:text-[11px] font-bold text-[#4A3B2B] leading-tight">
+                                        
+                                        <!-- Row 1 -->
+                                        <div class="col-start-6 row-start-1 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-0.5 sm:gap-1.5 h-full w-full">
+                                            <div onclick="openCalendarEvent('rc')" class="bg-[#3AB6D8] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
+                                                <span class="whitespace-nowrap">·RC遥控车竞速</span>
+                                                <span class="text-[0.66em] font-normal transform scale-90 opacity-90 hidden sm:block whitespace-nowrap mt-0.5">四驱车拼装&小比例竞速</span>
+                                            </div>
+                                            <div onclick="openCalendarEvent('pony')" class="bg-[#EE70B5] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
+                                                <span class="whitespace-nowrap">·小马宝莉见面会</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-start-7 row-start-1 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-0.5 sm:gap-1.5 h-full w-full">
+                                            <div onclick="openCalendarEvent('run')" class="bg-[#D6E042] text-[#4A3B2B] rounded-full w-[94%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
+                                                <span class="whitespace-nowrap">·热爱自由追风跑</span>
+                                                <span class="text-[0.66em] font-normal transform scale-90 opacity-90 hidden sm:block whitespace-nowrap mt-0.5">滨江亲子快乐跑</span>
+                                            </div>
+                                            <div onclick="openCalendarEvent('market')" class="bg-[#6B4B38] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
+                                                <span class="whitespace-nowrap">·亲子公益集市</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Row 2 -->
+                                        <div class="col-start-2 row-start-2 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-0.5 h-full w-full cursor-pointer active:scale-95 transition" onclick="openCalendarEvent('lottery')">
+                                            <span class="text-[#4A3B2B] font-black whitespace-nowrap">·神秘IP限定产品</span>
+                                            <span class="text-[#4A3B2B] font-black whitespace-nowrap">抽奖日</span>
+                                            <span class="text-[#888] font-normal text-[0.83em] transform scale-90 mt-1 hidden sm:block whitespace-nowrap">当日店内任意消费即可参与抽奖</span>
+                                        </div>
+
+                                        <div class="col-start-4 row-start-2 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-0.5 h-full w-full cursor-pointer active:scale-95 transition" onclick="openCalendarEvent('lottery')">
+                                            <span class="text-[#4A3B2B] font-black whitespace-nowrap">·神秘IP限定产品</span>
+                                            <span class="text-[#4A3B2B] font-black whitespace-nowrap">抽奖日</span>
+                                            <span class="text-[#888] font-normal text-[0.83em] transform scale-90 mt-1 hidden sm:block whitespace-nowrap">当日店内任意消费即可参与抽奖</span>
+                                        </div>
+
+                                        <div class="col-start-5 row-start-2 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-0.5 sm:gap-1.5 h-full w-full">
+                                            <div onclick="openCalendarEvent('robot')" class="bg-[#586A7A] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
+                                                <span class="whitespace-nowrap">·银河通用机器人互动</span>
+                                                <span class="text-[0.66em] font-normal transform scale-90 opacity-90 hidden sm:block whitespace-nowrap mt-0.5">春晚同款机器人亮相</span>
+                                            </div>
+                                            <div onclick="openCalendarEvent('skate')" class="bg-[#3AB6D8] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
+                                                <span class="whitespace-nowrap">·热爱板仔初体验</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-start-6 row-start-2 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-0.5 sm:gap-1.5 h-full w-full">
+                                            <div onclick="openCalendarEvent('hotwheels')" class="bg-[#E57620] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
+                                                <span class="whitespace-nowrap">·风火轮开箱</span>
+                                            </div>
+                                            <div onclick="openCalendarEvent('paw')" class="bg-[#A555E8] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
+                                                <span class="whitespace-nowrap">·汪汪队见面会</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-start-7 row-start-2 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-0.5 sm:gap-1.5 h-full w-full">
+                                            <div onclick="openCalendarEvent('craft')" class="bg-[#48A578] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
+                                                <span class="whitespace-nowrap">·创意手工坊</span>
+                                                <span class="text-[0.66em] font-normal transform scale-90 opacity-90 hidden sm:block whitespace-nowrap flex items-center mt-0.5"><svg class="w-[1em] h-[1em] mr-0.5 inline-block" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>龙美术馆咖啡店</span>
+                                            </div>
+                                            <div onclick="openCalendarEvent('paw')" class="bg-[#A555E8] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
+                                                <span class="whitespace-nowrap">·汪汪队见面会</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Row 3 -->
+                                        <div class="col-start-1 row-start-3 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-0.5 sm:gap-1.5 h-full w-full">
+                                            <div onclick="openCalendarEvent('bake')" class="bg-[#E6E8E3] text-[#4A3B2B] rounded-full w-[94%] py-0.5 sm:py-1 flex flex-col items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
+                                                <span class="whitespace-nowrap">·手作烘焙时光</span>
+                                                <span class="text-[0.66em] font-normal transform scale-90 opacity-80 hidden sm:block whitespace-nowrap flex items-center mt-0.5"><svg class="w-[1em] h-[1em] mr-0.5 inline-block" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>龙美术馆咖啡店</span>
+                                            </div>
+                                            <div onclick="openCalendarEvent('pony')" class="bg-[#EE70B5] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
+                                                <span class="whitespace-nowrap">·小马宝莉见面会</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-start-2 row-start-3 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-[1px] sm:gap-[3px] h-full w-full">
+                                            <div onclick="openCalendarEvent('market')" class="bg-[#6B4B38] text-white rounded-full w-[94%] py-[2px] sm:py-[4px] flex items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
+                                                <span class="whitespace-nowrap">·亲子公益集市</span>
+                                            </div>
+                                            <div onclick="openCalendarEvent('pony')" class="bg-[#EE70B5] text-white rounded-full w-[94%] py-[2px] sm:py-[4px] flex items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
+                                                <span class="whitespace-nowrap">·小马宝莉见面会</span>
+                                            </div>
+                                            <div onclick="openCalendarEvent('lottery')" class="text-[#4A3B2B] w-[94%] py-[2px] sm:py-[4px] flex flex-col items-center justify-center cursor-pointer active:scale-95 transition">
+                                                <span class="whitespace-nowrap font-black">·神秘IP限定产品抽奖日</span>
+                                                <span class="text-[0.66em] font-normal transform scale-90 opacity-80 hidden sm:block whitespace-nowrap mt-0.5">当日店内任意消费即可参与抽奖</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-start-4 row-start-3 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-0.5 h-full w-full cursor-pointer active:scale-95 transition" onclick="openCalendarEvent('lottery')">
+                                            <span class="text-[#4A3B2B] font-black whitespace-nowrap">·神秘IP限定产品</span>
+                                            <span class="text-[#4A3B2B] font-black whitespace-nowrap">抽奖日</span>
+                                            <span class="text-[#888] font-normal text-[0.83em] transform scale-90 mt-1 hidden sm:block whitespace-nowrap">当日店内任意消费即可参与抽奖</span>
+                                        </div>
+
+                                        <div class="col-start-7 row-start-3 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-0.5 sm:gap-1.5 h-full w-full">
+                                            <div onclick="openCalendarEvent('dance')" class="bg-[#DE4C35] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
+                                                <span class="whitespace-nowrap">·潮酷唱跳街舞秀</span>
+                                            </div>
+                                            <div onclick="openCalendarEvent('pony')" class="bg-[#EE70B5] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
+                                                <span class="whitespace-nowrap">·小马宝莉见面会</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Row 4 -->
+                                        <div class="col-start-2 row-start-4 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-0.5 h-full w-full cursor-pointer active:scale-95 transition" onclick="openCalendarEvent('lottery')">
+                                            <span class="text-[#4A3B2B] font-black whitespace-nowrap">·神秘IP限定产品</span>
+                                            <span class="text-[#4A3B2B] font-black whitespace-nowrap">抽奖日</span>
+                                            <span class="text-[#888] font-normal text-[0.83em] transform scale-90 mt-1 hidden sm:block whitespace-nowrap">当日店内任意消费即可参与抽奖</span>
+                                        </div>
+
+                                        <div class="col-start-4 row-start-4 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-0.5 h-full w-full cursor-pointer active:scale-95 transition" onclick="openCalendarEvent('lottery')">
+                                            <span class="text-[#4A3B2B] font-black whitespace-nowrap">·神秘IP限定产品</span>
+                                            <span class="text-[#4A3B2B] font-black whitespace-nowrap">抽奖日</span>
+                                            <span class="text-[#888] font-normal text-[0.83em] transform scale-90 mt-1 hidden sm:block whitespace-nowrap">当日店内任意消费即可参与抽奖</span>
+                                        </div>
+
+                                        <div class="col-start-6 row-start-4 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-0.5 sm:gap-1.5 h-full w-full">
+                                            <div onclick="openCalendarEvent('market')" class="bg-[#6B4B38] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
+                                                <span class="whitespace-nowrap">·亲子公益集市</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-start-7 row-start-4 flex flex-col justify-end items-center pb-1 sm:pb-2 gap-0.5 sm:gap-1.5 h-full w-full">
+                                            <div onclick="openCalendarEvent('nature')" class="bg-[#B05DD2] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
+                                                <span class="whitespace-nowrap">·自然美育学堂</span>
+                                            </div>
+                                            <div onclick="openCalendarEvent('pony')" class="bg-[#EE70B5] text-white rounded-full w-[94%] py-0.5 sm:py-1 flex items-center justify-center shadow-sm cursor-pointer active:scale-95 transition">
+                                                <span class="whitespace-nowrap">·小马宝莉见面会</span>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="shrink-0 h-[40px] flex items-center justify-center border-t border-[#EEDDB8] text-[10px] sm:text-xs text-[#8A7B6B] px-4 font-medium z-10 text-center">
+                            因天气等不可抗因素影响，以上活动安排或将延期举办或取消，敬请留意。
+                        </div>
+                    </div>
+                `
+            }
+        };
+
+        const modalCard = document.getElementById('modal-card');
+        const modalDynamicContent = document.getElementById('modal-dynamic-content');
+        const modal = document.getElementById('info-modal');
+        const modalOverlay = document.getElementById('modal-overlay');
+
+        window.openFloat = (floatKey) => {
+            const data = floatData[floatKey];
+            if (data) {
+                document.getElementById('modal-glow').style.setProperty('--theme-color', data.themeColor);
+                
+                modalCard.className = 'w-full rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter pointer-events-auto';
+                
+                if (floatKey === 'calendar') {
+                    modalCard.classList.add('max-w-4xl', 'w-[92vw]', 'sm:w-[85vw]');
+                    modalCard.style.backgroundColor = 'transparent'; 
+                } else if (['benefit', 'coin', 'shop'].includes(floatKey)) {
+                    modalCard.classList.add('max-w-lg', 'w-[90vw]');
+                    modalCard.style.backgroundColor = 'transparent'; 
+                } else {
+                    modalCard.classList.add('max-w-lg', 'w-[90vw]', 'border', 'border-white/60');
+                    modalCard.style.backgroundColor = 'rgba(255, 255, 255, 0.65)';
+                }
+
+                modalDynamicContent.innerHTML = data.content;
+                
+                if (floatKey === 'calendar' && !isIOS) {
+                    const grid = modalDynamicContent.querySelector('.grid');
+                    if (grid) {
+                        const wrapper = document.createElement('div');
+                        wrapper.style.width = '100%';
+                        wrapper.style.height = '100%';
+                        wrapper.style.position = 'absolute';
+                        wrapper.style.inset = '0';
+                        wrapper.style.overflow = 'hidden';
+                        
+                        grid.parentNode.insertBefore(wrapper, grid);
+                        wrapper.appendChild(grid);
+
+                        grid.style.width = '200%';
+                        grid.style.height = '200%';
+                        grid.style.transform = 'scale(0.5)';
+                        grid.style.transformOrigin = 'top left';
+                        
+                        grid.classList.remove('text-[6px]', 'sm:text-[9px]', 'md:text-[11px]');
+                        grid.classList.add('text-[12px]', 'sm:text-[18px]', 'md:text-[22px]');
+                    }
+                }
+
+                modalCard.classList.remove('modal-enter');
+                void modalCard.offsetWidth; 
+                modalCard.classList.add('modal-enter');
+                modal.classList.remove('hidden');
+            }
+        };
+
+        const floatBtns = document.querySelectorAll('.float-btn');
+        for (let i = 0; i < floatBtns.length; i++) {
+            floatBtns[i].addEventListener('click', function(e) {
+                e.stopPropagation(); 
+                window.openFloat(this.getAttribute('data-float'));
+            });
+        }
+
+        window.openCalendarEvent = (eventId) => {
+            const eventData = calendarEventsData[eventId];
+            if (!eventData) return;
+
+            // 🌟 修复 Bug: 确保无论是规则还是详情页，底层都使用实心背景，拒绝透明叠加影响阅读
+            modalCard.style.backgroundColor = '#FDF2E2';
+            modalCard.classList.remove('border', 'border-white/60');
+
+            if (eventData.type === 'rules') {
+                renderFlowStep2(eventData.title, eventData.html, "window.openFloat('calendar')", eventData.agreementTitle, eventData.agreementHtml);
+            } else {
+                const subHtml = eventData.subtitle ? `<p class="text-sm font-bold text-orange-600/80 mt-1">${eventData.subtitle}</p>` : '';
+                const timesHtml = (eventData.times && eventData.times.length > 0) 
+                    ? `<div class="flex flex-wrap justify-center mt-3">${eventData.times.map(t => `<div class="bg-orange-100 text-orange-800 px-3 py-1 rounded-md text-xs sm:text-sm font-bold shadow-sm inline-block m-1 border border-orange-200">${t}</div>`).join('')}</div>` 
+                    : '';
+
+                modalDynamicContent.innerHTML = `
+                    <div class="w-full flex flex-col max-h-[85vh] bg-[#FDF2E2] fade-in relative rounded-[32px] overflow-hidden">
+                        <div class="shrink-0 h-[60px] flex justify-center items-center bg-[#FDF2E2] border-b border-orange-200/50 z-20">
+                            <button onclick="window.openFloat('calendar')" class="absolute left-4 text-orange-600 font-bold text-sm flex items-center active:scale-95 transition">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>返回
+                            </button>
+                            <h3 class="text-lg sm:text-xl font-black text-orange-800 px-10 truncate">活动详情</h3>
+                        </div>
+                        <div class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar p-6 sm:p-8 flex flex-col items-center justify-center bg-orange-50/50 text-center" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
+                            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-orange-100 w-full my-auto">
+                                <div class="text-orange-600/80 font-bold mb-3 flex items-center justify-center text-xs sm:text-sm bg-orange-50 w-max mx-auto px-3 py-1 rounded-full border border-orange-100">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                    ${eventData.location}
+                                </div>
+                                <h4 class="text-xl sm:text-2xl font-black text-orange-600 mb-2">${eventData.title}</h4>
+                                ${subHtml}
+                                ${timesHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        };
+
+        function renderPureIntroModal(data) {
+            document.getElementById('modal-glow').style.display = 'none'; 
+            modalCard.style.backgroundColor = data.themeColor;
+            modalCard.classList.remove('border', 'border-white/60');
+            
+            modalDynamicContent.innerHTML = `
+                <div class="flex flex-col items-center justify-center w-full min-h-[40vh] max-h-[85vh] overflow-y-auto fade-in p-6 custom-scrollbar" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
+                    <div class="flex items-center mb-6 drop-shadow-sm mt-auto">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center font-black text-lg sm:text-xl mr-3 shadow-inner shrink-0" style="background-color: ${data.textColor}; color: ${data.themeColor};">
+                            ${data.badge}
+                        </div>
+                        <h2 class="text-3xl sm:text-4xl font-black tracking-widest shrink-0" style="color: ${data.textColor};">${data.title}</h2>
+                    </div>
+                    <div class="text-center font-bold text-lg sm:text-xl leading-relaxed mb-4 shrink-0" style="color: ${data.textColor};">
+                        <p>${data.line1}</p>
+                        <p>${data.line2}</p>
+                    </div>
+                    <div class="text-center font-bold text-[10px] sm:text-xs leading-relaxed opacity-80 mb-auto shrink-0" style="color: ${data.textColor};">
+                        <p>${data.en1}</p>
+                        <p>${data.en2}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderFlowStep1(data) {
+            document.getElementById('modal-glow').style.display = 'none'; 
+            modalCard.style.backgroundColor = data.themeColor;
+            modalCard.classList.remove('border', 'border-white/60');
+
+            modalDynamicContent.innerHTML = `
+                <div class="flex flex-col w-full max-h-[85vh] fade-in relative">
+                    <div class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar p-6 flex flex-col items-center justify-center" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
+                        <div class="flex items-center mb-6 drop-shadow-sm shrink-0 mt-auto">
+                            <div class="w-12 h-12 rounded-full flex items-center justify-center font-black text-lg sm:text-xl mr-3 shadow-inner" style="background-color: ${data.textColor}; color: ${data.themeColor};">
+                                ${data.badge}
+                            </div>
+                            <h2 class="text-3xl sm:text-4xl font-black tracking-widest" style="color: ${data.textColor};">${data.title}</h2>
+                        </div>
+                        <div class="text-center font-bold text-lg sm:text-xl leading-relaxed mb-4 shrink-0" style="color: ${data.textColor};">
+                            <p>${data.line1}</p>
+                            <p>${data.line2}</p>
+                        </div>
+                        <div class="text-center font-bold text-[10px] sm:text-xs leading-relaxed opacity-80 mb-10 shrink-0" style="color: ${data.textColor};">
+                            <p>${data.en1}</p>
+                            <p>${data.en2}</p>
+                        </div>
+                        <button id="btn-read-safety" class="w-full max-w-[280px] shrink-0 font-bold py-3.5 px-6 rounded-2xl shadow-lg transform transition active:scale-95 text-sm sm:text-base mb-auto" style="background-color: ${data.textColor}; color: ${data.themeColor};">
+                            阅读入场安全须知
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('btn-read-safety').addEventListener('click', () => {
+                document.getElementById('modal-glow').style.display = 'block';
+                modalCard.style.backgroundColor = 'rgba(255, 255, 255, 0.65)';
+                modalCard.classList.add('border', 'border-white/60');
+                renderFlowStep2(data.rulesTitle, data.rulesHtml, null, data.agreementTitle, data.agreementHtml);
+            });
+        }
+
+        function renderMultiFlowStep1(data) {
+            document.getElementById('modal-glow').style.display = 'none'; 
+            modalCard.style.backgroundColor = data.themeColor;
+            modalCard.classList.remove('border', 'border-white/60');
+
+            const buttonsHtml = data.options.map((opt, index) => `
+                <button onclick="window.triggerMultiOption('${data.id}', ${index})" class="w-full shrink-0 font-bold py-3.5 px-6 rounded-2xl shadow-lg transform transition active:scale-95 text-sm sm:text-base mb-3.5" style="background-color: ${data.textColor}; color: ${data.themeColor};">
+                    ${opt.btnText}
+                </button>
+            `).join('');
+
+            modalDynamicContent.innerHTML = `
+                <div class="flex flex-col w-full max-h-[85vh] fade-in relative">
+                    <div class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar p-6 flex flex-col items-center justify-center" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
+                        <div class="flex items-center mb-6 drop-shadow-sm shrink-0 mt-auto">
+                            <div class="w-12 h-12 rounded-full flex items-center justify-center font-black text-lg sm:text-xl mr-3 shadow-inner" style="background-color: ${data.textColor}; color: ${data.themeColor};">
+                                ${data.badge}
+                            </div>
+                            <h2 class="text-3xl sm:text-4xl font-black tracking-widest" style="color: ${data.textColor};">${data.title}</h2>
+                        </div>
+                        <div class="text-center font-bold text-lg sm:text-xl leading-relaxed mb-4 shrink-0" style="color: ${data.textColor};">
+                            <p>${data.line1}</p>
+                            <p>${data.line2}</p>
+                        </div>
+                        <div class="text-center font-bold text-[10px] sm:text-xs leading-relaxed opacity-80 mb-8 shrink-0" style="color: ${data.textColor};">
+                            <p>${data.en1}</p>
+                            <p>${data.en2}</p>
+                        </div>
+                        <div class="w-full max-w-[280px] shrink-0 mb-auto">
+                            ${buttonsHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.triggerMultiOption = (zoneId, optionIndex) => {
+            const opt = zonesData[zoneId].options[optionIndex];
+            document.getElementById('modal-glow').style.display = 'block';
+            modalCard.style.backgroundColor = 'rgba(255, 255, 255, 0.65)';
+            modalCard.classList.add('border', 'border-white/60');
+            renderFlowStep2(opt.rulesTitle, opt.rulesHtml, null, opt.agreementTitle, opt.agreementHtml);
+        };
+
+        window.renderFlowStep2 = function(rulesTitle, rulesHtml, backAction = null, agreementTitle = null, agreementHtml = null) {
+            const backBtnHtml = backAction ? `
+                <button onclick="${backAction}" class="absolute left-4 text-orange-600 font-bold text-sm flex items-center active:scale-95 transition">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>返回
+                </button>
+            ` : '';
+
+            const btnText = agreementHtml ? '已阅须知，下一步：签署安全协议' : '我已阅读并接受此须知，为自己安全负责';
+
+            modalDynamicContent.innerHTML = `
+                <div class="w-full flex flex-col max-h-[85vh] fade-in relative bg-[#FDF2E2] rounded-[32px] overflow-hidden">
+                    <div class="shrink-0 h-[60px] flex justify-center items-center border-b border-orange-200/50 z-20">
+                        ${backBtnHtml}
+                        <h3 class="text-lg sm:text-xl font-black text-orange-800 px-10 truncate w-full text-center">${rulesTitle}</h3>
+                    </div>
+                    <div class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar p-5 sm:p-6 text-xs sm:text-sm text-gray-800 leading-relaxed space-y-5" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
+                        ${rulesHtml}
+                    </div>
+                    <div class="shrink-0 h-[72px] bg-white/80 backdrop-blur-md border-t border-gray-100 flex items-center justify-center px-4 z-20">
+                        <button id="btn-accept-rules" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-[0_8px_20px_rgba(234,88,12,0.3)] transform transition active:scale-95 text-sm sm:text-base flex justify-center items-center">
+                            ${btnText}
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('btn-accept-rules').addEventListener('click', () => {
+                if (agreementHtml) {
+                    renderAgreementStep(agreementTitle, agreementHtml, rulesTitle, rulesHtml, backAction);
+                } else {
+                    renderPassStep3();
+                }
+            });
+        }
+
+        window.renderAgreementStep = function(title, html, rulesTitle, rulesHtml, originalBackAction) {
+            window.goBackToRules = function() {
+                renderFlowStep2(rulesTitle, rulesHtml, originalBackAction, title, html);
+            };
+
+            modalDynamicContent.innerHTML = `
+                <div class="w-full flex flex-col max-h-[85vh] fade-in relative bg-[#FDF2E2] rounded-[32px] overflow-hidden">
+                    <div class="shrink-0 h-[60px] flex justify-center items-center border-b border-orange-200/50 z-20">
+                        <button onclick="window.goBackToRules()" class="absolute left-4 text-orange-600 font-bold text-sm flex items-center active:scale-95 transition">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>返回
+                        </button>
+                        <h3 class="text-lg sm:text-xl font-black text-orange-800 px-10 truncate w-full text-center">${title}</h3>
+                    </div>
+                    <div class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar p-5 sm:p-6 bg-white/60" style="-webkit-overflow-scrolling: touch; touch-action: pan-y;">
+                        ${html}
+                    </div>
+                    <div class="shrink-0 bg-white/90 backdrop-blur-md border-t border-gray-200 flex flex-col items-center justify-center px-4 py-4 z-20">
+                        <div class="w-full bg-orange-50/50 p-3 rounded-xl border border-orange-100 mb-3 shadow-inner">
+                            <input type="text" id="signer-name" placeholder="请填写本人（或监护人）真实姓名完成签署：" class="w-full bg-white border border-orange-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-colors">
+                        </div>
+                        <button id="btn-sign-agreement" disabled class="w-full bg-gray-400 text-white font-bold py-3.5 px-4 rounded-xl transition text-sm sm:text-base flex justify-center items-center cursor-not-allowed">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            同意并电子签署协议
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            const nameInput = document.getElementById('signer-name');
+            const signBtn = document.getElementById('btn-sign-agreement');
+
+            nameInput.addEventListener('input', (e) => {
+                if (e.target.value.trim().length > 0) {
+                    signBtn.disabled = false;
+                    signBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                    signBtn.classList.add('bg-green-600', 'hover:bg-green-700', 'shadow-[0_8px_20px_rgba(16,185,129,0.3)]', 'active:scale-95');
+                } else {
+                    signBtn.disabled = true;
+                    signBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+                    signBtn.classList.remove('bg-green-600', 'hover:bg-green-700', 'shadow-[0_8px_20px_rgba(16,185,129,0.3)]', 'active:scale-95');
+                }
+            });
+
+            signBtn.addEventListener('click', () => {
+                const name = nameInput.value.trim();
+                if(name) {
+                    renderPassStep3(name);
+                }
+            });
+        }
+
+        window.renderPassStep3 = function(signerName = '') {
+            document.getElementById('modal-glow').style.setProperty('--theme-color', '#10B981');
+            const now = new Date();
+            const timeString = `${now.getMonth()+1}月${now.getDate()}日 ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+            let signerHtml = '';
+            if (signerName) {
+                signerHtml = `
+                    <div class="mt-4 pt-3 border-t border-green-200/50 relative z-10 w-full text-center">
+                        <p class="text-xs text-green-700 font-medium">电子签署人</p>
+                        <p class="font-black text-green-800 text-xl tracking-widest mt-0.5">${signerName}</p>
+                    </div>
+                    <div class="absolute -right-4 -bottom-4 opacity-10 transform rotate-[-15deg] pointer-events-none">
+                        <div class="border-[6px] border-green-800 rounded-full w-28 h-28 flex items-center justify-center">
+                            <span class="text-green-800 font-black text-3xl">已签</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            modalDynamicContent.innerHTML = `
+                <div class="p-8 flex flex-col items-center justify-center w-full min-h-[45vh] fade-in bg-white rounded-[32px]">
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full border-4 flex items-center justify-center mb-5 animate-scan bg-green-50">
+                        <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    <h2 class="text-xl sm:text-2xl font-black text-green-600 mb-2">安全协议已确认</h2>
+                    <p class="text-xs sm:text-sm font-bold text-gray-500 tracking-widest mb-6 border-b border-gray-200 pb-2">TIME: ${timeString}</p>
+                    
+                    <div class="bg-green-50 text-green-800 px-6 py-4 rounded-2xl text-center w-full border border-green-200 shadow-inner relative overflow-hidden">
+                        <p class="font-bold text-sm sm:text-base relative z-10">请向现场工作人员出示此凭证</p>
+                        <p class="text-[10px] sm:text-xs mt-1 opacity-80 relative z-10">凭此绿码方可入场体验</p>
+                        ${signerHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        const hotspots = document.querySelectorAll('.hotspot-ip');
+        for (let i = 0; i < hotspots.length; i++) {
+            hotspots[i].addEventListener('click', function(e) {
+                e.stopPropagation(); 
+                const zoneId = this.getAttribute('data-zone');
+                const data = zonesData[zoneId];
+                
+                if (data) {
+                    document.getElementById('modal-glow').style.display = 'block';
+                    
+                    modalCard.className = 'w-full rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter max-w-lg w-[90vw] border border-white/60 pointer-events-auto';
+                    modalCard.style.backgroundColor = 'rgba(255, 255, 255, 0.65)';
+                    toggleViewportZoom(false);
+
+                    if (data.type === 'pure-intro') {
+                        renderPureIntroModal(data); 
+                    } else if (data.type === 'flow') {
+                        renderFlowStep1(data); 
+                    } else if (data.type === 'multi-flow') {
+                        renderMultiFlowStep1(data); 
+                    }
+
+                    modalCard.classList.remove('modal-enter');
+                    void modalCard.offsetWidth; 
+                    modalCard.classList.add('modal-enter');
+                    modal.classList.remove('hidden');
+                }
+            });
+        }
+
+        const closeModal = () => {
+            modal.classList.add('hidden');
+            toggleViewportZoom(false);
+        }
+        document.getElementById('modal-overlay').addEventListener('click', closeModal);
+        
+        modalCard.addEventListener('click', (e) => {
+            e.stopPropagation(); 
+        });
+    </script>
+</body>
+</html>        @keyframes phoneRotate {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(90deg); }
+            100% { transform: rotate(90deg); }
+        }
+        .animate-phone { animation: phoneRotate 2s ease-in-out infinite; }
+
+        @keyframes sway {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-6deg); }
+            75% { transform: rotate(6deg); }
+        }
+        .animate-sway { 
+            animation: sway 3s ease-in-out infinite; 
+            transform-origin: bottom center; 
+        }
+
+        @keyframes pan {
+            0%, 100% { transform: translateX(0px); }
+            50% { transform: translateX(-15px); }
+        }
+        .animate-pan { animation: pan 4s ease-in-out infinite; }
+
+        @keyframes drive {
+            0%, 100% { transform: translateX(0px); }
+            50% { transform: translateX(15px); }
+        }
+        .animate-drive { animation: drive 3.5s ease-in-out infinite; }
+
+        @keyframes scanGlow {
+            0% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(16, 185, 129, 0.8); border-color: rgba(16, 185, 129, 1); }
+            100% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.3); }
+        }
+        .animate-scan { animation: scanGlow 2s infinite; }
+
+        .modal-enter { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .fade-in { animation: fadeIn 0.3s ease-in-out forwards; }
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .scroll-container {
+            width: 100%; height: 100%;
+            overflow-x: auto; overflow-y: hidden;
+            -webkit-overflow-scrolling: touch; 
+            position: relative;
+            overscroll-behavior: none;
+            touch-action: pan-x pan-y;
+        }
+        
+        .map-wrapper {
+            height: 100%;
+            position: relative;
+            display: inline-block; 
+        }
+
+        .map-bg-img, .hotspot-ip img {
+            pointer-events: none; 
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .map-bg-img {
+            height: 100%; 
+            width: auto;  
+            max-width: none;
+            display: block;
+        }
+
+        .hotspot-ip {
+            position: absolute;
+            cursor: pointer;
+            transition: transform 0.1s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            --tx: 0px;
+            --ty: 0px;
+            --scale: 1;
+            transform: translate(var(--tx), var(--ty)) scale(var(--scale));
+        }
+        .hotspot-ip:active { 
+            --scale: 0.95; 
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 4px; }
+    </style>
+</head>
+<body class="antialiased text-gray-800">
+
+    <div id="app-root" class="relative w-full h-full overflow-hidden bg-[#F8D36A] origin-center transition-transform duration-300">
+
+        <!-- ================= 视图 1：竖屏开启页 ================= -->
+        <div id="view-intro" class="view-layer relative overflow-hidden cursor-pointer">
+            <img src="assets/intro-bg.jpg" class="absolute inset-0 w-full h-full object-cover z-0" alt="活动海报">
+            
+            <video 
+                id="intro-video"
+                src="assets/intro-bg.mp4" 
+                poster="assets/intro-bg.jpg"
+                autoplay 
+                muted 
+                playsinline 
+                webkit-playsinline
+                class="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none"
+            ></video>
+
+            <div id="android-enter-wrapper" class="absolute bottom-[12%] left-0 w-full flex justify-center z-50 hidden">
+                <button id="btn-android-enter" class="px-8 py-3.5 bg-black/40 backdrop-blur-md border border-white/50 rounded-full text-white active:scale-95 transition shadow-[0_8px_30px_rgba(0,0,0,0.4)] flex flex-col items-center relative overflow-hidden cursor-pointer">
+                    <div class="absolute inset-0 bg-gradient-to-r from-orange-500/40 to-rose-500/40 animate-pulse pointer-events-none"></div>
+                    <span class="relative z-10 tracking-widest font-black text-lg drop-shadow-md flex items-center">
+                        ✨ 触碰星光，跃入热爱
+                    </span>
+                    <span class="relative z-10 text-[10px] font-normal opacity-90 mt-1 tracking-widest">点此进入社区</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= 视图 2：旋转手机提示页 ================= -->
+        <div id="view-rotate" class="view-layer">
+            <div class="flex flex-col items-center">
+                <div class="w-16 h-28 border-4 border-white rounded-xl mb-6 flex items-center justify-center animate-phone">
+                    <div class="w-10 h-20 bg-white/20 rounded-sm"></div>
+                </div>
+                <h2 class="text-2xl font-bold mb-2 text-white">为了更好的体验</h2>
+                <p class="text-gray-300 mb-8 text-sm sm:text-base">请解锁方向锁定，并将手机横过来观看</p>
+                
+                <button id="btn-force-landscape" class="px-8 py-4 bg-gradient-to-r from-orange-400 to-rose-500 border border-white/40 rounded-full text-white active:scale-95 transition shadow-[0_10px_25px_rgba(244,63,94,0.4)] flex flex-col items-center">
+                    <span class="tracking-widest font-black text-base mb-0.5">✨ 拨动时针，跃入热爱之境</span>
+                    <span class="text-[10px] font-normal opacity-80 tracking-normal font-sans">（屏幕无法自动旋转？点此强制进入）</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= 视图 3：横向地图主页 ================= -->
+        <div id="view-map" class="view-layer">
+            <div class="scroll-container" id="map-scroll-container">
+                <div class="map-wrapper">
+                    
+                    <img src="assets/map-horizontal.webp" alt="活动地图" class="map-bg-img" onerror="console.error('找不到地图背景，请检查路径')">
+
+                    <div class="hotspot-ip z-20" style="top: 50%; left: 5%; --tx: -50%; --ty: -50%;" data-zone="departure">
+                        <img src="assets/ip_tongche.webp" alt="痛车" class="w-40 sm:w-56 object-contain animate-drive drop-shadow-xl" onerror="this.style.display='none';">
+                    </div>
+
+                    <div class="hotspot-ip z-20" style="top: 78%; left: 11%; --tx: -50%; --ty: -50%;" data-zone="zone_c">
+                        <img src="assets/ip-boy.png" alt="男孩" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway drop-shadow-lg">
+                    </div>
+
+                    <div class="hotspot-ip z-20" style="top: 25%; left: 18%; --tx: -50%; --ty: -50%;" data-zone="climbing">
+                        <img src="assets/ip-bear.png" alt="大熊" class="w-32 h-32 sm:w-48 sm:h-48 object-contain animate-sway drop-shadow-lg" style="animation-delay: 0.5s;">
+                    </div>
+
+                    <div class="hotspot-ip z-20" style="top: 45%; left: 25%; --tx: -50%; --ty: -50%;" data-zone="zone_d">
+                        <img src="assets/ip-frog.png" alt="青蛙" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway drop-shadow-lg" style="animation-delay: 1.2s;">
+                    </div>
+
+                    <div class="hotspot-ip z-30" style="top: 80%; left: 40%; --tx: -50%; --ty: -50%;" data-zone="zone_e">
+                        <img src="assets/ip-bus.png" alt="巴士" class="w-60 sm:w-[350px] object-contain animate-pan drop-shadow-xl">
+                    </div>
+
+                    <div class="hotspot-ip z-20" style="top: 35%; left: 54%; --tx: -50%; --ty: -50%;" data-zone="zone_g">
+                        <img src="assets/ip-rabbit.png" alt="兔子" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway drop-shadow-lg" style="animation-delay: 0.5s;">
+                    </div>
+
+                    <div class="hotspot-ip z-30" style="top: 63%; left: 60%; --tx: -50%; --ty: -50%;" data-zone="zone_h">
+                        <img src="assets/golden.png" alt="金币" class="w-16 h-16 sm:w-24 sm:h-24 object-contain animate-sway drop-shadow-lg" style="animation-delay: 1.2s;" onerror="this.style.display='none';">
+                    </div>
+
+                    <div class="hotspot-ip z-20" style="top: 39%; left: 66%; --tx: -50%; --ty: -50%;" data-zone="bubble">
+                        <img src="assets/ip-octopus.png" alt="章鱼" class="w-24 h-24 sm:w-36 sm:h-36 object-contain animate-sway drop-shadow-lg" style="animation-delay: 1.8s;">
+                    </div>
+
+                    <div class="hotspot-ip z-20" style="top: 43%; left: 72%; --tx: -50%; --ty: -50%;" data-zone="powerblock">
+                        <img src="assets/ip-elephant.png" alt="大象" class="w-24 h-24 sm:w-32 sm:h-32 object-contain animate-sway drop-shadow-lg" style="animation-delay: 1.2s;">
+                    </div>
+
+                    <div class="hotspot-ip z-30" style="top: 80%; left: 77%; --tx: -50%; --ty: -50%;" data-zone="zone_e2">
+                        <img src="assets/ip-bus.png" alt="巴士" class="w-60 sm:w-[350px] object-contain animate-pan drop-shadow-xl" style="animation-delay: 0.5s;">
+                    </div>
+
+                    <div class="hotspot-ip z-10" style="top: 35%; left: 87%; --tx: -50%; --ty: -50%;" data-zone="zone_k">
+                        <img src="assets/ip-bear.png" alt="小熊" class="w-28 h-28 sm:w-40 sm:h-40 object-contain animate-sway drop-shadow-lg" style="animation-delay: 1.8s;">
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ================= 左下角固定时间 ================= -->
+            <div id="fixed-time-display" class="absolute left-2 bottom-3 sm:left-4 sm:bottom-4 z-40 flex flex-col transition-opacity duration-300 drop-shadow-md pointer-events-none" style="display: none;">
+                <div class="text-orange-600 font-black text-[11px] sm:text-xs tracking-wider flex items-center mb-0.5">
+                    <span class="mr-1 text-sm sm:text-base opacity-90">🕒</span> 
+                    2026.04.25 <span class="mx-1 font-normal text-orange-500/80">—</span> 05.17
+                </div>
+                <div class="text-orange-600 font-black text-[7px] sm:text-[9px] tracking-widest ml-5 flex items-center">
+                    工作日: 10:00-20:00 <span class="mx-0.5 opacity-50 font-normal">|</span> 周末/节假日: 10:00-21:00
+                </div>
+            </div>
+
+            <!-- ================= 右下角悬浮菜单 ================= -->
+            <div id="floating-menu" class="absolute right-3 bottom-4 sm:right-6 sm:bottom-6 z-40 flex flex-row items-end gap-2 sm:gap-3 transition-opacity duration-300" style="display: none;">
+                <button class="float-btn relative w-12 h-16 sm:w-16 sm:h-20 shrink-0 transform transition active:scale-90 cursor-pointer" data-float="benefit">
+                    <img src="assets/small icon 1.png" class="w-full h-full object-contain filter drop-shadow-[0_4px_6px_rgba(0,0,0,0.3)]" alt="打卡福利">
+                </button>
+                <button class="float-btn relative w-12 h-16 sm:w-16 sm:h-20 shrink-0 transform transition active:scale-90 cursor-pointer" data-float="coin">
+                    <img src="assets/small icon 2.png" class="w-full h-full object-contain filter drop-shadow-[0_4px_6px_rgba(0,0,0,0.3)]" alt="金币玩法">
+                </button>
+                <button class="float-btn relative w-12 h-16 sm:w-16 sm:h-20 shrink-0 transform transition active:scale-90 cursor-pointer" data-float="shop">
+                    <img src="assets/small icon 3.png" class="w-full h-full object-contain filter drop-shadow-[0_4px_6px_rgba(0,0,0,0.3)]" alt="限时痛店">
+                </button>
+                <button class="float-btn relative w-12 h-16 sm:w-16 sm:h-20 shrink-0 transform transition active:scale-90 cursor-pointer" data-float="calendar">
+                    <img src="assets/small icon 4.png" class="w-full h-full object-contain filter drop-shadow-[0_4px_6px_rgba(0,0,0,0.3)]" alt="活动课表">
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= 🌟 新手引导全屏遮罩 ================= -->
+        <div id="tutorial-mask" class="absolute inset-0 z-[70] hidden bg-black/85 fade-in pointer-events-auto"></div>
+
+        <!-- ================= 左上角：入场指引指南针 ================= -->
+        <button id="btn-reopen-guide" class="absolute top-4 left-4 sm:top-6 sm:left-6 z-40 hidden active:scale-90 transition-transform duration-200 w-14 h-14 sm:w-16 sm:h-16 shrink-0 cursor-pointer origin-center">
+            <img src="assets/guide-icon.png" class="w-full h-full object-contain drop-shadow-md relative z-10" alt="入场指引" onerror="this.style.display='none';">
+            <div id="tutorial-ring" class="absolute inset-[-10px] rounded-full border-2 border-white border-dashed animate-pulse hidden pointer-events-none z-0"></div>
+        </button>
+
+        <!-- ================= 🌟 悬浮画廊：活动指引长图 ================= -->
+        <div id="guide-modal" class="absolute inset-0 z-[60] hidden flex items-center justify-center p-4 sm:p-8">
+            <div class="absolute inset-0 bg-black/70 backdrop-blur-sm cursor-pointer" id="guide-overlay"></div>
+            <div id="guide-scroll-container" class="relative z-10 w-full max-w-4xl h-auto max-h-[85vh] overflow-x-auto overflow-y-auto custom-scrollbar rounded-2xl shadow-2xl bg-[#FDF2E2] border border-white/20 fade-in flex items-center p-2 sm:p-4" style="-webkit-overflow-scrolling: touch; touch-action: pan-x pan-y;">
+                <img src="assets/guide-bg.webp" class="h-[50vh] sm:h-[65vh] w-auto max-w-none block rounded-xl shadow-sm" alt="活动引导" onerror="console.error('找不到活动引导图片')">
+            </div>
+        </div>
+
+        <!-- ================= 通用弹窗组件 ================= -->
+        <div id="info-modal" class="absolute inset-0 z-50 hidden flex items-center justify-center p-4 pointer-events-none">
+            <div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity cursor-pointer pointer-events-auto" id="modal-overlay"></div>
+            
+            <div id="modal-card" class="w-full max-w-lg rounded-[32px] overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.15)] z-10 relative transition-all duration-300 modal-enter pointer-events-auto" style="background-color: rgba(255, 255, 255, 0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);">
+                <div id="modal-glow" class="absolute top-0 right-0 w-full h-48 opacity-40 pointer-events-none transition-colors duration-500" style="background: radial-gradient(circle at 80% 0%, var(--theme-color), transparent 70%);"></div>
+                <div id="modal-dynamic-content" class="w-full relative z-10"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const viewIntro = document.getElementById('view-intro');
+        const viewRotate = document.getElementById('view-rotate');
+        const viewMap = document.getElementById('view-map');
+        const floatingMenu = document.getElementById('floating-menu');
+        const fixedTimeDisplay = document.getElementById('fixed-time-display');
+        const btnReopenGuide = document.getElementById('btn-reopen-guide');
+        
+        let hasStarted = false;
+        let hasSeenGuide = false;
+        let isForcedLandscape = false; 
+
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        if (isIOS) {
+            const forceBtn = document.getElementById('btn-force-landscape');
+            if (forceBtn) forceBtn.style.display = 'none';
+            viewIntro.classList.add('cursor-pointer');
+        } else {
+            const androidEnterBtn = document.getElementById('android-enter-wrapper');
+            if (androidEnterBtn) androidEnterBtn.classList.remove('hidden');
+            
+            const guideContainer = document.getElementById('guide-scroll-container');
+            if (guideContainer) {
+                guideContainer.classList.remove('w-full', 'max-w-4xl', 'max-h-[85vh]');
+                guideContainer.classList.add('w-[80%]', 'max-w-3xl', 'max-h-[70vh]'); 
+                const guideImg = guideContainer.querySelector('img');
+                if (guideImg) {
+                    guideImg.classList.remove('h-[50vh]', 'sm:h-[65vh]');
+                    guideImg.classList.add('h-[45vh]', 'sm:h-[55vh]');
+                }
+            }
+        }
+
+        function checkOrientation() {
+            if (!hasStarted) return; 
+            
+            const physicalLandscape = window.innerWidth > window.innerHeight;
+            
+            if (physicalLandscape && isForcedLandscape) {
+                isForcedLandscape = false;
+                const appRoot = document.getElementById('app-root');
+                appRoot.style.position = '';
+                appRoot.style.top = '';
+                appRoot.style.left = '';
+                appRoot.style.width = '100%';
+                appRoot.style.height = '100%';
+                appRoot.style.transform = '';
+            }
+            
+            const isLandscape = physicalLandscape || isForcedLandscape;
+            
+            if (isLandscape) {
+                viewIntro.style.display = 'none';
+                viewRotate.style.display = 'none';
+                viewMap.style.display = 'flex';
+                floatingMenu.style.display = 'flex'; 
+                fixedTimeDisplay.style.display = 'flex';
+                btnReopenGuide.style.display = 'block';
+                
+                if (!hasSeenGuide) {
+                    document.getElementById('tutorial-mask').classList.remove('hidden');
+                    btnReopenGuide.classList.replace('z-40', 'z-[80]');
+                    document.getElementById('tutorial-ring').classList.remove('hidden');
+                }
+            } else {
+                viewIntro.style.display = 'none';
+                viewMap.style.display = 'none';
+                viewRotate.style.display = 'flex';
+                floatingMenu.style.display = 'none'; 
+                fixedTimeDisplay.style.display = 'none'; 
+                btnReopenGuide.style.display = 'none';
+                document.getElementById('guide-modal').classList.add('hidden');
+                document.getElementById('tutorial-mask').classList.add('hidden');
+            }
+        }
+
+        function startApp() {
+            hasStarted = true;
+            if (!isIOS && window.innerHeight > window.innerWidth) {
+                isForcedLandscape = true;
+                const appRoot = document.getElementById('app-root');
+                const w = window.innerWidth;
+                const h = window.innerHeight;
+                appRoot.style.position = 'absolute';
+                appRoot.style.top = '50%';
+                appRoot.style.left = '50%';
+                appRoot.style.width = Math.max(w, h) + 'px';
+                appRoot.style.height = Math.min(w, h) + 'px';
+                appRoot.style.transform = 'translate(-50%, -50%) rotate(90deg)';
+            }
+            checkOrientation();
+        }
+
+        document.getElementById('btn-force-landscape').addEventListener('click', () => {
+            startApp();
+        });
+
+        viewIntro.addEventListener('click', (e) => {
+            if (!isIOS && e.target.closest('#btn-android-enter')) {
+                startApp();
+            } else if (isIOS) {
+                startApp();
+            }
+        });
+
+        btnReopenGuide.addEventListener('click', (e) => {
+            if (!hasSeenGuide) {
+                document.getElementById('tutorial-mask').classList.add('hidden');
+                btnReopenGuide.classList.replace('z-[80]', 'z-40');
+                document.getElementById('tutorial-ring').classList.add('hidden');
+                hasSeenGuide = true;
+            }
+            document.getElementById('guide-modal').classList.remove('hidden');
+        });
+
+        const guideModal = document.getElementById('guide-modal');
+        const guideOverlay = document.getElementById('guide-overlay');
+        guideModal.addEventListener('click', (e) => {
+            if (e.target === guideModal || e.target === guideOverlay) {
+                guideModal.classList.add('hidden');
+            }
+        });
+
+        const safePlayVideo = (vid) => {
+            if (!vid) return;
+            const playPromise = vid.play();
+            if (playPromise !== undefined && typeof playPromise.catch === 'function') {
+                playPromise.catch((e) => { console.log('Autoplay blocked:', e); });
+            }
+        };
+
+        document.addEventListener('touchstart', function() {
+            const video = document.getElementById('intro-video');
+            if (video && video.paused && !hasStarted) {
+                safePlayVideo(video);
+            }
+        }, { once: true });
+
+        const introVideo = document.getElementById('intro-video');
+        if (introVideo) {
+            introVideo.addEventListener('ended', () => {
+                startApp();
+            });
+            document.addEventListener("WeixinJSBridgeReady", function() {
+                safePlayVideo(introVideo);
+            }, false);
+        }
+
+        window.addEventListener('resize', checkOrientation);
+        window.addEventListener('orientationchange', () => { setTimeout(checkOrientation, 200); });
+        viewIntro.style.display = 'flex';
+
+        const viewportMeta = document.getElementById('viewport-meta');
+        function toggleViewportZoom(allow) {
+            if(allow) {
+                viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover');
+            } else {
+                viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
+            }
+        }
+
+        // =========================================================================
         // 🌟 安卓强制横屏专属手势滚动引擎
         // =========================================================================
         let dragStartX = 0;
