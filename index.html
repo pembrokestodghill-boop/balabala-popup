@@ -272,8 +272,10 @@
             <div class="absolute inset-0 bg-black/70 backdrop-blur-sm cursor-pointer" id="guide-overlay"></div>
             <!-- 修改：强制全平台使用统一的相对宽高配置，保障四周完美留白与宽屏展现 -->
             <div class="relative z-10 w-[90%] h-[85%] max-w-4xl rounded-2xl shadow-2xl bg-[#FDF2E2] border border-white/20 fade-in flex items-center p-2 sm:p-4" id="guide-container">
-                <div id="guide-scroll-container" class="w-full h-full overflow-x-auto overflow-y-auto custom-scrollbar flex items-center justify-center" style="-webkit-overflow-scrolling: touch;">
-                    <img src="assets/guide-bg.webp" class="h-[95%] w-auto max-w-none block rounded-xl shadow-sm mx-auto" alt="活动引导" onerror="console.error('找不到活动引导图片')">
+                <!-- 移除 justify-center 保障内容长于容器时可以滑动到左边界 -->
+                <div id="guide-scroll-container" class="w-full h-full overflow-x-auto overflow-y-auto custom-scrollbar flex items-center" style="-webkit-overflow-scrolling: touch;">
+                    <!-- 移除 mx-auto 保障不会因为 flex 居中机制导致左侧截断 -->
+                    <img src="assets/guide-bg.webp" class="h-[95%] w-auto max-w-none block rounded-xl shadow-sm" alt="活动引导" onerror="console.error('找不到活动引导图片')">
                 </div>
             </div>
         </div>
@@ -467,6 +469,11 @@
                     isMapTarget = true;
                     break;
                 }
+
+                if (['guide-scroll-container', 'calendar-scroll-container', 'benefit-scroll-container', 'coin-scroll-container', 'shop-scroll-container'].includes(target.id)) {
+                    activeScrollTarget = target;
+                    break;
+                }
                 
                 const style = window.getComputedStyle(target);
                 const isScrollableY = target.scrollHeight > target.clientHeight && (style.overflowY === 'auto' || style.overflowY === 'scroll' || target.classList.contains('custom-scrollbar') || target.classList.contains('overflow-y-auto'));
@@ -496,10 +503,22 @@
                 activeScrollTarget.scrollLeft -= deltaY;
                 scrolled = true;
             } else {
-                const isScrollableY = activeScrollTarget.scrollHeight > activeScrollTarget.clientHeight;
-                if (isScrollableY || activeScrollTarget.id === 'guide-scroll-container') {
-                    activeScrollTarget.scrollTop += deltaX; 
+                if (activeScrollTarget.id === 'guide-scroll-container') {
+                    activeScrollTarget.scrollLeft -= deltaY;
                     scrolled = true;
+                } else if (['calendar-scroll-container', 'benefit-scroll-container', 'coin-scroll-container', 'shop-scroll-container'].includes(activeScrollTarget.id)) {
+                    activeScrollTarget.scrollTop += deltaX;
+                    scrolled = true;
+                } else {
+                    const isScrollableY = activeScrollTarget.scrollHeight > activeScrollTarget.clientHeight;
+                    const isScrollableX = activeScrollTarget.scrollWidth > activeScrollTarget.clientWidth;
+                    if (isScrollableY) {
+                        activeScrollTarget.scrollTop += deltaX; 
+                        scrolled = true;
+                    } else if (isScrollableX) {
+                        activeScrollTarget.scrollLeft -= deltaY;
+                        scrolled = true;
+                    }
                 }
             }
 
@@ -790,7 +809,7 @@
                 themeColor: '#EA580C',
                 content: `
                     <div class="w-full flex flex-col max-h-[85vh] bg-[#FDF2E2] fade-in relative rounded-[32px] overflow-hidden">
-                        <div class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
+                        <div id="benefit-scroll-container" class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
                             <img src="assets/dakafuli.png" class="w-full h-auto block" alt="打卡福利">
                         </div>
                     </div>
@@ -810,7 +829,7 @@
                 themeColor: '#DC2626',
                 content: `
                     <div class="w-full flex flex-col max-h-[85vh] bg-[#FFF1F0] fade-in relative rounded-[32px] overflow-hidden">
-                        <div class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
+                        <div id="shop-scroll-container" class="flex-1 min-h-0 w-full overflow-y-auto custom-scrollbar" style="-webkit-overflow-scrolling: touch;">
                             <img src="assets/xianshitongdian.png" class="w-full h-auto block" alt="限时痛店">
                         </div>
                     </div>
@@ -996,8 +1015,7 @@
                     modalCard.classList.add('max-w-2xl', 'w-[90%]', 'h-[85%]');
                     modalCard.style.backgroundColor = 'transparent'; 
                 } else if (['benefit', 'shop'].includes(floatKey)) {
-                    // 保留用户指定的两个免修改项（保持原样）
-                    modalCard.classList.add('max-w-lg', 'w-[90vw]'); 
+                    modalCard.classList.add('max-w-2xl', 'w-[90%]');
                     modalCard.style.backgroundColor = 'transparent'; 
                 } else {
                     modalCard.classList.add('max-w-lg', 'w-[90vw]', 'border', 'border-white/60');
